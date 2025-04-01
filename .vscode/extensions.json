@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "njpwerner.autodocstring",
+    "ms-toolsai.jupyter",
+    "ms-python.python",
+    "charliermarsh.ruff"
+  ]
+}
