@@ -19,3 +19,8 @@ make dev
 ## Adding new dependencies
 
 To add new dependency use `uv add ${dependency}`
+
+## Storing data files
+
+All data stored for the purpose of the analysis should be dumped into the `data`
+directory. They are not tracked by the git.
