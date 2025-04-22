@@ -17,6 +17,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "scipy>=1.11.4",
     "seaborn>=0.13.2",
+    "statsmodels>=0.14.4",
     "sunburst>=1.0.0a2",
 ]
 [tool.ruff.lint]

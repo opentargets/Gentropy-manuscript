@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -968,6 +967,7 @@ dependencies = [
     { name = "pre-commit" },
     { name = "scipy" },
     { name = "seaborn" },
+    { name = "statsmodels" },
     { name = "sunburst" },
 ]
 
@@ -985,6 +985,7 @@ requires-dist = [
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "scipy", specifier = ">=1.11.4" },
     { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "statsmodels", specifier = ">=0.14.4" },
     { name = "sunburst", specifier = ">=1.0.0a2" },
 ]
 
