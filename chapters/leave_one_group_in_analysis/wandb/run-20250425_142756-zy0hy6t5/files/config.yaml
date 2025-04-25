@@ -1,0 +1,164 @@
+_wandb:
+    value:
+        cli_version: 0.19.8
+        m: []
+        python_version: 3.11.11
+        t:
+            "1":
+                - 5
+                - 49
+                - 50
+                - 53
+                - 55
+                - 105
+            "2":
+                - 5
+                - 49
+                - 50
+                - 53
+                - 55
+                - 105
+            "3":
+                - 2
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.11.11
+            "5": 0.19.8
+            "8":
+                - 1
+                - 5
+            "12": 0.19.8
+            "13": linux-x86_64
+        visualize:
+            precision_recall:
+                panel_config:
+                    fieldSettings:
+                        class: class
+                        x: recall
+                        "y": precision
+                    panelDefId: wandb/area-under-curve/v0
+                    stringSettings:
+                        title: Precision-Recall Curve
+                        x-axis-title: Recall
+                        y-axis-title: Precision
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: precision_recall_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2
+            roc:
+                panel_config:
+                    fieldSettings:
+                        class: class
+                        x: fpr
+                        "y": tpr
+                    panelDefId: wandb/area-under-curve/v0
+                    stringSettings:
+                        title: ROC Curve
+                        x-axis-title: False positive rate
+                        y-axis-title: True positive rate
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: roc_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2
+        viz:
+            calibration_curve:
+                historyFieldSettings:
+                    key: calibration_curve
+                    x-axis: _step
+                id: wandb/calibration/v1
+            class_proportions:
+                historyFieldSettings:
+                    key: class_proportions
+                    x-axis: _step
+                id: wandb/class_proportions/v1
+            confusion_matrix:
+                historyFieldSettings:
+                    key: confusion_matrix
+                    x-axis: _step
+                id: wandb/confusion_matrix/v1
+            feature_importances:
+                historyFieldSettings:
+                    key: feature_importances
+                    x-axis: _step
+                id: wandb/feature_importances/v1
+            summary_metrics:
+                historyFieldSettings:
+                    key: summary_metrics
+                    x-axis: _step
+                id: wandb/metrics/v1
+ccp_alpha:
+    value: 0
+criterion:
+    value: friedman_mse
+init:
+    value: null
+learning_rate:
+    value: 0.1
+loss:
+    value: log_loss
+max_depth:
+    value: 3
+max_features:
+    value: null
+max_leaf_nodes:
+    value: null
+min_impurity_decrease:
+    value: 0
+min_samples_leaf:
+    value: 1
+min_samples_split:
+    value: 5
+min_weight_fraction_leaf:
+    value: 0
+n_estimators:
+    value: 100
+n_iter_no_change:
+    value: null
+random_state:
+    value: 42
+subsample:
+    value: 0.7
+tol:
+    value: 0.0001
+validation_fraction:
+    value: 0.1
+verbose:
+    value: 0
+warm_start:
+    value: false
