@@ -1,0 +1,1 @@
+{"columns": ["metric_name", "metric_value", "model_name"], "data": [["accuracy_score", 0.98, "GradientBoostingClassifier"], ["precision", 0.98, "GradientBoostingClassifier"], ["recall", 0.98, "GradientBoostingClassifier"], ["f1_score", 0.98, "GradientBoostingClassifier"]]}
