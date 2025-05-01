@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "altair>=5.5.0",
     "bokeh>=3.4.3",
+    "dash-bio>=1.0.2",
     "gentropy>=2.2.0",
     "ipython>=9.0.2",
     "jupyterlab>=4.3.6",
@@ -21,6 +22,8 @@ dependencies = [
     "seaborn>=0.13.2",
     "statsmodels>=0.14.4",
     "sunburst>=1.0.0a2",
+    "tagore>=1.1.2",
+    "wordcloud>=1.9.4",
 ]
 [tool.ruff.lint]
 select = ["D", "I", "E"]
