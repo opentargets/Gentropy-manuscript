@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -1028,8 +1029,8 @@ wheels = [
 
 [[package]]
 name = "gentropy"
-version = "2.2.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.0.0"
+source = { git = "https://github.com/opentargets/gentropy?tag=v2.3.0-rc.4#e4bef9dc14e3fcf7d9aac382374e17051ee8e901" }
 dependencies = [
     { name = "google-cloud-secret-manager" },
     { name = "google-cloud-storage" },
@@ -1048,15 +1049,11 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "wandb" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/39/c156898340fbc08315af90a7508f6533a0bcfbe119349f37fac0fc74d83b/gentropy-2.2.0.tar.gz", hash = "sha256:6d8a972453e29cbf992414db318d8b0b7a77093a45e75c51a5e7a5e31886c6f0", size = 3479873 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e8/78/8930b1bb73f2d78701b99d8fcc7b9fa9b31373b42a0988b2604eee456baa/gentropy-2.2.0-py3-none-any.whl", hash = "sha256:0f90ef9acbe0bacac26dcde6d5f655f61d6730fae225a90453db1d9514c7801f", size = 281889 },
-]
 
 [[package]]
 name = "gentropy-manuscript"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "altair" },
     { name = "bokeh" },
@@ -1084,7 +1081,7 @@ requires-dist = [
     { name = "altair", specifier = ">=5.5.0" },
     { name = "bokeh", specifier = ">=3.4.3" },
     { name = "dash-bio", specifier = ">=1.0.2" },
-    { name = "gentropy", specifier = ">=2.2.0" },
+    { name = "gentropy", git = "https://github.com/opentargets/gentropy?tag=v2.3.0-rc.4" },
     { name = "ipython", specifier = ">=9.0.2" },
     { name = "jupyterlab", specifier = ">=4.3.6" },
     { name = "notebook", specifier = ">=7.3.3" },

@@ -1,0 +1,181 @@
+{
+  "fields": [
+    { "metadata": {}, "name": "variantId", "nullable": true, "type": "string" },
+    { "metadata": {}, "name": "studyId", "nullable": true, "type": "string" },
+    {
+      "metadata": {},
+      "name": "studyLocusId",
+      "nullable": true,
+      "type": "string"
+    },
+    { "metadata": {}, "name": "beta", "nullable": true, "type": "double" },
+    { "metadata": {}, "name": "zScore", "nullable": true, "type": "double" },
+    {
+      "metadata": {},
+      "name": "pValueMantissa",
+      "nullable": true,
+      "type": "float"
+    },
+    {
+      "metadata": {},
+      "name": "pValueExponent",
+      "nullable": true,
+      "type": "integer"
+    },
+    {
+      "metadata": {},
+      "name": "standardError",
+      "nullable": true,
+      "type": "double"
+    },
+    {
+      "metadata": {},
+      "name": "finemappingMethod",
+      "nullable": true,
+      "type": "string"
+    },
+    { "metadata": {}, "name": "studyType", "nullable": true, "type": "string" },
+    {
+      "metadata": {},
+      "name": "credibleSetSize",
+      "nullable": false,
+      "type": "integer"
+    },
+    {
+      "metadata": {},
+      "name": "isTransQtl",
+      "nullable": true,
+      "type": "boolean"
+    },
+    {
+      "metadata": {},
+      "name": "posteriorProbability",
+      "nullable": true,
+      "type": "double"
+    },
+    { "metadata": {}, "name": "nSamples", "nullable": true, "type": "integer" },
+    {
+      "metadata": {},
+      "name": "nControls",
+      "nullable": true,
+      "type": "integer"
+    },
+    { "metadata": {}, "name": "nCases", "nullable": true, "type": "integer" },
+    { "metadata": {}, "name": "geneId", "nullable": true, "type": "string" },
+    {
+      "metadata": {},
+      "name": "traitFromSourceMappedIds",
+      "nullable": true,
+      "type": { "containsNull": true, "elementType": "string", "type": "array" }
+    },
+    {
+      "metadata": {},
+      "name": "majorPopulation",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "ldPopulation",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "relativeSampleSize",
+            "nullable": false,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "allelefrequencies",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": {
+          "fields": [
+            {
+              "metadata": {},
+              "name": "populationName",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "alleleFrequency",
+              "nullable": true,
+              "type": "double"
+            }
+          ],
+          "type": "struct"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "vepEffect",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "assessment",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "normalisedScore",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "targetId",
+            "nullable": true,
+            "type": "string"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "majorPopulationAF",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": {
+          "fields": [
+            {
+              "metadata": {},
+              "name": "populationName",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "alleleFrequency",
+              "nullable": true,
+              "type": "double"
+            }
+          ],
+          "type": "struct"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "majorPopulationMAF",
+      "nullable": true,
+      "type": "double"
+    }
+  ],
+  "type": "struct"
+}
