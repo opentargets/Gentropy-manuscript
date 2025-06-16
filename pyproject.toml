@@ -61,3 +61,19 @@ docstring-quotes = "double"
 
 [tool.uv.sources]
 gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v2.3.0-rc.4" }
+
+
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+    "pytest-sugar>=1.0.0",
+    "pytest-xdist>=3.7.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-n auto --doctest-modules --cov=src/ --cov-report=xml --cache-clear"
+pythonpath = ["."]
+testpaths = ["tests", "src/manuscript_methods"]
+markers = ["step_test"]
