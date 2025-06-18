@@ -1,12 +1,65 @@
 """MAF related methods."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from enum import Enum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 
-from manuscript_methods.ld_populations import LDPopulation, LDPopulationName
+
+class MinorAlleleFrequencyType(str, Enum):
+    """Enum representing minor allele frequency types.
+
+    The enum is used to distinguish between different types of minor allele frequencies.
+    """
+
+    NOT_FLIPPED = "notFlipped"
+    FLIPPED = "flipped"
+    AMBIGUOUS = "ambiguous"
+
+
+class MinorAlleleFrequency:
+    """Class representing minor allele frequency."""
+
+    name = "minorAlleleFrequency"
+    schema = "STRUCT<value: DOUBLE, type: STRING>"
+
+    def __init__(self, col: Column | None = None):
+        """Initialize MinorAlleleFrequency with a column.
+
+        Args:
+            col (Column | None): Column representing minor allele frequency. If None, a default column will
+            be created with the name 'minorAlleleFrequency'.
+
+        """
+        self.col = col.alias(self.name) if col is not None else f.col(self.name)
+
+    @property
+    def value(self) -> Column:
+        """Get value from minor allele frequency."""
+        return self.col.getField("value").alias("value")
+
+    @property
+    def type(self) -> Column:
+        """Get type from minor allele frequency."""
+        return self.col.getField("type").alias("type")
+
+    @classmethod
+    def from_af(cls, population_frequency: PopulationFrequency) -> MinorAlleleFrequency:
+        """Calculate Minor Allele Frequency from allele frequency."""
+        af = population_frequency.allele_frequency
+        flipped = f.struct((f.lit(1.0) - af).alias("value"), f.lit("flipped").alias("type"))
+        non_flipped = f.struct(af.alias("value"), f.lit("notFlipped").alias("type"))
+        ambiguous = f.struct(af.alias("value"), f.lit("ambiguous").alias("type"))
+
+        return cls(
+            f.when(af > 0.5, flipped)
+            .when(af < 0.5, non_flipped)
+            .when(af == 0.5, ambiguous)  # Handle the case where allele frequency is exactly 0.5
+            .otherwise(None)
+        )
 
 
 class AlleleFrequencyPopulationName(str, Enum):
@@ -21,7 +74,7 @@ class AlleleFrequencyPopulationName(str, Enum):
     NFE = "nfe_adj"
     FIN = "fin_adj"
 
-    # Other populations that we do not know how to convert to LDPopulationName
+    # Other populations that we do not have currently the LD for.
     REMAINING = "remaining_adj"
     MID = "mid_adj"
     AMI = "ami_adj"
@@ -52,14 +105,41 @@ class MAFDiscrepancies(str, Enum):
     VARIANT_MISSING_FROM_GNOMAD_AF = "VARIANT_MISSING_FROM_GNOMAD_AF"
 
 
-class AlleleFrequency:
+class PopulationFrequency:
     """Class representing allele frequency."""
 
     schema = "STRUCT<populationName: STRING, alleleFrequency: DOUBLE>"
+    name = "populationFrequency"
 
     def __init__(self, col: Column | None = None):
-        """Initialize AlleleFrequency with a column."""
-        self.name = "alleleFrequency"
+        """Initialize PopulationFrequency with a column.
+
+        Args:
+            col (Column | None): Column representing allele frequency. If None, a default column will
+            be created with the name 'populationFrequency'.
+
+        Examples:
+        --------
+        >>> data = [(("afr_adj", 0.1),), (("amr_adj", 0.2),)]
+        >>> schema = f"{PopulationFrequency.name}: {PopulationFrequency.schema}"
+        >>> print(schema)
+        populationFrequency: STRUCT<populationName: STRING, alleleFrequency: DOUBLE>
+        >>> df = spark.createDataFrame(data, schema)
+        >>> af = PopulationFrequency()
+        >>> af.population_name
+        Column<'populationFrequency[populationName] AS populationName'>
+        >>> af.allele_frequency
+        Column<'populationFrequency[alleleFrequency] AS alleleFrequency'>
+        >>> df.show()
+        +-------------------+
+        |populationFrequency|
+        +-------------------+
+        |     {afr_adj, 0.1}|
+        |     {amr_adj, 0.2}|
+        +-------------------+
+        <BLANKLINE>
+
+        """
         self.col = col.alias(self.name) if col is not None else f.col(self.name)
 
     @property
@@ -72,38 +152,139 @@ class AlleleFrequency:
         """Get allele frequency from allele frequency."""
         return self.col.getField("alleleFrequency").alias("alleleFrequency")
 
-    def maf(self) -> Column:
-        """Calculate Minor Allele Frequency from variant frequency."""
-        return (
-            f.when((self.allele_frequency > 0.5), f.lit(1.0) - self.allele_frequency)
-            .when((self.allele_frequency <= 0.5), self.allele_frequency)
-            .otherwise(None)
-        )
+    @property
+    def maf(self) -> MinorAlleleFrequency:
+        """Calculate Minor Allele Frequency from variant frequency.
+
+        Returns:
+            Column: Minor Allele Frequency column.
+
+        Examples:
+        --------
+        >>> data = [(("AFR", 0.1),), (("AMR", 0.9),), (("EAS", 0.5),)]
+        >>> schema = f"{PopulationFrequency.name}: {PopulationFrequency.schema}"
+        >>> df = spark.createDataFrame(data, schema)
+        >>> maf = PopulationFrequency().maf.col
+        >>> df = df.withColumn("minorAlleleFrequency", maf)
+        >>> af = f.col("populationFrequency")
+        >>> maf_value = f.round(maf.getField("value"), 1).alias("value")
+        >>> conversion_type = maf.getField("type").alias("type")
+        >>> df = df.select(af, maf_value, conversion_type)
+        >>> df.show(truncate=False)
+        +-------------------+-----+----------+
+        |populationFrequency|value|type      |
+        +-------------------+-----+----------+
+        |{AFR, 0.1}         |0.1  |notFlipped|
+        |{AMR, 0.9}         |0.1  |flipped   |
+        |{EAS, 0.5}         |0.5  |ambiguous |
+        +-------------------+-----+----------+
+        <BLANKLINE>
+
+        """
+        return MinorAlleleFrequency.from_af(self)
 
 
 class AlleleFrequencies:
     """Class representing a collection of allele frequencies."""
 
-    schema = f"ARRAY<{AlleleFrequency.schema}>"
+    schema = f"ARRAY<{PopulationFrequency.schema}>"
+    name = "alleleFrequencies"
 
     def __init__(self, col: Column | None = None):
-        """Initialize AlleleFrequencies with a column."""
-        self.name = "alleleFrequencies"
+        """Initialize AlleleFrequencies with a column.
+
+        Args:
+            col (Column | None): Column representing allele frequencies. If None, a default column will
+            be created with the name 'alleleFrequencies'.
+
+        Examples:
+        --------
+        >>> x1 = [("AFR", 0.1), ("AMR", 0.2)]
+        >>> x2 = [("EAS", 0.3), ("NFE", 0.4)]
+        >>> data = [(x1,), (x2,)]
+        >>> schema = f"{AlleleFrequencies.name}: {AlleleFrequencies.schema}"
+        >>> df = spark.createDataFrame(data, schema)
+        >>> af = AlleleFrequencies()
+        >>> df.select(af.col).show(truncate=False)
+        +------------------------+
+        |alleleFrequencies       |
+        +------------------------+
+        |[{AFR, 0.1}, {AMR, 0.2}]|
+        |[{EAS, 0.3}, {NFE, 0.4}]|
+        +------------------------+
+        <BLANKLINE>
+
+        """
         self.col = col.alias(self.name) if col is not None else f.col(self.name)
 
-    def major_ld_population_frequency(self, population_name: Column) -> AlleleFrequency:
-        """Get allele frequency for a specific population."""
+    def ld_population_af(self, population_name: Column) -> PopulationFrequency:
+        """Get allele frequency for a specific population.
+
+        Args:
+            population_name (Column): Column representing the ld population name.
+
+        Returns:
+            PopulationFrequency: PopulationFrequency object containing allele frequency for the specified population.
+
+        Examples:
+        --------
+        >>> x1 = [("afr_adj", 0.1), ("amr_adj", 0.2)]
+        >>> x2 = [("eas_adj", 0.3), ("nfe_adj", 0.4)]
+        >>> data = [(x1, "afr"), (x2, "eas")]
+        >>> schema = f"{AlleleFrequencies.name}: {AlleleFrequencies.schema}, populationName: STRING"
+        >>> df = spark.createDataFrame(data, schema)
+        >>> ld_af = AlleleFrequencies().ld_population_af(f.col("populationName"))
+        >>> df.select(ld_af.col).show(truncate=False)
+        +-------------------+
+        |populationFrequency|
+        +-------------------+
+        |{afr_adj, 0.1}     |
+        |{eas_adj, 0.3}     |
+        +-------------------+
+        <BLANKLINE>
+
+        """
         ld_population = PopulationConverter.ld_to_af(population_name)
         _filter: Callable[[Column], Column]
         _filter = lambda x: x.getField("populationName") == ld_population
+        ld_pop_or_empty = f.filter(self.col, _filter)
+        expr = (
+            f.when(f.size(ld_pop_or_empty) == 1, ld_pop_or_empty.getItem(0))
+            .otherwise(None)
+            .alias("populationFrequency")
+        )
 
-        return AlleleFrequency(f.filter(self.col, _filter))
+        return PopulationFrequency(expr)
 
-    def major_ld_population_maf(self, population_name: Column) -> Column:
-        """Calculate Minor Allele Frequency from variant frequency."""
-        major_population_af = self.major_ld_population_frequency(population_name)
-        expr = f.when(f.size(major_population_af.col) == 1, major_population_af.maf()).otherwise(None)
-        return expr.alias("majorPopulationMAF")
+    def ld_population_maf(self, population_name: Column) -> MinorAlleleFrequency:
+        """Calculate Minor Allele Frequency from variant frequency.
+
+        Args:
+            population_name (Column): Column representing the ld population name.
+
+        Returns:
+            MinorAlleleFrequency: Class representing column containing the major population MAF.
+
+        Examples:
+        --------
+        >>> x1 = [("afr_adj", 0.1), ("amr_adj", 0.2)]
+        >>> x2 = [("eas_adj", 0.3), ("nfe_adj", 0.4)]
+        >>> data = [(x1, "afr"), (x2, "eas")]
+        >>> schema = f"{AlleleFrequencies.name}: {AlleleFrequencies.schema}, populationName: STRING"
+        >>> df = spark.createDataFrame(data, schema)
+        >>> ld_af = AlleleFrequencies().ld_population_maf(f.col("populationName"))
+        >>> df.select(ld_af).show(truncate=False)
+        +------------------+
+        |majorPopulationMaf|
+        +------------------+
+        |{0.1, notFlipped} |
+        |{0.3, notFlipped} |
+        +------------------+
+        <BLANKLINE>
+
+        """
+        ld_population_af = self.ld_population_af(population_name)
+        return ld_population_af.maf
 
 
 def maf_discrepancies(maf: Column) -> Column:
