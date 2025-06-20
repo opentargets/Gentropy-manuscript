@@ -38,6 +38,12 @@
     },
     {
       "metadata": {},
+      "name": "pip",
+      "nullable": true,
+      "type": "double"
+    },
+    {
+      "metadata": {},
       "name": "finemappingMethod",
       "nullable": true,
       "type": "string"
@@ -230,6 +236,12 @@
           },
           {
             "metadata": {},
+            "name": "geneId",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
             "name": "trait",
             "nullable": true,
             "type": "string"
@@ -307,6 +319,154 @@
             "name": "majorAlleleEstimatedBeta",
             "nullable": true,
             "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "leadVariantConsequence",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "type",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "transcriptConsequence",
+            "nullable": true,
+            "type": {
+              "fields": [
+                {
+                  "metadata": {},
+                  "name": "variantFunctionalConsequenceIds",
+                  "nullable": true,
+                  "type": {
+                    "containsNull": true,
+                    "elementType": "string",
+                    "type": "array"
+                  }
+                },
+                {
+                  "metadata": {},
+                  "name": "aminoAcidChange",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "uniprotAccessions",
+                  "nullable": true,
+                  "type": {
+                    "containsNull": true,
+                    "elementType": "string",
+                    "type": "array"
+                  }
+                },
+                {
+                  "metadata": {},
+                  "name": "isEnsemblCanonical",
+                  "nullable": true,
+                  "type": "boolean"
+                },
+                {
+                  "metadata": {},
+                  "name": "codons",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "distanceFromFootprint",
+                  "nullable": true,
+                  "type": "long"
+                },
+                {
+                  "metadata": {},
+                  "name": "distanceFromTss",
+                  "nullable": true,
+                  "type": "long"
+                },
+                {
+                  "metadata": {},
+                  "name": "appris",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "maneSelect",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "targetId",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "impact",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "lofteePrediction",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "siftPrediction",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "polyphenPrediction",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "consequenceScore",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "transcriptIndex",
+                  "nullable": true,
+                  "type": "integer"
+                },
+                {
+                  "metadata": {},
+                  "name": "approvedSymbol",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "biotype",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "transcriptId",
+                  "nullable": true,
+                  "type": "string"
+                }
+              ],
+              "type": "struct"
+            }
           }
         ],
         "type": "struct"

@@ -93,6 +93,11 @@ class StudyStatistics:
         return self.col.getField("traitClass").alias("traitClass")
 
     @property
+    def gene_id(self) -> Column:
+        """Get the gene ID associated with the cohort."""
+        return self.col.getField("geneId").alias("geneId")
+
+    @property
     def trait_ids(self) -> Column:
         """Get the trait IDs associated with the cohort."""
         return self.col.getField("traitFromSourceMappedIds").alias("traitFromSourceMappedIds")
@@ -113,8 +118,8 @@ class StudyStatistics:
     def split_pqtl(cls, study_type: Column, is_trans_pqtl: Column) -> Column:
         """Transform the study type to a string."""
         expr = (
-            f.when((study_type == f.lit(StudyType.PQTL)) & (is_trans_pqtl), f.lit(StudyType.TRANS_PQTL))
-            .when((study_type == f.lit(StudyType.PQTL)) & (~is_trans_pqtl), f.lit(StudyType.CIS_PQTL))
+            f.when((study_type == f.lit(StudyType.PQTL)) & is_trans_pqtl, f.lit(StudyType.TRANS_PQTL))
+            .when((study_type == f.lit(StudyType.PQTL)) & ~is_trans_pqtl, f.lit(StudyType.CIS_PQTL))
             .otherwise(study_type)
         )
 
@@ -143,6 +148,7 @@ class StudyStatistics:
         study_type: Column,
         trait_ids: Column,
         is_trans_pqtl: Column,
+        gene_id: Column,
     ) -> StudyStatistics:
         """Compute the cohort statistics from the number of cases, controls, and trait.
 
@@ -164,6 +170,7 @@ class StudyStatistics:
                 n_cases.alias("nCases"),
                 n_controls.alias("nControls"),
                 n_samples.alias("nSamples"),
+                gene_id.alias("geneId"),
                 trait.alias("trait"),
                 cls.split_pqtl(study_type, is_trans_pqtl),
                 cls.classify_trait(trait, n_cases, n_controls, study_type),
