@@ -212,10 +212,12 @@ class LeadVariantConsequences:
             )
             .when(
                 (study_statistics.study_type != f.lit(StudyType.GWAS))
-                & (transcript_consequences.contains_consequence_for_molecular_trait(study_statistics.gene_id)),
+                & (transcript_consequences.contains_consequence_for_molecular_trait(study_statistics.molecular_trait)),
                 f.struct(
                     f.lit(EffectType.IN_GENE_EFFECT).alias("type"),
-                    transcript_consequences.find_most_severe_molecular_trait_consequence(study_statistics.gene_id).col,
+                    transcript_consequences.find_most_severe_molecular_trait_consequence(
+                        study_statistics.molecular_trait
+                    ).col,
                 ),
             )
             .otherwise(

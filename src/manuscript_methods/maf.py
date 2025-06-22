@@ -101,8 +101,9 @@ class PopulationConverter:
 class MAFDiscrepancies(str, Enum):
     """Enum representing MAF discrepancies."""
 
-    MAJOR_ANCESTRY_MISSING_FROM_GNOMAD_AF = "MAJOR_ANCESTRY_MISSING_FROM_GNOMAD_AF"
-    VARIANT_MISSING_FROM_GNOMAD_AF = "VARIANT_MISSING_FROM_GNOMAD_AF"
+    MAJOR_ANCESTRY_MISSING_FROM_GNOMAD_AF = "Variant missing from major ancestry in gnomAD AF"
+    VARIANT_MISSING_FROM_GNOMAD_AF = "Variant missing from any ancestry in gnomAD AF"
+    VARIANT_HAS_AF = "Variant has allele frequency in gnomAD AF"
 
 
 class PopulationFrequency:
@@ -301,6 +302,6 @@ def maf_discrepancies(maf: Column) -> Column:
     expr = (
         f.when(maf.isNull(), f.lit(MAFDiscrepancies.VARIANT_MISSING_FROM_GNOMAD_AF))
         .when(maf == 0.0, f.lit(MAFDiscrepancies.MAJOR_ANCESTRY_MISSING_FROM_GNOMAD_AF))
-        .otherwise(None)
+        .otherwise(MAFDiscrepancies.VARIANT_HAS_AF)
     )
     return expr.alias("mafDiscrepancy")

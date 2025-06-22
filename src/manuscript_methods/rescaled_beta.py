@@ -42,7 +42,7 @@ class RescaledStatistics:
     @property
     def prev(self) -> Column:
         """Get the prevalence of the trait."""
-        return self.col.getField("prev").alias("prev")
+        return self.col.getField("prevalence").alias("prevalence")
 
     @classmethod
     def compute_beta_sign(cls, beta: Column) -> Column:

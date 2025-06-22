@@ -236,12 +236,6 @@
           },
           {
             "metadata": {},
-            "name": "geneId",
-            "nullable": true,
-            "type": "string"
-          },
-          {
-            "metadata": {},
             "name": "trait",
             "nullable": true,
             "type": "string"
@@ -255,18 +249,14 @@
           {
             "metadata": {},
             "name": "traitClass",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           },
           {
             "metadata": {},
-            "name": "traitFromSourceMappedIds",
+            "name": "molecularTrait",
             "nullable": true,
-            "type": {
-              "containsNull": true,
-              "elementType": "string",
-              "type": "array"
-            }
+            "type": "string"
           }
         ],
         "type": "struct"
