@@ -461,6 +461,16 @@
         ],
         "type": "struct"
       }
+    },
+    {
+      "metadata": {},
+      "name": "traitFromSourceMappedIds",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": "string",
+        "type": "array"
+      }
     }
   ],
   "type": "struct"

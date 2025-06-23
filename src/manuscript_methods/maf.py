@@ -305,3 +305,38 @@ def maf_discrepancies(maf: Column) -> Column:
         .otherwise(MAFDiscrepancies.VARIANT_HAS_AF)
     )
     return expr.alias("mafDiscrepancy")
+
+
+class VariantFrequencyClass:
+    def __init__(self, name, condition: Callable[[Column], Column]) -> None:
+        self.name = name
+        self.condition = condition
+
+    def from_maf(self, maf: Column) -> Column:
+        """Extract variant type from MAF."""
+        condition = self.condition(maf)
+        return f.when(condition, f.lit(True)).otherwise(f.lit(False)).alias(self.name)
+
+
+class MinorAlleleFrequencyClassification:
+    """Class representing minor allele frequency classification."""
+
+    name = "variantMAFClassification"
+
+    def __init__(self, col: Column | None = None):
+        """Initialize MinorAlleleFrequencyClassification with a column."""
+        self.col = col.alias(self.name) if col is not None else f.col(self.name)
+
+    @classmethod
+    def from_maf(
+        cls, maf: MinorAlleleFrequency, variant_types: list[VariantFrequencyClass] | None = None
+    ) -> MinorAlleleFrequencyClassification:
+        """Classify variants based on the maf thresholds."""
+        if not variant_types:
+            variant_types = [
+                VariantFrequencyClass("common", lambda maf: (maf >= 0.01)),
+                VariantFrequencyClass("rare", lambda maf: (maf < 0.01)),
+            ]
+        distributions = [vt.from_maf(maf.value) for vt in variant_types]
+        expr = f.struct(*distributions).alias("variantMAFClassification")
+        return cls(expr)

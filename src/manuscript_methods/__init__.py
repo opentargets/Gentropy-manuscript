@@ -1,39 +1,30 @@
 """Manuscript methods for the package."""
 
+from typing import Protocol
+
 from plotnine import (
     aes,
+    annotate,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
     element_text,
+    geom_boxplot,
     geom_col,
+    geom_histogram,
+    geom_vline,
     ggplot,
     labs,
+    scale_fill_brewer,
     scale_y_continuous,
     theme,
-    scale_fill_brewer,
-    geom_histogram,
-    coord_cartesian,
-    geom_vline,
-    annotate,
-)
-from plotnine import (
-    ggplot,
-    aes,
-    geom_boxplot,
-    theme,
-    element_text,
-    element_line,
-    element_rect,
-    element_blank,
-    labs,
-    scale_fill_brewer,
 )
 from pyspark.sql import Column, DataFrame
 from pyspark.sql import functions as f
 
 
-def group_statistics(df: DataFrame, group_column: Column) -> DataFrame:
+def group_statistics(df: DataFrame, group_column: Column | list[Column]) -> DataFrame:
     """Calculate group statistics.
 
     the statistics calculated are:
@@ -132,6 +123,36 @@ def plot_aggregated_data(df: DataFrame, x: str, y: str, xtitle: str, ytitle: str
         + scale_fill_brewer(type="seq", name="% of total")
     )
     return plot
+
+
+class PlotAddable(Protocol):
+    """Object that can be added to a ggplot object."""
+
+    def __radd__(self, plot: ggplot) -> ggplot: ...
+
+
+class Theme(PlotAddable):
+    """Basic theme for plotnine plots."""
+
+    def __radd__(self, plt: ggplot) -> ggplot:
+        """Add the theme to the plot."""
+        return self._add_theme(plt)
+
+    def _add_theme(self, plt: ggplot) -> ggplot:
+        """Add the theme to the plot."""
+        REM = 10
+        return plt + theme(
+            figure_size=(5.35, 4.5),  # ~85mm wide
+            axis_title=element_text(size=REM * 1, family="sans-serif"),
+            axis_text=element_text(size=REM * 0.8, family="sans-serif"),
+            axis_text_x=element_text(rotation=45, hjust=1),
+            axis_ticks=element_line(color="black"),
+            axis_line=element_line(color="black"),
+            panel_background=element_rect(fill="white"),
+            panel_border=element_rect(color="black", fill=None),
+            panel_grid=element_blank(),
+            plot_margin=0.1,
+        )
 
 
 def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> ggplot:
