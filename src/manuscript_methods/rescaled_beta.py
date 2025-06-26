@@ -94,6 +94,7 @@ class RescaledStatistics:
         trait_class: Column,
         beta: Column,
         maf: Column,
+        af: Column,
         n_samples: Column,
         n_cases: Column,
     ) -> RescaledStatistics:
@@ -103,7 +104,7 @@ class RescaledStatistics:
         prev = cls.compute_prevalence(n_cases, n_samples)
         se = cls.compute_se(var_g, n_samples, trait_class, prev)
         rescaled_beta = z_score * se
-        major_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(maf, rescaled_beta)
+        major_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(af, rescaled_beta)
 
         return cls(
             f.struct(

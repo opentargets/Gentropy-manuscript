@@ -4,6 +4,7 @@ from enum import Enum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
+from pyspark.sql import types as t
 
 
 class VariantType(str, Enum):
@@ -48,7 +49,7 @@ class Variant:
     @classmethod
     def get_variant_end(cls, pos: Column, ref: Column, alt: Column) -> Column:
         """Get the end position of the variant."""
-        return pos + cls.get_variant_len(ref, alt).alias("end")
+        return pos + cls.get_variant_len(ref, alt).cast(t.IntegerType()).alias("end")
 
     @classmethod
     def compute(cls, chr: Column, pos: Column, ref: Column, alt: Column) -> Variant:
@@ -56,7 +57,7 @@ class Variant:
         return Variant(
             f.struct(
                 chr,
-                pos.alias("start"),
+                pos.cast(t.IntegerType()).alias("start"),
                 cls.get_variant_end(pos, ref, alt).alias("end"),
                 cls.get_variant_type(ref, alt).alias("type"),
                 ref.alias("ref"),

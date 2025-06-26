@@ -90,21 +90,49 @@
     },
     {
       "metadata": {},
-      "name": "pip",
+      "name": "locusStatistics",
       "nullable": true,
-      "type": "double"
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "locusSize",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusLength",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusStart",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusEnd",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "leadVariantPIP",
+            "nullable": true,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
     },
     {
       "metadata": {},
       "name": "finemappingMethod",
       "nullable": true,
       "type": "string"
-    },
-    {
-      "metadata": {},
-      "name": "credibleSetSize",
-      "nullable": true,
-      "type": "integer"
     },
     {
       "metadata": {},
