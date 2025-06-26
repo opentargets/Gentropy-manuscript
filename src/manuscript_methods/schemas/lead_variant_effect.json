@@ -8,6 +8,58 @@
     },
     {
       "metadata": {},
+      "name": "variant",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "chromosome",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "start",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "end",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "type",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "ref",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "alt",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "length",
+            "nullable": true,
+            "type": "integer"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
       "name": "studyLocusId",
       "nullable": true,
       "type": "string"
@@ -51,7 +103,7 @@
     {
       "metadata": {},
       "name": "credibleSetSize",
-      "nullable": false,
+      "nullable": true,
       "type": "integer"
     },
     {
@@ -119,13 +171,13 @@
           {
             "metadata": {},
             "name": "ldPopulation",
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           {
             "metadata": {},
             "name": "relativeSampleSize",
-            "nullable": false,
+            "nullable": true,
             "type": "double"
           }
         ],
@@ -147,7 +199,7 @@
           {
             "metadata": {},
             "name": "type",
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           }
         ],
@@ -179,7 +231,7 @@
     {
       "metadata": {},
       "name": "variantStatistics",
-      "nullable": false,
+      "nullable": true,
       "type": {
         "fields": [
           {
@@ -213,7 +265,7 @@
     {
       "metadata": {},
       "name": "studyStatistics",
-      "nullable": false,
+      "nullable": true,
       "type": {
         "fields": [
           {
@@ -249,7 +301,7 @@
           {
             "metadata": {},
             "name": "traitClass",
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           {
@@ -265,13 +317,13 @@
     {
       "metadata": {},
       "name": "rescaledStatistics",
-      "nullable": false,
+      "nullable": true,
       "type": {
         "fields": [
           {
             "metadata": {},
             "name": "directionOfEffect",
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           {
@@ -317,13 +369,13 @@
     {
       "metadata": {},
       "name": "leadVariantConsequence",
-      "nullable": false,
+      "nullable": true,
       "type": {
         "fields": [
           {
             "metadata": {},
             "name": "type",
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           {
