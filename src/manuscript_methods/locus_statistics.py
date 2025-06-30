@@ -135,6 +135,11 @@ class LocusStatistics:
         """
         self.col = col.alias(self.name) if col is not None else f.col(self.name)
 
+    @property
+    def lead_variant_pip(self) -> Column:
+        """Get the lead variant PIP from the locus statistics."""
+        return self.col.getField("leadVariantPIP")
+
     @classmethod
     def extract_pip_from_locus(cls, variant_col: Column, locus: Column) -> Column:
         """Extract Posterior probability from variant from locus.

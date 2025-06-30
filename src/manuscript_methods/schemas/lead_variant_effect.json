@@ -9,7 +9,7 @@
     {
       "metadata": {},
       "name": "variant",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
@@ -91,13 +91,13 @@
     {
       "metadata": {},
       "name": "locusStatistics",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
             "metadata": {},
             "name": "locusSize",
-            "nullable": true,
+            "nullable": false,
             "type": "integer"
           },
           {
@@ -199,13 +199,13 @@
           {
             "metadata": {},
             "name": "ldPopulation",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           },
           {
             "metadata": {},
             "name": "relativeSampleSize",
-            "nullable": true,
+            "nullable": false,
             "type": "double"
           }
         ],
@@ -227,7 +227,7 @@
           {
             "metadata": {},
             "name": "type",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           }
         ],
@@ -259,7 +259,7 @@
     {
       "metadata": {},
       "name": "variantStatistics",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
@@ -293,7 +293,7 @@
     {
       "metadata": {},
       "name": "studyStatistics",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
@@ -329,7 +329,7 @@
           {
             "metadata": {},
             "name": "traitClass",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           },
           {
@@ -345,13 +345,13 @@
     {
       "metadata": {},
       "name": "rescaledStatistics",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
             "metadata": {},
             "name": "directionOfEffect",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           },
           {
@@ -397,13 +397,13 @@
     {
       "metadata": {},
       "name": "leadVariantConsequence",
-      "nullable": true,
+      "nullable": false,
       "type": {
         "fields": [
           {
             "metadata": {},
             "name": "type",
-            "nullable": true,
+            "nullable": false,
             "type": "string"
           },
           {

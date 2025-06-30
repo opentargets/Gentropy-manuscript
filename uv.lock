@@ -1130,6 +1130,7 @@ dependencies = [
     { name = "jupyterlab" },
     { name = "notebook" },
     { name = "numpy" },
+    { name = "patchworklib" },
     { name = "plotly" },
     { name = "plotnine" },
     { name = "polars" },
@@ -1161,8 +1162,9 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.3.6" },
     { name = "notebook", specifier = ">=7.3.3" },
     { name = "numpy", specifier = ">=1.26.4" },
+    { name = "patchworklib", specifier = ">=0.6.3" },
     { name = "plotly", specifier = ">=5.24.1" },
-    { name = "plotnine", specifier = ">=0.14.5" },
+    { name = "plotnine", git = "https://github.com/has2k1/plotnine.git?rev=v0.12.4" },
     { name = "polars", specifier = ">=1.26.0" },
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "requests", specifier = ">=2.32.3" },
@@ -2184,17 +2186,18 @@ wheels = [
 
 [[package]]
 name = "mizani"
-version = "0.13.3"
+version = "0.9.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "matplotlib" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "scipy" },
     { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/46/4e46557d893962cc2db79ec49109f6a1064a4a2d08850bb15a8b0b9253e4/mizani-0.13.3.tar.gz", hash = "sha256:8325ccce41803122803a664d7a4996a285cb0641f3e2fd67a94a762901d81f3c", size = 765571 }
+sdist = { url = "https://files.pythonhosted.org/packages/22/8c/af5ab84c8e75efbe14cbc15558b46b259a068bab4b285000ae4fcddec1b0/mizani-0.9.3.tar.gz", hash = "sha256:fb61339e9e4711850e902ca286b1ae75255f483823d891aa0515b426d56c606d", size = 161687 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/08/556a1de98bdfe67f944de07bac555c651bd21b23094c26b4ff8e6f241c33/mizani-0.13.3-py3-none-any.whl", hash = "sha256:073235f58a2df47c6601a86b64b029964d5e2429622a6d2d5edd23634550c719", size = 127950 },
+    { url = "https://files.pythonhosted.org/packages/e2/95/d4e33d3f5bc9fee5512637661208b6b595bda58e9b6a66fa867137761dd7/mizani-0.9.3-py3-none-any.whl", hash = "sha256:ac5d49b913de88dc2fb28d82141e9777b97407a6971a158f758093ad5bb820a1", size = 73742 },
 ]
 
 [[package]]
@@ -2667,6 +2670,22 @@ wheels = [
 ]
 
 [[package]]
+name = "patchworklib"
+version = "0.6.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dill" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "plotnine" },
+    { name = "seaborn" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6d/74/f094e4b8f2fdf9b6bcca905a876e2442f7bfd50e5c8ff5532089ccfe1def/patchworklib-0.6.3-py3-none-any.whl", hash = "sha256:c5aeb4a4746dca4c3ca7e78b7dd4a1ff3c0153b980bb5382bede93dab4fa5dca", size = 48251 },
+]
+
+[[package]]
 name = "patsy"
 version = "1.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2775,19 +2794,16 @@ wheels = [
 
 [[package]]
 name = "plotnine"
-version = "0.14.5"
-source = { registry = "https://pypi.org/simple" }
+version = "0.12.4"
+source = { git = "https://github.com/has2k1/plotnine.git?rev=v0.12.4#f78a0fdeee24b1ea791869da24c89117d1b9b442" }
 dependencies = [
     { name = "matplotlib" },
     { name = "mizani" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "patsy" },
     { name = "scipy" },
     { name = "statsmodels" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/0e/618bfa724ad19418c83eb22cdc4332dc69bb67f47094bd013ffe15e188d2/plotnine-0.14.5.tar.gz", hash = "sha256:9e75969e8e10d8d770a4be36d10e075cc10b88ca6fcc99e36ada53436fb5653f", size = 6424617 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4d/c5/7cfda7ba9fa02243367fbfb4880b6de8039266f22c47c2dbbd39b6adc46f/plotnine-0.14.5-py3-none-any.whl", hash = "sha256:4a8bc4360732dd69a0263def4abab285ed8f0f4386186f1e44c642f2cea79b88", size = 1301197 },
 ]
 
 [[package]]

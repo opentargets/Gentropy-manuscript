@@ -7,11 +7,13 @@ import json
 from enum import Enum
 
 from gentropy.dataset.dataset import Dataset
-from pyspark.sql import DataFrame, Window
+from gentropy.dataset.study_locus import StudyLocus
+from pyspark.sql import DataFrame, SparkSession, Window
 from pyspark.sql import functions as f
 from pyspark.sql.types import StructType
 
 from manuscript_methods import schemas
+from manuscript_methods.locus_statistics import LocusStatistics
 from manuscript_methods.maf import MinorAlleleFrequency
 from manuscript_methods.rescaled_beta import RescaledStatistics
 from manuscript_methods.study_statistics import StudyStatistics, StudyType
@@ -98,6 +100,29 @@ class LeadVariantEffect(Dataset):
         df = self.df.filter(f.abs(beta) <= effect_size_threshold)
         return LeadVariantEffect(df)
 
+    def filter_by_study_locus_id(self, sl: StudyLocus) -> LeadVariantEffect:
+        """Filter the dataset by study locus.
+
+        Args:
+            sl (StudyLocus): StudyLocus object containing the study locus data.
+
+        Returns:
+            LeadVariantEffect: Filtered dataset.
+
+        """
+        sl_dim = sl.df.select("studyLocusId").count()
+        unique_sl_dim = sl.df.select("studyLocusId").distinct().count()
+        print(f"StudyLocus dimension: {sl_dim}, unique studyLocusId: {unique_sl_dim}")
+        if sl_dim != unique_sl_dim:
+            raise ValueError("StudyLocus dataframe should have unique studyLocusId values.")
+        df = self.df.join(sl.df.select("studyLocusId"), on=["studyLocusId"], how="inner")
+        count_before = self.df.count()
+        count_after = df.count()
+        print(f"Initial rows: {count_before}")
+        print(f"Filtered {count_before - count_after} rows based on the StudyLocus.")
+        print(f"Remaining rows: {count_after}")
+        return LeadVariantEffect(df)
+
     def replicated(self) -> DataFrame:
         """Filter only replicated credible sets.
 
@@ -119,7 +144,7 @@ class LeadVariantEffect(Dataset):
         trait_id = f.when(study_stats.study_type == StudyType.GWAS.value, gwas_trait).otherwise(
             study_stats.molecular_trait
         )
-        credible_set_id = f.md5(f.concat_ws(",", var_id, trait_id))
+        credible_set_id = f.md5(f.concat_ws(",", var_id, trait_id, study_stats.study_type))
         # Add credible set Id as the concatenation of variantId and traitId and freeze the computation
         # to avoid recomputing it multiple times
         df = self.df.withColumn("credibleSetId", credible_set_id).persist()
@@ -128,10 +153,23 @@ class LeadVariantEffect(Dataset):
         # Again make sure that the computation is done before filtering!
         df = df.withColumn("replicationCount", replication_count).persist()
         # apply filtering
-        df = df.filter(f.col("pip") >= 0.9).filter(f.col("replicationCount") >= 2).dropDuplicates(["credibleSetId"])
+        df = (
+            df.filter(LocusStatistics().lead_variant_pip >= 0.9)
+            .filter(f.col("replicationCount") >= 2)
+            .dropDuplicates(["credibleSetId"])
+        )
         following_n = df.count()
         print(f"Initial number of variants: {initial_n}")
         print(f"Following number of variants: {following_n}")
         print(f"Number of variants removed: {initial_n - following_n}")
         print(f"Percentage of variants removed: {(initial_n - following_n) / initial_n:.2%}")
         return df
+
+    def limit(self) -> LeadVariantEffect:
+        """Limit the dataset to only cis-pQTL, GWAS and eQTL studies."""
+        df = self.df.filter(
+            f.col("studyStatistics.studyTYpe").isin(
+                [StudyType.CIS_PQTL.value, StudyType.GWAS.value, StudyType.EQTL.value]
+            )
+        )
+        return LeadVariantEffect(df)

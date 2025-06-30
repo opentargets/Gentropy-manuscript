@@ -1,43 +1,26 @@
 """Manuscript methods for the package."""
 
-from typing import Protocol
-
-from plotnine import (
-    aes,
-    annotate,
-    coord_cartesian,
-    element_blank,
-    element_line,
-    element_rect,
-    element_text,
-    geom_boxplot,
-    geom_col,
-    geom_histogram,
-    geom_vline,
-    ggplot,
-    labs,
-    scale_fill_brewer,
-    scale_y_continuous,
-    theme,
-)
-from pyspark.sql import Column, DataFrame
+import plotnine as p9
+from pyspark.sql import Column, DataFrame, Window
 from pyspark.sql import functions as f
 
 
-def group_statistics(df: DataFrame, group_column: Column | list[Column]) -> DataFrame:
+def group_statistics(df: DataFrame, group_column: Column | list[Column] | str | list[str]) -> DataFrame:
     """Calculate group statistics.
 
     the statistics calculated are:
     * count of each group
     * percentage of each group relative to the total count
     """
+    if isinstance(group_column, str):
+        group_column = [f.col(group_column)]
+    elif isinstance(group_column, Column):
+        group_column = [group_column]
     total = df.count()
     grouped_df = (
         df.groupBy(group_column)
-        .agg(
-            f.count("*").alias("count"),
-            f.format_number((f.count("*") / total * 100.0).alias("percentage"), 2).alias("%"),
-        )
+        .agg(f.count("*").alias("count"), (f.count("*") / total * 100.0).alias("percentage"))
+        .select(*group_column, f.col("count"), f.format_number(f.col("percentage"), 2).alias("%"), f.col("percentage"))
         .orderBy(f.desc("count"))
     )
 
@@ -75,87 +58,56 @@ def format_scientific_notation(breaks):
     return new_breaks
 
 
-def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, title: str) -> ggplot:
+class OpenTargetsTheme:
+    """Basic theme for plotnine plots."""
+
+    import plotnine as p9
+
+    REM = 10
+    theme = p9.theme(
+        figure_size=(5.35, 4.5),
+        axis_title=p9.element_text(size=REM * 1, family="sans-serif"),
+        axis_text=p9.element_text(size=REM * 0.8, family="sans-serif", rotation=45, hjust=1),
+        axis_text_x=p9.element_text(hjust=1),
+        axis_text_y=p9.element_text(hjust=1),
+        axis_title_y=p9.element_text(size=REM, rotation=0),
+        axis_ticks=p9.element_line(color="black"),
+        axis_line=p9.element_line(color="black"),
+        panel_background=p9.element_rect(fill="white"),
+        panel_border=p9.element_rect(color="black", fill=None),
+        panel_grid=p9.element_blank(),
+    )
+
+
+def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, title: str) -> p9.ggplot:
     """Plot grouped statistics."""
     REM = 10
     p = (
-        ggplot(data=group_stats.toPandas(), mapping=aes(x=x, y=y, fill=fill))
-        + geom_col(stat="identity")
-        + labs(x=title)
-        + scale_fill_brewer(type="seq", name="% of total")
-        + scale_y_continuous(labels=format_scientific_notation)
-        + theme(
-            figure_size=(5.35, 4.5),  # ~85mm wide
-            axis_title=element_text(size=REM * 1, family="sans-serif"),
-            axis_text=element_text(size=REM * 0.8, family="sans-serif"),
-            axis_text_x=element_text(rotation=45, hjust=1),
-            axis_ticks=element_line(color="black"),
-            axis_line=element_line(color="black"),
-            panel_background=element_rect(fill="white"),
-            panel_border=element_rect(color="black", fill=None),
-            panel_grid=element_blank(),
-            plot_margin=0.1,
-        )
+        p9.ggplot(data=group_stats.toPandas(), mapping=p9.aes(x=x, y=y, fill=fill))
+        + p9.geom_col(stat="identity")
+        + p9.labs(x=title)
+        + p9.scale_fill_brewer(type="seq", name="% of total")
+        + p9.scale_y_continuous(labels=format_scientific_notation)
+        + OpenTargetsTheme.theme
     )
     return p
 
 
-def plot_aggregated_data(df: DataFrame, x: str, y: str, xtitle: str, ytitle: str) -> ggplot:
+def plot_aggregated_data(df: DataFrame, x: str, y: str, xtitle: str, ytitle: str) -> p9.ggplot:
     """Plot boxplot with aggregated data."""
     data = df.toPandas()
     REM = 10
     plot = (
-        ggplot(data)
-        + geom_boxplot(aes(x=x, y=y))
-        + theme(
-            figure_size=(5.35, 4.5),  # ~85mm wide
-            axis_title=element_text(size=REM * 1, family="sans-serif"),
-            axis_text=element_text(size=REM * 0.8, family="sans-serif"),
-            axis_text_x=element_text(rotation=45, hjust=1),
-            axis_ticks=element_line(color="black"),
-            axis_line=element_line(color="black"),
-            panel_background=element_rect(fill="white"),
-            panel_border=element_rect(color="black", fill=None),
-            panel_grid=element_blank(),
-            plot_margin=0.1,
-        )
-        + labs(x=xtitle, y=ytitle)
-        + scale_fill_brewer(type="seq", name="% of total")
+        p9.ggplot(data)
+        + p9.geom_boxplot(p9.aes(x=x, y=y))
+        + OpenTargetsTheme.theme
+        + p9.labs(x=xtitle, y=ytitle)
+        + p9.scale_fill_brewer(type="seq", name="% of total")
     )
     return plot
 
 
-class PlotAddable(Protocol):
-    """Object that can be added to a ggplot object."""
-
-    def __radd__(self, plot: ggplot) -> ggplot: ...
-
-
-class Theme(PlotAddable):
-    """Basic theme for plotnine plots."""
-
-    def __radd__(self, plt: ggplot) -> ggplot:
-        """Add the theme to the plot."""
-        return self._add_theme(plt)
-
-    def _add_theme(self, plt: ggplot) -> ggplot:
-        """Add the theme to the plot."""
-        REM = 10
-        return plt + theme(
-            figure_size=(5.35, 4.5),  # ~85mm wide
-            axis_title=element_text(size=REM * 1, family="sans-serif"),
-            axis_text=element_text(size=REM * 0.8, family="sans-serif"),
-            axis_text_x=element_text(rotation=45, hjust=1),
-            axis_ticks=element_line(color="black"),
-            axis_line=element_line(color="black"),
-            panel_background=element_rect(fill="white"),
-            panel_border=element_rect(color="black", fill=None),
-            panel_grid=element_blank(),
-            plot_margin=0.1,
-        )
-
-
-def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> ggplot:
+def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> p9.ggplot:
     """Plot the distribution of credible set sizes."""
     # Convert to Pandas DataFrame for plotting
     dataset = df.toPandas()
@@ -165,29 +117,16 @@ def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> ggplot:
     mean_val = dataset[factor].mean()
 
     p = (
-        ggplot(data=dataset, mapping=aes(x=factor))
-        + geom_histogram(
+        p9.ggplot(data=dataset, mapping=p9.aes(x=factor))
+        + p9.geom_histogram(
             bins=50,
             color="grey",
             fill="lightgray",
         )
-        + coord_cartesian(ylim=(0, 400))  # limit y-axis to hide the spike
-        + labs(x=xtitle)
-        + geom_vline(xintercept=mean_val, color="#1f77b4", linetype="dashed", size=0.5, show_legend=True)
-        + theme(
-            # figure_size=(REM, REM*0.75),
-            figure_size=(5.35, 4.5),  # ~85mm wide
-            axis_title=element_text(size=REM * 1, family="sans-serif"),
-            axis_text=element_text(size=REM * 0.8, family="sans-serif"),
-            axis_ticks=element_line(color="black"),
-            axis_line=element_line(color="black"),
-            panel_background=element_rect(fill="white"),
-            panel_border=element_rect(color="black", fill=None),
-            panel_grid=element_blank(),
-            # plot_margin=0.25,
-            plot_margin=0.1,
-        )
-        + annotate(
+        + p9.labs(x=xtitle)
+        + p9.geom_vline(xintercept=mean_val, color="#1f77b4", linetype="dashed", size=0.5, show_legend=True)
+        + OpenTargetsTheme.theme
+        + p9.annotate(
             "text",
             x=5000,
             y=50,
@@ -199,3 +138,34 @@ def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> ggplot:
         )
     )
     return p
+
+
+def break_string(string: str, nmin: int = 15) -> str:
+    """Break a string into multiple lines if the length exceeds nmin characters.
+
+    This function is useful for plots where the group names are too long and
+    we need to break them into multiple lines for better readability.
+    """
+    new_string = ""
+    current_rows = 1
+    for idx, i in enumerate(string):
+        if i == " ":
+            if idx - (nmin * current_rows) > 0:
+                new_string += "\n"
+                current_rows += 1
+            else:
+                new_string += i
+        else:
+            new_string += i
+    return new_string
+
+
+def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 0.66) -> Column:
+    """Calculate the proportion of protein-altering variants in each bucket."""
+    w = Window.partitionBy("bucket", "studyType").orderBy("bucket", "studyType")
+    n_protein_altering = f.count(f.when(vep_score >= threshold, 1)).over(w).alias("nAlteringInBucket")
+    n_non_protein_altering = f.count(f.when(vep_score < threshold, 1)).over(w).alias("nNonAlteringInBucket")
+    proportion = (n_protein_altering / n_non_protein_altering).alias("alteringNonAlteringProportionInBucket")
+    stderr = f.sqrt((proportion * (1 - proportion)) / (n_protein_altering + n_non_protein_altering)).alias("stdErr")
+    total = (n_protein_altering + n_non_protein_altering).alias("totalInBucket")
+    return f.struct(n_protein_altering, n_non_protein_altering, proportion, stderr, total)
