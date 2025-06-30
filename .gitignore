@@ -179,4 +179,4 @@ data/*
 !data/.gitkeep
 
 
-spark-warehouse/
+spark-warehouse
