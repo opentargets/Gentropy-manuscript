@@ -70,7 +70,6 @@ class OpenTargetsTheme:
         axis_text=p9.element_text(size=REM * 0.8, family="sans-serif", rotation=45, hjust=1),
         axis_text_x=p9.element_text(hjust=1),
         axis_text_y=p9.element_text(hjust=1),
-        axis_title_y=p9.element_text(size=REM, rotation=0),
         axis_ticks=p9.element_line(color="black"),
         axis_line=p9.element_line(color="black"),
         panel_background=p9.element_rect(fill="white"),
