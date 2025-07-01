@@ -5,11 +5,14 @@
   "notebook.output.scrolling": true,
   "notebook.codeActionsOnSave": {
     "source.fixAll.ruff": "explicit",
-    "source.unusedImports": "explicit",
     "source.convertImportFormat": "explicit",
     "source.organizeImports.ruff": "explicit"
   },
   "notebook.variablesView": true,
   "notebook.showCellStatusBar": "visible",
-  "python.defaultInterpreterPath": ".venv/bin/python"
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.analysis.typeCheckingMode": "standard",
+  "python.testing.pytestArgs": ["src"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

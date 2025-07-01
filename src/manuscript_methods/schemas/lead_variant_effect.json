@@ -1,0 +1,557 @@
+{
+  "fields": [
+    {
+      "metadata": {},
+      "name": "variantId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
+      "name": "variant",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "chromosome",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "start",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "end",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "type",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "ref",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "alt",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "length",
+            "nullable": true,
+            "type": "integer"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "studyLocusId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
+      "name": "studyId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
+      "name": "geneId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
+      "name": "originalBeta",
+      "nullable": true,
+      "type": "double"
+    },
+    {
+      "metadata": {},
+      "name": "originalStandardError",
+      "nullable": true,
+      "type": "double"
+    },
+    {
+      "metadata": {},
+      "name": "locusStatistics",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "locusSize",
+            "nullable": false,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusLength",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusStart",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "locusEnd",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "leadVariantPIP",
+            "nullable": true,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "finemappingMethod",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
+      "name": "isTransQtl",
+      "nullable": true,
+      "type": "boolean"
+    },
+    {
+      "metadata": {},
+      "name": "variantEffect",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": {
+          "fields": [
+            {
+              "metadata": {},
+              "name": "method",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "assessment",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "score",
+              "nullable": true,
+              "type": "float"
+            },
+            {
+              "metadata": {},
+              "name": "assessmentFlag",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "targetId",
+              "nullable": true,
+              "type": "string"
+            },
+            {
+              "metadata": {},
+              "name": "normalisedScore",
+              "nullable": true,
+              "type": "double"
+            }
+          ],
+          "type": "struct"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "majorLdPopulation",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "ldPopulation",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "relativeSampleSize",
+            "nullable": false,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "majorLdPopulationMaf",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "value",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "type",
+            "nullable": false,
+            "type": "string"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "majorLdPopulationAf",
+      "nullable": true,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "populationName",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "alleleFrequency",
+            "nullable": true,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "variantStatistics",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "chi2Stat",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "pValueMantissa",
+            "nullable": true,
+            "type": "float"
+          },
+          {
+            "metadata": {},
+            "name": "pValueExponent",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "ApproximatedVarianceExplained",
+            "nullable": true,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "studyStatistics",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "nCases",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "nControls",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "nSamples",
+            "nullable": true,
+            "type": "integer"
+          },
+          {
+            "metadata": {},
+            "name": "trait",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "studyType",
+            "nullable": true,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "traitClass",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "molecularTrait",
+            "nullable": true,
+            "type": "string"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "rescaledStatistics",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "directionOfEffect",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "zScore",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "varG",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "prevalence",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "estimatedSE",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "estimatedBeta",
+            "nullable": true,
+            "type": "double"
+          },
+          {
+            "metadata": {},
+            "name": "majorAlleleEstimatedBeta",
+            "nullable": true,
+            "type": "double"
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "leadVariantConsequence",
+      "nullable": false,
+      "type": {
+        "fields": [
+          {
+            "metadata": {},
+            "name": "type",
+            "nullable": false,
+            "type": "string"
+          },
+          {
+            "metadata": {},
+            "name": "transcriptConsequence",
+            "nullable": true,
+            "type": {
+              "fields": [
+                {
+                  "metadata": {},
+                  "name": "variantFunctionalConsequenceIds",
+                  "nullable": true,
+                  "type": {
+                    "containsNull": true,
+                    "elementType": "string",
+                    "type": "array"
+                  }
+                },
+                {
+                  "metadata": {},
+                  "name": "aminoAcidChange",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "uniprotAccessions",
+                  "nullable": true,
+                  "type": {
+                    "containsNull": true,
+                    "elementType": "string",
+                    "type": "array"
+                  }
+                },
+                {
+                  "metadata": {},
+                  "name": "isEnsemblCanonical",
+                  "nullable": true,
+                  "type": "boolean"
+                },
+                {
+                  "metadata": {},
+                  "name": "codons",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "distanceFromFootprint",
+                  "nullable": true,
+                  "type": "long"
+                },
+                {
+                  "metadata": {},
+                  "name": "distanceFromTss",
+                  "nullable": true,
+                  "type": "long"
+                },
+                {
+                  "metadata": {},
+                  "name": "appris",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "maneSelect",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "targetId",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "impact",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "lofteePrediction",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "siftPrediction",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "polyphenPrediction",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "consequenceScore",
+                  "nullable": true,
+                  "type": "float"
+                },
+                {
+                  "metadata": {},
+                  "name": "transcriptIndex",
+                  "nullable": true,
+                  "type": "integer"
+                },
+                {
+                  "metadata": {},
+                  "name": "approvedSymbol",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "biotype",
+                  "nullable": true,
+                  "type": "string"
+                },
+                {
+                  "metadata": {},
+                  "name": "transcriptId",
+                  "nullable": true,
+                  "type": "string"
+                }
+              ],
+              "type": "struct"
+            }
+          }
+        ],
+        "type": "struct"
+      }
+    },
+    {
+      "metadata": {},
+      "name": "traitFromSourceMappedIds",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": "string",
+        "type": "array"
+      }
+    }
+  ],
+  "type": "struct"
+}

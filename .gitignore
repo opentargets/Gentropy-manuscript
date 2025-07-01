@@ -177,3 +177,6 @@ cython_debug/
 # Data
 data/*
 !data/.gitkeep
+
+
+spark-warehouse

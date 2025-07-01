@@ -1,19 +1,21 @@
 [project]
 name = "gentropy-manuscript"
 version = "0.1.0"
-description = "Add your description here"
+description = "The analysis done for the manuscript"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "altair>=5.5.0",
     "bokeh>=3.4.3",
+    "dash-bio>=1.0.2",
     "gentropy>=2.2.0",
     "ipython>=9.0.2",
     "jupyterlab>=4.3.6",
     "notebook>=7.3.3",
     "numpy>=1.26.4",
+    "patchworklib>=0.6.3",
     "plotly>=5.24.1",
-    "plotnine>=0.14.5",
+    "plotnine>=0.12.4",
     "polars>=1.26.0",
     "pre-commit>=4.2.0",
     "requests>=2.32.3",
@@ -21,7 +23,18 @@ dependencies = [
     "seaborn>=0.13.2",
     "statsmodels>=0.14.4",
     "sunburst>=1.0.0a2",
+    "tagore>=1.1.2",
+    "wordcloud>=1.9.4",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/manuscript_methods"]
+
+
 [tool.ruff.lint]
 select = ["D", "I", "E"]
 ignore = [
@@ -46,3 +59,23 @@ line-length = 120
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
+
+[tool.uv.sources]
+gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v2.3.0-rc.4" }
+plotnine = { git = "https://github.com/has2k1/plotnine.git", rev = "v0.12.4" }
+
+
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+    "pytest-sugar>=1.0.0",
+    "pytest-xdist>=3.7.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-n auto --doctest-modules --cov=src/ --cov-report=xml --cache-clear"
+pythonpath = ["."]
+testpaths = ["tests", "src/manuscript_methods"]
+markers = ["step_test"]
