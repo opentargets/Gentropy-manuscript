@@ -83,10 +83,14 @@ class LeadVariantEffect(Dataset):
         )
         return LeadVariantEffect(df)
 
-    def maf_filter(self, remove_null: bool = True, remove_zero: bool = True) -> LeadVariantEffect:
+    def maf_filter(
+        self, remove_null: bool = True, remove_zero: bool = True, threshold: float | None = 0.01
+    ) -> LeadVariantEffect:
         """Filter out lead variants without calculated MAF."""
         maf = MinorAlleleFrequency(f.col("majorLdPopulationMaf")).value
         df = self.df
+        if threshold:
+            df = df.filter(maf >= threshold)
         if remove_zero:
             df = df.filter(maf > 0)
         if remove_null:

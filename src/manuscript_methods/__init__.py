@@ -165,14 +165,13 @@ class OpenTargetsTheme:
 
 def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, title: str) -> p9.ggplot:
     """Plot grouped statistics."""
-    REM = 10
     p = (
         p9.ggplot(data=group_stats.toPandas(), mapping=p9.aes(x=x, y=y, fill=fill))
         + p9.geom_col(stat="identity")
         + p9.labs(x=title)
-        + p9.scale_fill_brewer(type="seq", name="% of total")
+        + p9.scale_fill_manual(values=OpenTargetsTheme.categorical_dark_colors)
         + p9.scale_y_continuous(labels=format_scientific_notation)
-        + OpenTargetsTheme.theme
+        + OpenTargetsTheme.categorical_theme(REM=5)
     )
     return p
 
@@ -249,7 +248,7 @@ def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 
     w = Window.partitionBy("bucket", "studyType").orderBy("bucket", "studyType")
     n_protein_altering = f.count(f.when(vep_score >= threshold, 1)).over(w).alias("nAlteringInBucket")
     n_non_protein_altering = f.count(f.when(vep_score < threshold, 1)).over(w).alias("nNonAlteringInBucket")
-    proportion = (n_protein_altering / n_non_protein_altering).alias("alteringNonAlteringProportionInBucket")
-    stderr = f.sqrt((proportion * (1 - proportion)) / (n_protein_altering + n_non_protein_altering)).alias("stdErr")
     total = (n_protein_altering + n_non_protein_altering).alias("totalInBucket")
+    proportion = (n_protein_altering / total).alias("alteringProportionInBucket")
+    stderr = f.sqrt((proportion * (1 - proportion)) / (total)).alias("stdErr")
     return f.struct(n_protein_altering, n_non_protein_altering, proportion, stderr, total)
