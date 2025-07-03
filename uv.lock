@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -1128,6 +1129,7 @@ dependencies = [
     { name = "gentropy" },
     { name = "ipython" },
     { name = "jupyterlab" },
+    { name = "narwhals" },
     { name = "notebook" },
     { name = "numpy" },
     { name = "patchworklib" },
@@ -1160,6 +1162,7 @@ requires-dist = [
     { name = "gentropy", git = "https://github.com/opentargets/gentropy?tag=v2.3.0-rc.4" },
     { name = "ipython", specifier = ">=9.0.2" },
     { name = "jupyterlab", specifier = ">=4.3.6" },
+    { name = "narwhals", specifier = ">=1.35.0" },
     { name = "notebook", specifier = ">=7.3.3" },
     { name = "numpy", specifier = ">=1.26.4" },
     { name = "patchworklib", specifier = ">=0.6.3" },

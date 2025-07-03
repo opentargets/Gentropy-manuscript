@@ -19,6 +19,8 @@ class StudyType(str, Enum):
     TUQTL = "tuqtl"
     TRANS_PQTL = "trans-pqtl"
     CIS_PQTL = "cis-pqtl"
+    GWAS_MEASUREMENT = "gwas-measurement"
+    GWAS_DISEASE = "gwas-disease"
 
 
 class CaseControlDiscrepancy(str, Enum):
@@ -111,6 +113,10 @@ class StudyStatistics:
         )
 
         return expr.alias("traitClass")
+
+    def transform_study_type(self, value: StudyType) -> StudyStatistics:
+        """Transform the study type to a string."""
+        return StudyStatistics(self.col.withField("studyType", f.lit(value)))
 
     @classmethod
     def split_pqtl(cls, study_type: Column, is_trans_pqtl: Column) -> Column:

@@ -201,30 +201,40 @@ class LeadVariantConsequences:
     def compute(
         cls, transcript_consequences: TranscriptConsequences, study_statistics: StudyStatistics
     ) -> LeadVariantConsequences:
-        """Compute lead variant consequences."""
-        expr = (
-            f.when(
-                study_statistics.study_type == f.lit(StudyType.GWAS),
-                f.struct(
-                    f.lit(EffectType.UNKNOWN).alias("type"),
-                    transcript_consequences.most_severe_consequence.col,
-                ),
-            )
-            .when(
-                (study_statistics.study_type != f.lit(StudyType.GWAS))
-                & (transcript_consequences.contains_consequence_for_molecular_trait(study_statistics.molecular_trait)),
+        """Compute lead variant consequences.
+
+        For molecular traits, where the geneId from study exists in the transcript consequences,
+        we will return the most severe consequence for the molecular trait and most severe consequence overall.
+
+        If the study type is GWAS or molecular trait where we do not find the geneId in transcript consequences,
+        we will return the most severe consequence only.
+        """
+        expr = f.when(
+            (study_statistics.study_type != f.lit(StudyType.GWAS))
+            & (transcript_consequences.contains_consequence_for_molecular_trait(study_statistics.molecular_trait)),
+            f.struct(
                 f.struct(
                     f.lit(EffectType.IN_GENE_EFFECT).alias("type"),
+                    transcript_consequences.most_severe_consequence.col,
+                ).alias("mostSevereConsequence"),
+                f.struct(
+                    f.lit(EffectType.OUT_OF_GENE_EFFECT).alias("type"),
                     transcript_consequences.find_most_severe_molecular_trait_consequence(
                         study_statistics.molecular_trait
                     ).col,
-                ),
-            )
-            .otherwise(
+                ).alias("mostSevereConsequenceForMolecularTrait"),
+            ),
+        ).otherwise(
+            f.struct(
                 f.struct(
-                    f.lit(EffectType.OUT_OF_GENE_EFFECT).alias("type"),
+                    f.lit(EffectType.IN_GENE_EFFECT).alias("type"),
                     transcript_consequences.most_severe_consequence.col,
-                )
-            )
+                ).alias("mostSevereConsequence"),
+                f.struct(
+                    f.lit(EffectType.UNKNOWN).alias("type"),
+                    f.lit(None).alias(TranscriptConsequence.name),
+                ).alias("mostSevereConsequenceForMolecularTrait"),
+            ),
         )
+
         return cls(expr)
