@@ -77,6 +77,91 @@ class OpenTargetsTheme:
         panel_grid=p9.element_blank(),
     )
 
+    @staticmethod
+    def categorical_theme(REM=10):
+        return p9.theme(
+            axis_title=p9.element_text(size=REM, family="sans-serif"),
+            axis_ticks_direction="out",
+            axis_ticks=p9.element_line(color="black"),
+            axis_ticks_length_major=8,
+            axis_ticks_length_minor=4,
+            axis_line=p9.element_line(color="black"),
+            panel_grid_major=p9.element_blank(),
+            panel_grid_minor=p9.element_blank(),
+            panel_background=p9.element_rect(fill="white"),
+            axis_text_x=p9.element_text(size=REM * 1.5, family="sans-serif", rotation=45, va="top", ha="right"),
+            axis_text_y=p9.element_text(size=REM * 2.0, family="sans-serif"),
+            axis_title_y=p9.element_text(size=REM * 2.0, family="sans-serif"),
+            panel_border=p9.element_rect(color="black", fill=None),
+            figure_size=(REM / 2, REM / 1.5),
+            legend_position=(0.4, 0.8),
+            legend_title=p9.element_text(size=REM),
+            legend_text=p9.element_text(size=REM),
+            legend_direction="vertical",
+            legend_box_background=p9.element_rect(color="black", size=1),
+        )
+
+    categorical_light_colors = [
+        "#fa4d56",
+        "#4589ff",
+        "#08bdba",
+        "#d4bbff",
+        "#007d79",
+        "#fff1f1",
+        "#d12771",
+        "#bae6ff",
+        "#8a3ffc",
+        "#ff7eb6",
+        "#6fdc8c",
+        "#d2a106",
+        "#ba4e00",
+        "#33b1ff",
+    ]
+    categorical_dark_colors = [
+        "#fa4d56",
+        "#002d9c",
+        "#009d9a",
+        "#a56eff",
+        "#005d5d",
+        "#570408",
+        "#ee538b",
+        "#012749",
+        "#6929c4",
+        "#9f1853",
+        "#198038",
+        "#b28600",
+        "#8a3800",
+        "#1192e8",
+    ]
+
+    association_colors = [
+        "#DBEAF6",
+        "#BFDAEE",
+        "#A5CAE6",
+        "#8ABADE",
+        "#6EA9D7",
+        "#4F97CF",
+        "#3583C0",
+        "#2C6EA0",
+        "#245780",
+    ]
+
+    prioritization_colors = [
+        "#A01813",
+        "#BC3A19",
+        "#D65A1F",
+        "#E08145",
+        "#E3A772",
+        "#E6CA9C",
+        "#ECEADA",
+        "#C5D2C1",
+        "#9EBAA8",
+        "#78A290",
+        "#528B78",
+        "#2F735F",
+        "#2E5943",
+    ]
+
 
 def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, title: str) -> p9.ggplot:
     """Plot grouped statistics."""
