@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import NamedTuple
 
-from gentropy.common.utils import extract_chromosome, extract_position
+from gentropy.common.processing import extract_chromosome, extract_position
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 from pyspark.sql import types as t

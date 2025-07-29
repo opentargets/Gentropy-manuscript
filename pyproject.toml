@@ -23,6 +23,7 @@ dependencies = [
     "scipy>=1.11.4",
     "seaborn>=0.13.2",
     "statsmodels>=0.14.4",
+    "streamlit>=1.47.1",
     "sunburst>=1.0.0a2",
     "tagore>=1.1.2",
     "wordcloud>=1.9.4",
@@ -62,9 +63,7 @@ line-length = 120
 docstring-quotes = "double"
 
 [tool.uv.sources]
-gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v2.3.0-rc.4" }
-plotnine = { git = "https://github.com/has2k1/plotnine.git", rev = "v0.12.4" }
-
+gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v2.4.0-rc.2" }
 
 
 [dependency-groups]
