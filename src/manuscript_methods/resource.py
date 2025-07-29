@@ -9,21 +9,21 @@ from pyspark.sql import Column, DataFrame
 from pyspark.sql import functions as f
 
 
-class Resource(NamedTuple):
+class DataSource(NamedTuple):
     """Resource class to hold resource information."""
 
     name: str
     filter_expr: Callable[[], Column]
 
 
-class ResourceType(Enum):
+class DataSourceType(Enum):
     """Resource type enum."""
 
-    GWAS_CATALOG = Resource(
+    GWAS_CATALOG = DataSource(
         name="GWAS Catalog",
         filter_expr=lambda: (f.col("studyId").startswith(f.lit("GCST"))),
     )
-    EQLT_CATALOGUE = Resource(
+    EQLT_CATALOGUE = DataSource(
         name="eQTL Catalogue",
         filter_expr=lambda: (
             (~f.col("studyId").startswith(f.lit("GCST")))
@@ -31,32 +31,32 @@ class ResourceType(Enum):
             & (~f.col("studyId").startswith(f.lit("UKB")))
         ),
     )
-    UKB_PPP_EUR = Resource(
+    UKB_PPP_EUR = DataSource(
         name="UK Biobank PPP EUR",
         filter_expr=lambda: (f.col("studyId").startswith(f.lit("UKB"))),
     )
-    FINNGEN = Resource(
+    FINNGEN = DataSource(
         name="FinnGen",
         filter_expr=lambda: (f.col("studyId").startswith(f.lit("FINNGEN"))),
     )
 
 
-def describe_resource(df: DataFrame) -> DataFrame:
+def describe_datasource(df: DataFrame) -> DataFrame:
     """Describe the resource.
 
     Args:
         df (DataFrame): DataFrame containing studyId or studyLocusId.
 
     Returns:
-        DataFrame: DataFrame with resourceId and count.
+        DataFrame: DataFrame with dataSourceId and count.
 
     Examples:
         >>> data = [("GCST000001",), ("GCST000002",), ("FINNGEN_R12-0001",)]
         >>> schema = "studyId STRING"
         >>> df = spark.createDataFrame(data, schema)
-        >>> describe_resource(df).show()
+        >>> describe_datasource(df).show()
         +------------+-----+
-        |  resourceId|count|
+        |dataSourceId|count|
         +------------+-----+
         |GWAS Catalog|    2|
         |     FinnGen|    1|
@@ -64,24 +64,29 @@ def describe_resource(df: DataFrame) -> DataFrame:
         <BLANKLINE>
 
     """
-    return classify_by_resource(df).groupBy("resourceId").count()
+    return classify_by_datasource(df).groupBy("dataSourceId").count()
 
 
-def classify_by_resource(df: DataFrame) -> DataFrame:
+def classify_by_datasource(df: DataFrame) -> DataFrame:
     """Classify the DataFrame by resource.
 
     Args:
         df (DataFrame): DataFrame containing studyId or studyLocusId.
 
     Returns:
-        DataFrame: DataFrame with resourceId and count.
+        DataFrame: DataFrame with dataSourceId.
 
     """
     expr = f.when(f.lit(False), f.lit(None).cast("string"))
-    for x in [ResourceType.GWAS_CATALOG, ResourceType.EQLT_CATALOGUE, ResourceType.UKB_PPP_EUR, ResourceType.FINNGEN]:
+    for x in [
+        DataSourceType.GWAS_CATALOG,
+        DataSourceType.EQLT_CATALOGUE,
+        DataSourceType.UKB_PPP_EUR,
+        DataSourceType.FINNGEN,
+    ]:
         expr = expr.when(
             x.value.filter_expr(),
             f.lit(x.value.name),
         )
-    expr = expr.alias("resourceId")
-    return df.withColumn("resourceId", expr)
+    expr = expr.alias("dataSourceId")
+    return df.withColumn("dataSourceId", expr)
