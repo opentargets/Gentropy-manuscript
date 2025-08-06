@@ -1,6 +1,8 @@
 """Manuscript methods for the package."""
 
+import pandas as pd
 import plotnine as p9
+from pyspark import sql
 from pyspark.sql import Column, DataFrame, Window
 from pyspark.sql import functions as f
 
@@ -23,7 +25,6 @@ def group_statistics(df: DataFrame, group_column: Column | list[Column] | str | 
         .select(*group_column, f.col("count"), f.format_number(f.col("percentage"), 2).alias("%"), f.col("percentage"))
         .orderBy(f.desc("count"))
     )
-
     return grouped_df
 
 
@@ -46,7 +47,6 @@ def aggregated_statistics(df: DataFrame, group_columns: list[str], agg_column: s
         )
         .orderBy(f.desc("count"))
     )
-
     return grouped_df
 
 
@@ -163,10 +163,11 @@ class OpenTargetsTheme:
     ]
 
 
-def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, title: str) -> p9.ggplot:
+def plot_group_statistics(group_stats: DataFrame | pd.DataFrame, x: str, y: str, fill: str, title: str) -> p9.ggplot:
     """Plot grouped statistics."""
+    data = group_stats.toPandas() if isinstance(group_stats, sql.DataFrame) else group_stats
     p = (
-        p9.ggplot(data=group_stats.toPandas(), mapping=p9.aes(x=x, y=y, fill=fill))
+        p9.ggplot(data=data, mapping=p9.aes(x=x, y=y, fill=fill))
         + p9.geom_col(stat="identity")
         + p9.labs(x=title)
         + p9.scale_fill_manual(values=OpenTargetsTheme.categorical_dark_colors)
@@ -176,10 +177,9 @@ def plot_group_statistics(group_stats: DataFrame, x: str, y: str, fill: str, tit
     return p
 
 
-def plot_aggregated_data(df: DataFrame, x: str, y: str, xtitle: str, ytitle: str) -> p9.ggplot:
+def plot_aggregated_data(df: DataFrame | pd.DataFrame, x: str, y: str, xtitle: str, ytitle: str) -> p9.ggplot:
     """Plot boxplot with aggregated data."""
-    data = df.toPandas()
-    REM = 10
+    data = df.toPandas() if isinstance(df, sql.DataFrame) else df
     plot = (
         p9.ggplot(data)
         + p9.geom_boxplot(p9.aes(x=x, y=y))
@@ -193,7 +193,7 @@ def plot_aggregated_data(df: DataFrame, x: str, y: str, xtitle: str, ytitle: str
 def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> p9.ggplot:
     """Plot the distribution of credible set sizes."""
     # Convert to Pandas DataFrame for plotting
-    dataset = df.toPandas()
+    dataset: pd.DataFrame = df.toPandas()
 
     # Plotting parameters
     REM = 10

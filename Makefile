@@ -20,3 +20,8 @@ download_from_gcs: ## Download datasets
 	@gcloud storage cp gs://genetics-portal-dev-analysis/ss60/gentropy-manuscript/chapters/variant-effect-prediction/rescaled-betas.parquet data/rescaled-betas.parquet
 	@gcloud storage cp gs://genetics-portal-dev-analysis/ss60/gentropy-manuscript/chapters/variant-effect-prediction/binary-therapeutic-lead-variants.parquet data/binary-therapeutic-lead-variants.parquet
 	@gcloud storage rsync -r gs://genetics-portal-dev-analysis/yt4/20250403_for_gentropy_paper/known_studyLocusIds data/known_studyLocusIds
+
+
+run-app: ## Run application
+
+	uv run streamlit run app/home.py

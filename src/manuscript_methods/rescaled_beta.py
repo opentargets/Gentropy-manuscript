@@ -60,8 +60,13 @@ class RescaledStatistics:
         return cls.compute_beta_sign(beta) * f.sqrt(chi2_stat).alias("zScore")
 
     @classmethod
+    def compute_effective_sample_size(cls, prev: Column, n_samples: Column) -> Column:
+        """Calculate the effective sample size based on trait class."""
+        return (prev * (1 - prev) * n_samples).alias("effectiveSampleSize")
+
+    @classmethod
     def compute_var_g(cls, maf: Column) -> Column:
-        """Calculate the variance explained by the genotype."""
+        """Calculate the variance explained by the additive genotype."""
         return (2 * maf * (1 - maf)).alias("varG")
 
     @classmethod
@@ -70,10 +75,20 @@ class RescaledStatistics:
         return (n_cases / n_samples).alias("prev")
 
     @classmethod
-    def compute_se(cls, var_g: Column, n_samples: Column, trait_class: Column, prev: Column) -> Column:
-        """Calculate the standard error based on trait class."""
-        linear_se = f.sqrt(1 / (var_g * n_samples))
-        logit_se = f.sqrt(1 / (var_g * n_samples * prev * (1 - prev)))
+    def compute_se(
+        cls, var_g: Column, n_samples: Column, trait_class: Column, prev: Column, var_phen: Column | None = None
+    ) -> Column:
+        """Calculate the standard error based on trait class.
+
+        If `var_phen` is not provided, the method assumes that the phenotype was scaled to have a variance of 1 for quantitative traits.
+
+        The definition of the standard errors is derived from the
+        https://www.mv.helsinki.fi/home/mjxpirin/GWAS_course/material/GWAS3.pdf
+        """
+        var_phen = var_phen if isinstance(var_phen, Column) else f.lit(1.0)
+        effective_n_samples = cls.compute_effective_sample_size(prev, n_samples)
+        linear_se = f.sqrt(var_phen / (var_g * n_samples))
+        logit_se = f.sqrt(1 / (var_g * effective_n_samples))
         return (
             f.when(trait_class == f.lit(TraitClassName.QUANTITATIVE), linear_se)
             .when(trait_class == f.lit(TraitClassName.BINARY), logit_se)
@@ -104,7 +119,7 @@ class RescaledStatistics:
         prev = cls.compute_prevalence(n_cases, n_samples)
         se = cls.compute_se(var_g, n_samples, trait_class, prev)
         rescaled_beta = z_score * se
-        major_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(af, rescaled_beta)
+        minor_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(af, rescaled_beta)
 
         return cls(
             f.struct(
@@ -114,6 +129,6 @@ class RescaledStatistics:
                 prev.alias("prevalence"),
                 se.alias("estimatedSE"),
                 rescaled_beta.alias("estimatedBeta"),
-                major_allele_rescaled_beta.alias("majorAlleleEstimatedBeta"),
+                minor_allele_rescaled_beta.alias("minorAlleleEstimatedBeta"),
             )
         )

@@ -1,8 +1,7 @@
-"""Systematic ancestry-specific fine-mapping."""
+"""Study and credible set qualification."""
 
 import os
 
-import pandas as pd
 import streamlit as st
 from gentropy import Session
 from pyspark.sql import functions as f
