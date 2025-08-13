@@ -250,5 +250,6 @@ def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 
     n_non_protein_altering = f.count(f.when(vep_score < threshold, 1)).over(w).alias("nNonAlteringInBucket")
     total = (n_protein_altering + n_non_protein_altering).alias("totalInBucket")
     proportion = (n_protein_altering / total).alias("alteringProportionInBucket")
-    stderr = f.sqrt((proportion * (1 - proportion)) / (total)).alias("stdErr")
-    return f.struct(n_protein_altering, n_non_protein_altering, proportion, stderr, total)
+    stderr = f.sqrt((proportion * (1 - proportion)) / (total)).alias("stderr")
+    interval = (f.lit(1.96) * stderr).alias("confidenceInterval")  # 1.96 is the z-score for a 95% confidence interval
+    return f.struct(n_protein_altering, n_non_protein_altering, proportion, stderr, total, interval)
