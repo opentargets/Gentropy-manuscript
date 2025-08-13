@@ -24,3 +24,16 @@ To add new dependency use `uv add ${dependency}`
 
 All data stored for the purpose of the analysis should be dumped into the `data`
 directory. They are not tracked by the git.
+
+## Running application
+
+To run application run streamlit. Note that it requires to have env variable
+that points to the data release catalog. At bare minimum the `study`,
+`credbile_set` and `variant` are required to be in the output directory
+
+```
+export DATASET_PATH=/path/to/data/release/
+uv run streamlit run app/home.py
+```
+
+uv run
