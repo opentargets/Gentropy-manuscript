@@ -4,9 +4,9 @@
   "notebook.insertFinalNewline": true,
   "notebook.output.scrolling": true,
   "notebook.codeActionsOnSave": {
-    "source.fixAll.ruff": "explicit",
-    "source.convertImportFormat": "explicit",
-    "source.organizeImports.ruff": "explicit"
+    "notebook.source.fixAll.ruff": "explicit",
+    "notebook.source.convertImportFormat": "explicit",
+    "notebook.source.organizeImports.ruff": "never"
   },
   "notebook.variablesView": true,
   "notebook.showCellStatusBar": "visible",
