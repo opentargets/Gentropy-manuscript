@@ -386,7 +386,7 @@
           },
           {
             "metadata": {},
-            "name": "majorAlleleEstimatedBeta",
+            "name": "minorAlleleEstimatedBeta",
             "nullable": true,
             "type": "double"
           }

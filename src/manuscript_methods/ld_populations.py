@@ -7,6 +7,20 @@ from enum import Enum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
+from pyspark.sql import types as t
+
+
+class LdStructureType(str, Enum):
+    """Enum representing the kind of LD population."""
+
+    ONLY_MAJOR = "only_major"  # the array of relative sample sizes contains only one pops
+    ONE_MAJOR = "one_major"  # The array of relative sample sizes contains more then one populations, but only one population is major
+    N_EVEN_MAJORS = "N_even_majors"  # The array of relative sample sizes contains more then one populations, and multiple populations are major with uneven relative sample sizes
+    N_UNEVEN_MAJORS = "N_uneven_majors"  # The array of relative sample sizes contains more then one populations, and multiple populations are major with even relative sample sizes
+    EMPTY_LD = "empty_ld"  # When the array of relative sample size is empty or None
+    NON_DEFINED_RELATIVE_SAMPLE_SIZE = (
+        "non_defined_relative_sample_size"  # When the relative sample size is None for all populations
+    )
 
 
 class LDPopulationName(str, Enum):
@@ -282,10 +296,10 @@ class LDPopulationStructure:
 
         Examples:
         --------
-        >>> x1 = [('nfe',0.900),('eas',0.018),('afr',0.082)] # nfe choosen as it is largest population
-        >>> x2 = [('nfe',1.000),]                            # nfe choosen as it is the only population
-        >>> x3 = [('eas',0.500),('nfe',0.500)]               # nfe choosen when tie and nfe is default
-        >>> x4 = [('eas',0.500),('afr',0.500)]               # eas choosen when tie, first in the list
+        >>> x1 = [('nfe',0.900),('eas',0.018),('afr',0.082)] # nfe chosen as it is largest population
+        >>> x2 = [('nfe',1.000),]                            # nfe chosen as it is the only population
+        >>> x3 = [('eas',0.500),('nfe',0.500)]               # nfe chosen when tie and nfe is default
+        >>> x4 = [('eas',0.500),('afr',0.500)]               # eas chosen when tie, first in the list
         >>> x5 = []                                          # empty array, assume nfe with 0.0 sample
         >>> data = [(x1,),(x2,),(x3,),(x4,),(x5,)]
         >>> ld = LDPopulationStructure()
@@ -322,3 +336,103 @@ class LDPopulationStructure:
 
         expr = f.when(self.size > 0, f.reduce(self.col, initial_value, reducer)).otherwise(initial_value)
         return LDPopulation(expr)
+
+    def ld_structure(self) -> Column:
+        """Determine the LD structure type based on the relative sample sizes of the populations.
+
+        This method analyzes the `ldPopulationStructure` column and categorizes it into one of the following types:
+        - `only_major`: If the array contains only one population.
+        - `one_major`: If the array contains more than one population, but only one is considered major (relative sample size >= 1/N, where N is the number of populations).
+        - `N_even_majors`: If there are multiple populations, and all have the same relative sample size (i.e., they are evenly distributed).
+        - `N_uneven_majors`: If there are multiple populations, and they have different relative sample sizes (i.e., they are unevenly distributed).
+
+        Major population is defined as a population where:
+        * relativeSampleSize >= 1 / n_pops, where n_pops is the number of populations in the LD structure.
+
+        Returns:
+            Column: A column representing the LD structure type and the major populations.
+
+        Examples:
+        --------
+        >>> x1 = [('nfe',0.900),('eas',0.018),('afr',0.082)]    # nfe is major
+        >>> x2 = [('nfe',1.000),]                               # only nfe, major
+        >>> x3 = [('eas',0.500),('nfe',0.500)]                  # two even majors, eas and nfe
+        >>> x4 = [('eas',0.665),('afr',0.334), ('nfe', 0.001)]  # two uneven majors, eas and afr
+        >>> x5 = []                                             # empty array, no populations
+        >>> x6 = [('nfe', None),]                               # non defined relative sample size, no populations
+        >>> x7 = None                                           # non defined relative sample size, no populations
+        >>> data = [(x1,),(x2,),(x3,),(x4,),(x5,),(x6,),(x7,)]
+        >>> ld = LDPopulationStructure()
+        >>> schema = f"ldPopulationStructure: {ld.schema}"
+        >>> df = spark.createDataFrame(data, schema=schema)
+        >>> df.show(truncate=False)
+        +------------------------------------------+
+        |ldPopulationStructure                     |
+        +------------------------------------------+
+        |[{nfe, 0.9}, {eas, 0.018}, {afr, 0.082}]  |
+        |[{nfe, 1.0}]                              |
+        |[{eas, 0.5}, {nfe, 0.5}]                  |
+        |[{eas, 0.665}, {afr, 0.334}, {nfe, 0.001}]|
+        |[]                                        |
+        |[{nfe, NULL}]                             |
+        |NULL                                      |
+        +------------------------------------------+
+        <BLANKLINE>
+        >>> ld_structure = ld.ld_structure()
+        >>> df.select(ld_structure.alias("ldStructure")).show(truncate=False)
+        +-----------------------------------------------+
+        |ldStructure                                    |
+        +-----------------------------------------------+
+        |{one_major, [{nfe, 0.9}]}                      |
+        |{only_major, [{nfe, 1.0}]}                     |
+        |{2_even_majors, [{eas, 0.5}, {nfe, 0.5}]}      |
+        |{2_uneven_majors, [{eas, 0.665}, {afr, 0.334}]}|
+        |{empty_ld, []}                                 |
+        |{non_defined_relative_sample_size, []}         |
+        |{empty_ld, []}                                 |
+        +-----------------------------------------------+
+        <BLANKLINE>
+
+        """
+        expr = f.when(f.size(self.col) == 0, f.lit(LdStructureType.EMPTY_LD.value))
+        expr = expr.when(self.col.isNull(), f.lit(LdStructureType.EMPTY_LD.value))
+
+        n_non_empty_ld_pops = f.filter(self.col, lambda x: x.getField("relativeSampleSize").isNotNull())
+        expr = expr.when(
+            (f.size(self.col) != 0) & (f.size(n_non_empty_ld_pops) == 0),
+            f.lit(LdStructureType.NON_DEFINED_RELATIVE_SAMPLE_SIZE.value),
+        )
+
+        expr = expr.when(f.size(self.col) == 1, f.lit(LdStructureType.ONLY_MAJOR.value))
+
+        # Check which pops are major
+        n_pops = f.size(self.col)
+        major_cond = lambda x: f.when(x.getField("relativeSampleSize") >= 1.0 / n_pops, f.lit(True)).otherwise(
+            f.lit(False)
+        )
+
+        major_pops_cond = f.transform(self.col, major_cond)
+        n_major_pops = f.size(f.filter(major_pops_cond, lambda x: x))
+        expr = expr.when(n_major_pops == 1, f.lit(LdStructureType.ONE_MAJOR.value))
+
+        major_pops = f.filter(
+            f.zip_with(major_pops_cond, self.col, lambda x, y: f.when(x, y).otherwise(None)), lambda x: x.isNotNull()
+        )
+        major_pops = f.when(major_pops.isNull(), f.array()).otherwise(major_pops)
+
+        # # sort the major pops by relative sample size and get the first one as the max
+        max_major_pop = f.array_sort(
+            major_pops,
+            lambda x, y: (x.getField("relativeSampleSize") - y.getField("relativeSampleSize")).cast(t.IntegerType()),
+        ).getField(0)
+
+        # # Check how many major pops have the same relative sample size
+        same_size_major_pops = f.filter(
+            major_pops, lambda x: x.getField("relativeSampleSize") == max_major_pop.getField("relativeSampleSize")
+        )
+        replacer = lambda x: f.replace(x, f.lit("N"), f.size(major_pops))
+        expr = expr.when(
+            f.size(same_size_major_pops) == 1, replacer(f.lit(LdStructureType.N_UNEVEN_MAJORS.value))
+        ).otherwise(replacer(f.lit(LdStructureType.N_EVEN_MAJORS.value)))
+
+        return f.struct(expr.alias("type"), major_pops.alias("majorPops")).alias("majorPopulationStructure")
