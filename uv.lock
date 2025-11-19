@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform == 'linux'",
@@ -948,6 +947,18 @@ wheels = [
 ]
 
 [[package]]
+name = "faicons"
+version = "0.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "htmltools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/06/e8/c12ef85c4444616ab1c1e96d5ecbadc8046d40b34797308846a2cfc06c80/faicons-0.2.2.tar.gz", hash = "sha256:6b7d7b19180179b6b83783f91bf6c9311c0f00ae0f97d41be1d24d9942361659", size = 604434 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/65/3c/1db1b0f878319bb227f35a0fca7cad64e1f528b518bcab1a708da305c86d/faicons-0.2.2-py3-none-any.whl", hash = "sha256:d45d7c2635b53582a3375c67d7e975a28a91d2c16ef5f6b5033b5cdd507224b6", size = 607225 },
+]
+
+[[package]]
 name = "fastjsonschema"
 version = "2.21.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1012,6 +1023,20 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ea/e0/46f9600c39c644b54e4420f941f75fa200d9288c9ae171e5d80918b8cbb9/fonttools-4.56.0-cp313-cp313-win32.whl", hash = "sha256:d0cb73ccf7f6d7ca8d0bc7ea8ac0a5b84969a41c56ac3ac3422a24df2680546f", size = 2140927 },
     { url = "https://files.pythonhosted.org/packages/27/6d/3edda54f98a550a0473f032d8050315fbc8f1b76a0d9f3879b72ebb2cdd6/fonttools-4.56.0-cp313-cp313-win_amd64.whl", hash = "sha256:62cc1253827d1e500fde9dbe981219fea4eb000fd63402283472d38e7d8aa1c6", size = 2186709 },
     { url = "https://files.pythonhosted.org/packages/bf/ff/44934a031ce5a39125415eb405b9efb76fe7f9586b75291d66ae5cbfc4e6/fonttools-4.56.0-py3-none-any.whl", hash = "sha256:1088182f68c303b50ca4dc0c82d42083d176cba37af1937e1a976a31149d4d14", size = 1089800 },
+]
+
+[[package]]
+name = "formulae"
+version = "0.5.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7d/64/5ad6998310894e5678f91f44c20662915f8384af2c647f97c97dfec17f07/formulae-0.5.4.tar.gz", hash = "sha256:150c8ddf985234fb1f1f2b7471d299432efef43f54ea8524eee391b8929caa70", size = 149896 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/88/12/808e8b17e09b60a31ab324d638e50f8cdc11dfcdafb4874a43afad296a2e/formulae-0.5.4-py3-none-any.whl", hash = "sha256:b6ee8150c1321f8c034e94e4a097f6af7c239d6d19a463c0398129e444e9b538", size = 53683 },
 ]
 
 [[package]]
@@ -1135,7 +1160,9 @@ dependencies = [
     { name = "altair" },
     { name = "bokeh" },
     { name = "dash-bio" },
+    { name = "formulae" },
     { name = "gentropy" },
+    { name = "great-tables" },
     { name = "ipython" },
     { name = "jupyterlab" },
     { name = "marimo" },
@@ -1148,7 +1175,9 @@ dependencies = [
     { name = "plotnine" },
     { name = "polars" },
     { name = "pre-commit" },
+    { name = "pymer4" },
     { name = "requests" },
+    { name = "rpy2" },
     { name = "scipy" },
     { name = "seaborn" },
     { name = "statsmodels" },
@@ -1171,7 +1200,9 @@ requires-dist = [
     { name = "altair", specifier = ">=5.5.0" },
     { name = "bokeh", specifier = ">=3.4.3" },
     { name = "dash-bio", specifier = ">=1.0.2" },
+    { name = "formulae", specifier = ">=0.5.4" },
     { name = "gentropy", git = "https://github.com/opentargets/gentropy?tag=v2.4.0-rc.2" },
+    { name = "great-tables", specifier = ">=0.18.0" },
     { name = "ipython", specifier = ">=9.0.2" },
     { name = "jupyterlab", specifier = ">=4.3.6" },
     { name = "marimo", specifier = ">=0.14.16" },
@@ -1184,7 +1215,9 @@ requires-dist = [
     { name = "plotnine", specifier = ">=0.12.4" },
     { name = "polars", specifier = ">=1.26.0" },
     { name = "pre-commit", specifier = ">=4.2.0" },
+    { name = "pymer4", specifier = ">=0.9.2" },
     { name = "requests", specifier = ">=2.32.3" },
+    { name = "rpy2", specifier = ">=3.6.2" },
     { name = "scipy", specifier = ">=1.11.4" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "statsmodels", specifier = ">=0.14.4" },
@@ -1408,6 +1441,25 @@ grpc = [
 ]
 
 [[package]]
+name = "great-tables"
+version = "0.18.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "babel" },
+    { name = "commonmark" },
+    { name = "faicons" },
+    { name = "htmltools" },
+    { name = "importlib-metadata" },
+    { name = "importlib-resources" },
+    { name = "numpy" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/49/3f/7cb44926c661fd1cd6c3a773aa858dca70bd57fbdded31b597f1e8d1a850/great_tables-0.18.0.tar.gz", hash = "sha256:7e5773e878ba20f2aa2e00e511f8aae2bc31bdda90a6441756d0719276d7b164", size = 12541288 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/0e/1b5649e637b456ffd76bd7e83eb7abd12203030ca8b3262199c46754b965/great_tables-0.18.0-py3-none-any.whl", hash = "sha256:24fff29aa73a7e8018e871786dc9384111864cbc38eea5a409861ea3d8c4d880", size = 1386145 },
+]
+
+[[package]]
 name = "grpc-google-iam-v1"
 version = "0.14.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1528,6 +1580,19 @@ wheels = [
 ]
 
 [[package]]
+name = "htmltools"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cd/1d/c568d17e9fb5ad5aa0ca3531c58d36fe69deb8eee4e53ff6425c1f99f210/htmltools-0.6.0.tar.gz", hash = "sha256:e8a3fb023d748935035db7ff17f620612ffc814a6a80b6ae388f7b7ab182adf7", size = 97152 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0a/ba/aa99706246f1938ca905eb6eeb7db832ac2e157aa4b805acb5cd4cd1791a/htmltools-0.6.0-py3-none-any.whl", hash = "sha256:072a274ff5e2851e0acce13fc5bb2bbdbbad8268dc8b123f881c05012ce7dce0", size = 84954 },
+]
+
+[[package]]
 name = "httpcore"
 version = "1.0.7"
 source = { registry = "https://pypi.org/simple" }
@@ -1624,6 +1689,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/76/66/650a33bd90f786193e4de4b3ad86ea60b53c89b669a5c7be931fac31cdb0/importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000", size = 56641 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/b0/36bd937216ec521246249be3bf9855081de4c5e06a0c9b4219dbeda50373/importlib_metadata-8.7.0-py3-none-any.whl", hash = "sha256:e5dd1551894c77868a30651cef00984d50e1002d06942a7101d34870c5f02afd", size = 27656 },
+]
+
+[[package]]
+name = "importlib-resources"
+version = "6.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/8c/f834fbf984f691b4f7ff60f50b514cc3de5cc08abfc3295564dd89c5e2e7/importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c", size = 44693 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec", size = 37461 },
 ]
 
 [[package]]
@@ -3412,6 +3486,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pymer4"
+version = "0.9.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/01/e5/be115cff3d8e6575c3aed446a27fd786ed696f9bba11652a5f32982d20e1/pymer4-0.9.2.tar.gz", hash = "sha256:85715b642affd02fac4e26031aa5c31eafaa1ce72baab4bb67bb9c712b0b4ccf", size = 2399639 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a5/0f/ef5bfc3951ba9f04ddcab48da9902f4f2f7c0dad89d714b176136a2d9c3b/pymer4-0.9.2-py3-none-any.whl", hash = "sha256:e1e2eb0bdb06610b8e7ff0f4caacac881d945a374ad9f70b5c102710bb5b31df", size = 2313219 },
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.3"
 source = { registry = "https://pypi.org/simple" }
@@ -3853,6 +3936,53 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/20/dd/1f1a923d6cd798b8582176aca8a0784676f1a0449fb6f07fce6ac1cdbfb6/rpds_py-0.24.0-pp311-pypy311_pp73-musllinux_1_2_aarch64.whl", hash = "sha256:eda5c1e2a715a4cbbca2d6d304988460942551e4e5e3b7457b50943cd741626d", size = 565818 },
     { url = "https://files.pythonhosted.org/packages/56/ec/d8da6df6a1eb3a418944a17b1cb38dd430b9e5a2e972eafd2b06f10c7c46/rpds_py-0.24.0-pp311-pypy311_pp73-musllinux_1_2_i686.whl", hash = "sha256:9abc80fe8c1f87218db116016de575a7998ab1629078c90840e8d11ab423ee25", size = 592627 },
     { url = "https://files.pythonhosted.org/packages/b3/14/c492b9c7d5dd133e13f211ddea6bb9870f99e4f73932f11aa00bc09a9be9/rpds_py-0.24.0-pp311-pypy311_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:6a727fd083009bc83eb83d6950f0c32b3c94c8b80a9b667c87f4bd1274ca30ba", size = 560885 },
+]
+
+[[package]]
+name = "rpy2"
+version = "3.6.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging", marker = "sys_platform == 'win32'" },
+    { name = "rpy2-rinterface" },
+    { name = "rpy2-robjects" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8a/70/8ea0f4c4157bc514f9276f08c39eff2c509dbf6b00ba8ea4c0763ab3e79d/rpy2-3.6.2.tar.gz", hash = "sha256:174ea5776a91d03b35dd5611889960e0f5451e9d0abea4abfc8c0be6a85377d0", size = 52959 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/63/6877f5440fa30a3882e9e36f68389c750354fd86c11fd61d0860c021d9b4/rpy2-3.6.2-py3-none-any.whl", hash = "sha256:bcfc5adebf54711a3a8f65c7ce113b4ad0fabc227746644effb4f831c580d6bd", size = 9898 },
+]
+
+[[package]]
+name = "rpy2-rinterface"
+version = "3.6.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cffi" },
+    { name = "packaging", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cf/9d/8f34eb5f3fb171bf49378848ffc0969cc88162809b3f526a0f31804ce73d/rpy2_rinterface-3.6.2.tar.gz", hash = "sha256:b62a0de00c64c469c3c59a4e5aee53112aa11da9dd6e52d3cd6cb741026156c2", size = 79242 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/85/2b/8c8e1eb39c19bdb04576f3d2e434f5bcf3c27565b59c880630338c82307a/rpy2_rinterface-3.6.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:686deed0a421daa08d4f69fb105bdded939f470200adf50c7d3a51ab43f6687b", size = 172950 },
+    { url = "https://files.pythonhosted.org/packages/a5/fb/1b4fc5e22fea7f78bf1398f4ca1842a4a7db0640536f91e9a1b05b1eae5e/rpy2_rinterface-3.6.2-cp311-cp311-win_amd64.whl", hash = "sha256:98516c24b7d1fd28299ab254a5b0076c99cfd8c93f33569b45e054211fa5e850", size = 173909 },
+    { url = "https://files.pythonhosted.org/packages/95/69/e891c777a892aa631875c14c469808da296557fdbc0482d1f3de6c6cd6c4/rpy2_rinterface-3.6.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:65878847e9eefbcf11253d776406a34ef651e4caec52bf93a2967967e967f0bf", size = 173071 },
+    { url = "https://files.pythonhosted.org/packages/1c/2d/1e5d3d0e901e75c6162fb7ab4d0dc6aa6142eaa49235cc6d225e1728fa2b/rpy2_rinterface-3.6.2-cp312-cp312-win_amd64.whl", hash = "sha256:ff0a99b2196dee7adc7836243a5f1e757f7ce7646c54641461bee185ca5be429", size = 174337 },
+    { url = "https://files.pythonhosted.org/packages/38/7a/189bbeb03485dd929d2431b897fd81a9d94e58dc3c759d52ad32e4eb98af/rpy2_rinterface-3.6.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:fe9efcfb0d51c5ce977d16e7edcdcb9c2336f308bb82180e77c5517a5d40bf5f", size = 173073 },
+    { url = "https://files.pythonhosted.org/packages/70/a4/8ce8c124275600fae61916e82cd3c13562b0d765e53aede751f3da2961f2/rpy2_rinterface-3.6.2-cp313-cp313-win_amd64.whl", hash = "sha256:9c34e402f4062f09326128baa3d6a140567124a2770009578b571ed2aeaba13e", size = 174334 },
+]
+
+[[package]]
+name = "rpy2-robjects"
+version = "3.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jinja2" },
+    { name = "packaging", marker = "sys_platform == 'win32'" },
+    { name = "rpy2-rinterface" },
+    { name = "tzlocal" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c2/a5/3f0187417b2bde373258e2ef4e0a9296ef7e049278a2164c363797adc585/rpy2_robjects-3.6.1.tar.gz", hash = "sha256:934a7b58873531eeae4b44557f9fadb6680a0ac85d6f042afd30296b04b6c47a", size = 105374 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ac/3b/9bc0f0281b29f943f9d9fa7f2db07fb6cf4a6e35e39a8b8f0a612cfc3f5c/rpy2_robjects-3.6.1-py3-none-any.whl", hash = "sha256:8699e4554391bcaac5fb32d39828f90d9fb5c0b00236da74bb874da587e92bc7", size = 125387 },
 ]
 
 [[package]]
@@ -4475,6 +4605,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/95/32/1a225d6164441be760d75c2c42e2780dc0873fe382da3e98a2e1e48361e5/tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9", size = 196380 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8", size = 347839 },
+]
+
+[[package]]
+name = "tzlocal"
+version = "5.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8b/2e/c14812d3d4d9cd1773c6be938f89e5735a1f11a9f184ac3639b93cef35d5/tzlocal-5.3.1.tar.gz", hash = "sha256:cceffc7edecefea1f595541dbd6e990cb1ea3d19bf01b2809f362a03dd7921fd", size = 30761 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/14/e2a54fabd4f08cd7af1c07030603c3356b74da07f7cc056e600436edfa17/tzlocal-5.3.1-py3-none-any.whl", hash = "sha256:eb1a66c3ef5847adf7a834f1be0800581b683b5608e74f86ecbcef8ab91bb85d", size = 18026 },
 ]
 
 [[package]]
