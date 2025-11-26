@@ -1,12 +1,17 @@
-# Gentropy-manuscript
+# WIP Gentropy-manuscript
 
-Repository to host code for the Systematic and scalable analysis of common
-variation advances drug target discovery
+Repository to host code for the The Pleiotropic Map of Common Genetic Variation
+and Therapeutic Implications.
 
 ## Chapters
 
 Analysis conducted for each manuscript paragraphs are stored under consecutive
 chapter subdirectory.
+
+### 01-data preparation
+
+The input datasets are downloaded and subsequent datasets are prepared for
+downstream analysis.
 
 ## Running notebooks
 
@@ -23,6 +28,7 @@ make dev
 - Java 11 (recommended using sdkman)
 - ~40G of RAM
 - ~30G of disk space
+- gsutil & gcloud sdk (for downloading data from Google Cloud Storage)
 
 ## Adding new dependencies
 
