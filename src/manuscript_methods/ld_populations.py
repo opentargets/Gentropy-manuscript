@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 from pyspark.sql import types as t
 
 
-class LdStructureType(str, Enum):
+class LdStructureType(StrEnum):
     """Enum representing the kind of LD population."""
 
     ONLY_MAJOR = "only_major"  # the array of relative sample sizes contains only one pops
@@ -23,7 +23,7 @@ class LdStructureType(str, Enum):
     )
 
 
-class LDPopulationName(str, Enum):
+class LDPopulationName(StrEnum):
     """Enum representing LD populations."""
 
     AFR = "afr"

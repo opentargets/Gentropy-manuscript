@@ -1,12 +1,12 @@
 """Consequence categories and their classification based on Sequence Ontology (SO) terms."""
 
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import functions as f
 from pyspark.sql.column import Column
 
 
-class IntergenicConsequence(str, Enum):
+class IntergenicConsequence(StrEnum):
     """Enum for intergenic consequences."""
 
     UPSTREAM = "upstream_gene_variant"
@@ -14,7 +14,7 @@ class IntergenicConsequence(str, Enum):
     INTERGENIC = "intergenic_variant"
 
 
-class RegulatoryConsequence(str, Enum):
+class RegulatoryConsequence(StrEnum):
     """Enum for regulatory consequences."""
 
     TFBS_ABLATION = "TFBS_ablation"
@@ -25,7 +25,7 @@ class RegulatoryConsequence(str, Enum):
     REGULATORY_REGION_VARIANT = "regulatory_region_variant"
 
 
-class IntragenicConsequence(str, Enum):
+class IntragenicConsequence(StrEnum):
     """Enum for intragenic consequences."""
 
     SPLICE_DONOR_5TH_BASE_VARIANT = "splice_donor_5th_base_variant"
@@ -47,7 +47,7 @@ class IntragenicConsequence(str, Enum):
     CODING_TRANSCRIPT_VARIANT = "coding_transcript_variant"
 
 
-class ProteinAlteringConsequence(str, Enum):
+class ProteinAlteringConsequence(StrEnum):
     """Enum for protein-altering consequences."""
 
     TRANSCRIPT_ABLATION = "transcript_ablation"
@@ -66,7 +66,7 @@ class ProteinAlteringConsequence(str, Enum):
     PROTEIN_ALTERING_VARIANT = "protein_altering_variant"
 
 
-class ConsequenceCategory(str, Enum):
+class ConsequenceCategory(StrEnum):
     """Enum for consequence categories."""
 
     INTERGENIC = "intergenic"

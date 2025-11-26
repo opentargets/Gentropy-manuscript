@@ -12,7 +12,7 @@ from pyspark.sql import SparkSession
 
 
 @pytest.fixture(scope="session", autouse=True)
-def spark(doctest_namespace: dict[str, Any], tmp_path_factory: pytest.TempPathFactory) -> SparkSession:
+def spark(doctest_namespace: dict[str, Any]) -> SparkSession:
     """Local spark session for testing purposes.
 
     It returns a session and make it available to doctests through
@@ -27,12 +27,11 @@ def spark(doctest_namespace: dict[str, Any], tmp_path_factory: pytest.TempPathFa
 
     """
     # Restart new session:
-    spark = SparkSession.builder.config(conf=get_spark_testing_conf()).master("local[1]").appName("test").getOrCreate()
+    spark = (
+        SparkSession.Builder().config(conf=get_spark_testing_conf()).master("local[1]").appName("test").getOrCreate()
+    )
     doctest_namespace["spark"] = spark
     return spark
-
-
-"""Spark utilities."""
 
 
 def get_spark_testing_conf() -> SparkConf:

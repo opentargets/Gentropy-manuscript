@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
@@ -11,7 +11,7 @@ from pyspark.sql import functions as f
 from manuscript_methods.study_statistics import StudyStatistics, StudyType
 
 
-class EffectType(str, Enum):
+class EffectType(StrEnum):
     """Effect type enumeration."""
 
     IN_GENE_EFFECT = "in-gene-effect"

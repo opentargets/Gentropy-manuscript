@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 
 
-class StudyType(str, Enum):
+class StudyType(StrEnum):
     """Enum for study types."""
 
     GWAS = "gwas"
@@ -23,7 +23,7 @@ class StudyType(str, Enum):
     GWAS_DISEASE = "gwas-disease"
 
 
-class CaseControlDiscrepancy(str, Enum):
+class CaseControlDiscrepancy(StrEnum):
     """Case control discrepancy types."""
 
     EMPTY_CASES_NON_EMPTY_CONTROLS = "emptyCasesNonEmptyControls"
@@ -31,7 +31,7 @@ class CaseControlDiscrepancy(str, Enum):
     SUM_CASES_CONTROLS_NEQUAL_SAMPLES = "sumCasesControlsNotEqualSamples"
 
 
-class TraitClassName(str, Enum):
+class TraitClassName(StrEnum):
     """Enum for trait class names."""
 
     QUANTITATIVE = "quantitative"

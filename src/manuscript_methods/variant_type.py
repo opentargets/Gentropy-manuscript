@@ -1,13 +1,15 @@
+"""Variant type module."""
+
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 from pyspark.sql import types as t
 
 
-class VariantType(str, Enum):
+class VariantType(StrEnum):
     """Enum representing different types of variants."""
 
     SNV = "SNV"

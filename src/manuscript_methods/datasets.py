@@ -8,7 +8,7 @@ from enum import Enum
 
 from gentropy.dataset.dataset import Dataset
 from gentropy.dataset.study_locus import StudyLocus
-from pyspark.sql import DataFrame, SparkSession, Window
+from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as f
 from pyspark.sql.types import StructType
 

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 
 
-class MinorAlleleFrequencyType(str, Enum):
+class MinorAlleleFrequencyType(StrEnum):
     """Enum representing minor allele frequency types.
 
     The enum is used to distinguish between different types of minor allele frequencies.
@@ -62,7 +62,7 @@ class MinorAlleleFrequency:
         )
 
 
-class AlleleFrequencyPopulationName(str, Enum):
+class AlleleFrequencyPopulationName(StrEnum):
     """Enum representing allele frequency population names.
 
     Based on gnomAD v4.1 allele frequency population names.
@@ -98,7 +98,7 @@ class PopulationConverter:
         )
 
 
-class MAFDiscrepancies(str, Enum):
+class MAFDiscrepancies(StrEnum):
     """Enum representing MAF discrepancies."""
 
     MAJOR_ANCESTRY_MISSING_FROM_GNOMAD_AF = "Variant missing from major ancestry in gnomAD AF"

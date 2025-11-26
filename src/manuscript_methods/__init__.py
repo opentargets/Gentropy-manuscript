@@ -30,7 +30,6 @@ def group_statistics(df: DataFrame, group_column: Column | list[Column] | str | 
 
 def aggregated_statistics(df: DataFrame, group_columns: list[str], agg_column: str) -> DataFrame:
     """Calculate aggregated statistics for multiple group columns."""
-    total = df.count()
     mean_expr = f.mean(agg_column).alias("mean")
     stddev_expr = f.stddev(agg_column).alias("stddev")
     max_expr = f.max(agg_column).alias("max")
@@ -79,6 +78,7 @@ class OpenTargetsTheme:
 
     @staticmethod
     def categorical_theme(REM=10):
+        """Categorical theme for plotnine plots."""
         return p9.theme(
             axis_title=p9.element_text(size=REM, family="sans-serif"),
             axis_ticks_direction="out",
@@ -196,7 +196,6 @@ def plot_distribution(df: DataFrame, factor: str, xtitle: str) -> p9.ggplot:
     dataset: pd.DataFrame = df.toPandas()
 
     # Plotting parameters
-    REM = 10
     mean_val = dataset[factor].mean()
 
     p = (

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
+from pyspark.sql import types as t
 
 from manuscript_methods.study_statistics import TraitClassName
 
@@ -47,12 +48,21 @@ class RescaledStatistics:
     @classmethod
     def compute_beta_sign(cls, beta: Column) -> Column:
         """Determine the direction of effect based on beta value."""
-        return f.when(beta < 0, f.lit(-1)).otherwise(f.lit(1)).alias("betaSign")
+        return (
+            f.when(beta.isNull(), f.lit(None).cast(t.IntegerType()))
+            .otherwise((beta / f.abs(beta)).cast(t.IntegerType()))
+            .alias("betaSign")
+        )
 
     @staticmethod
     def compute_direction_of_effect(beta: Column) -> Column:
         """Determine the direction of effect based on beta value."""
-        return f.when(beta < 0, f.lit("-")).otherwise(f.lit("+")).alias("effectDirection")
+        return (
+            f.when(beta.isNull() | (beta == 0), f.lit("?"))
+            .when(beta < 0, f.lit("-"))
+            .when(beta > 0, f.lit("+"))
+            .alias("effectDirection")
+        )
 
     @classmethod
     def compute_z_score(cls, chi2_stat: Column, beta: Column) -> Column:
@@ -113,6 +123,7 @@ class RescaledStatistics:
         n_samples: Column,
         n_cases: Column,
     ) -> RescaledStatistics:
+        """Compute rescaled statistics for trait analysis."""
         beta_sign = cls.compute_direction_of_effect(beta)
         z_score = cls.compute_z_score(chi2_stat, beta)
         var_g = cls.compute_var_g(maf)

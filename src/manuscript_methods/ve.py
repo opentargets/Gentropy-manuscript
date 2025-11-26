@@ -1,13 +1,13 @@
-"""VEP related functions."""
+"""Variant effect."""
 
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 
 
-class SingleVariantEffectMethod(str, Enum):
+class SingleVariantEffectMethod(StrEnum):
     """Enum for VEP variant effect methods."""
 
     ALPHA_MISSENSE = "AlphaMissense"
