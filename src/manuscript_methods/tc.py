@@ -199,7 +199,9 @@ class LeadVariantConsequences:
 
     @classmethod
     def compute(
-        cls, transcript_consequences: TranscriptConsequences, study_statistics: StudyStatistics
+        cls,
+        transcript_consequences: TranscriptConsequences,
+        study_statistics: StudyStatistics,
     ) -> LeadVariantConsequences:
         """Compute lead variant consequences.
 

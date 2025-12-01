@@ -30,6 +30,7 @@ def spark(doctest_namespace: dict[str, Any]) -> SparkSession:
     spark = (
         SparkSession.Builder().config(conf=get_spark_testing_conf()).master("local[1]").appName("test").getOrCreate()
     )
+
     doctest_namespace["spark"] = spark
     return spark
 

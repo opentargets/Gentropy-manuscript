@@ -1,19 +1,20 @@
 {
-  "notebook.defaultFormatter": "charliermarsh.ruff",
-  "notebook.formatOnSave.enabled": true,
-  "notebook.insertFinalNewline": true,
-  "notebook.output.scrolling": true,
-  "notebook.codeActionsOnSave": {
-    "notebook.source.fixAll.ruff": "explicit",
-    "notebook.source.convertImportFormat": "explicit",
-    "notebook.source.organizeImports.ruff": "never"
-  },
-  "notebook.variablesView": true,
-  "notebook.showCellStatusBar": "visible",
-  "python.defaultInterpreterPath": ".venv/bin/python",
-  "python.analysis.typeCheckingMode": "standard",
-  "python.testing.pytestArgs": ["src"],
-  "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true,
-  "editor.formatOnSave": true
+    "notebook.formatOnSave.enabled": true,
+    "notebook.formatOnCellExecution": true,
+    "notebook.codeActionsOnSave": {
+        "notebook.source.fixAll": "explicit"
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        }
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
 }

@@ -71,6 +71,7 @@ dev = [
     "pytest-cov>=6.1.1",
     "pytest-sugar>=1.0.0",
     "pytest-xdist>=3.7.0",
+    "ruff>=0.14.7",
 ]
 
 [tool.pytest.ini_options]
