@@ -8,15 +8,17 @@ suppressPackageStartupMessages({
   library(rlang)
 })
 
-if (getRversion() >= "2.15.1") utils::globalVariables(c(
-  "first_year", "cumulative", "nfe", "common_all", "all",
-  "layer_nfe", "layer_common_other", "layer_rare", "year",
-  "diseaseIds", "geneId"
-))
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(c(
+    "first_year", "cumulative", "nfe", "common_all", "all",
+    "layer_nfe", "layer_common_other", "layer_rare", "year",
+    "diseaseIds", "geneId"
+  ))
+}
 
 # Input and output paths
 input_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/l2g_diseases_full.csv"
-output_png <- "/Users/polina/genetics_gsea/scr/paper_figs/Figure_1_facet_v5.png"
+output_png <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_1/Figure_1_facet.png"
 
 # Theme to mimic matplotlib styling (Helvetica, bold title, light grid, no spines)
 base_theme <- theme_minimal() +
@@ -74,8 +76,10 @@ raw <- suppressMessages(readr::read_csv(input_csv, show_col_types = FALSE))
 # If diseaseIds is a pipe/semicolon/comma separated string, split to rows
 if ("diseaseIds" %in% names(raw) && is.character(raw$diseaseIds)) {
   sep_guess <- ifelse(any(str_detect(raw$diseaseIds, "\\|")), "|",
-                 ifelse(any(str_detect(raw$diseaseIds, ";")), ";",
-                 ifelse(any(str_detect(raw$diseaseIds, ",")), ",", NA)))
+    ifelse(any(str_detect(raw$diseaseIds, ";")), ";",
+      ifelse(any(str_detect(raw$diseaseIds, ",")), ",", NA)
+    )
+  )
   if (!is.na(sep_guess)) {
     raw_pairs <- raw %>%
       mutate(diseaseIds = str_split(diseaseIds, fixed(sep_guess))) %>%
@@ -146,13 +150,17 @@ genes_df <- tibble(year = years_genes) %>%
   left_join(select(genes_cum_nfe, year, nfe = cumulative), by = "year") %>%
   left_join(select(genes_cum_common, year, common_all = cumulative), by = "year") %>%
   left_join(select(genes_cum_all, year, all = cumulative), by = "year") %>%
-  mutate(across(c(nfe, common_all, all), ~replace_na(., 0))) %>%
-  mutate(layer_nfe = nfe,
-         layer_common_other = pmax(common_all - nfe, 0),
-         layer_rare = pmax(all - common_all, 0)) %>%
+  mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
+  mutate(
+    layer_nfe = nfe,
+    layer_common_other = pmax(common_all - nfe, 0),
+    layer_rare = pmax(all - common_all, 0)
+  ) %>%
   select(year, layer_nfe, layer_common_other, layer_rare) %>%
-  mutate(panel = "Disease~associated~genes~(x~10^3)",
-         metric = "genes")
+  mutate(
+    panel = "Disease~associated~genes~(x~10^3)",
+    metric = "genes"
+  )
 
 # Pairs
 years_pairs <- sort(unique(c(pairs_cum_nfe$year, pairs_cum_common$year, pairs_cum_all$year)))
@@ -160,21 +168,29 @@ pairs_df <- tibble(year = years_pairs) %>%
   left_join(select(pairs_cum_nfe, year, nfe = cumulative), by = "year") %>%
   left_join(select(pairs_cum_common, year, common_all = cumulative), by = "year") %>%
   left_join(select(pairs_cum_all, year, all = cumulative), by = "year") %>%
-  mutate(across(c(nfe, common_all, all), ~replace_na(., 0))) %>%
-  mutate(layer_nfe = nfe,
-         layer_common_other = pmax(common_all - nfe, 0),
-         layer_rare = pmax(all - common_all, 0)) %>%
+  mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
+  mutate(
+    layer_nfe = nfe,
+    layer_common_other = pmax(common_all - nfe, 0),
+    layer_rare = pmax(all - common_all, 0)
+  ) %>%
   select(year, layer_nfe, layer_common_other, layer_rare) %>%
-  mutate(panel = "Unique~gene-disease~pairs~(x~10^3)",
-         metric = "pairs")
+  mutate(
+    panel = "Unique~gene-disease~pairs~(x~10^3)",
+    metric = "pairs"
+  )
 
 # Combine for facets
 plot_df <- bind_rows(genes_df, pairs_df) %>%
-  pivot_longer(cols = c(layer_nfe, layer_common_other, layer_rare),
-               names_to = "layer", values_to = "value") %>%
+  pivot_longer(
+    cols = c(layer_nfe, layer_common_other, layer_rare),
+    names_to = "layer", values_to = "value"
+  ) %>%
   mutate(
-    layer = factor(layer, levels = c("layer_nfe", "layer_common_other", "layer_rare"),
-                   labels = c("NFE common (MAF \u2265 0.01)", "All common (MAF \u2265 0.01)", "Rare variants (MAF \u2265 0.01)")),
+    layer = factor(layer,
+      levels = c("layer_nfe", "layer_common_other", "layer_rare"),
+      labels = c("NFE common (MAF \u2265 0.01)", "All common (MAF \u2265 0.01)", "Rare variants (MAF \u2265 0.01)")
+    ),
     year = as.integer(year)
   )
 
@@ -185,11 +201,13 @@ x_breaks <- seq(2006, 2024, by = 2)
 build_plot <- function(df, ylab_expr) {
   ggplot(df, aes(x = year, y = value, fill = layer)) +
     geom_col(width = 0.8, position = position_stack(reverse = TRUE)) +
-    scale_fill_manual(values = c("NFE common (MAF \u2265 0.01)" = color_nfe,
-                                 "All common (MAF \u2265 0.01)" = color_common,
-                                 "Rare variants (MAF \u2265 0.01)" = color_all)) +
+    scale_fill_manual(values = c(
+      "NFE common (MAF \u2265 0.01)" = color_nfe,
+      "All common (MAF \u2265 0.01)" = color_common,
+      "Rare variants (MAF \u2265 0.01)" = color_all
+    )) +
     scale_x_continuous(breaks = x_breaks, expand = c(0, 0)) +
-    scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x/1000, accuracy = 1))) +
+    scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x / 1000, accuracy = 1))) +
     labs(x = "Year", y = NULL) +
     base_theme +
     ylab(ylab_expr) +
@@ -206,12 +224,17 @@ plot_df_genes <- plot_df %>% filter(metric == "genes")
 plot_df_pairs <- plot_df %>% filter(metric == "pairs")
 
 # Build two plots with y-axis labels including (x 10^3)
-p_genes <- build_plot(plot_df_genes, bquote(Disease~associated~genes~(x~10^3))) +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
-        plot.margin = margin(t = 0, r = 5, b = 5, l = 5))
-p_pairs <- build_plot(plot_df_pairs, bquote(Unique~gene-disease~pairs~(x~10^3))) +
-  theme(plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
-        legend.position = "none")
+p_genes <- build_plot(plot_df_genes, bquote(Disease ~ associated ~ genes ~ (x ~ 10^3))) +
+  theme(
+    axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
+    plot.margin = margin(t = 0, r = 5, b = 5, l = 5)
+  )
+p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene - disease ~ pairs ~ (x ~ 10^3))) +
+  theme(
+    axis.text.x = element_text(size = 10, face = "plain", margin = margin(t = -1), color = "#434343"),
+    plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
+    legend.position = "none"
+  )
 
 # Read additional data for line panels (from b.ipynb)
 qd_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/qd_sl_eff.csv"
@@ -221,7 +244,9 @@ qm_df <- if (file.exists(qm_csv)) suppressMessages(readr::read_csv(qm_csv, show_
 
 # Helper: cumulative stats per year (mean and 95% CI)
 get_cumulative_stats <- function(df, value_col) {
-  if (is.null(df)) return(tibble(year = integer(), mean = numeric(), ci = numeric()))
+  if (is.null(df)) {
+    return(tibble(year = integer(), mean = numeric(), ci = numeric()))
+  }
   df <- df %>% filter(.data$year != 2025)
   yrs <- sort(unique(df$year))
   res <- lapply(yrs, function(y) {
@@ -264,10 +289,10 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
         values = c("Diseases (N samples)" = "solid", "Measurements (N samples)" = "dashed")
       ) +
       scale_x_continuous(breaks = x_breaks, expand = c(0, 0)) +
-      scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x/1000, accuracy = 1))) +
+      scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x / 1000, accuracy = 1))) +
       labs(x = "Year", y = NULL) +
       base_theme +
-      ylab(bquote(Average~sample~size~(x~10^3))) +
+      ylab(bquote(Average ~ sample ~ size ~ (x ~ 10^3))) +
       coord_cartesian(xlim = c(2006 - 0.4, 2024 + 0.4)) +
       theme(
         legend.position = c(0.02, 0.94),
@@ -276,8 +301,10 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       )
   }
   p_samples <- build_samples_plot(samples_df) +
-    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
-          plot.margin = margin(t = 0, r = 5, b = 5, l = 5))
+    theme(
+      axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
+      plot.margin = margin(t = 0, r = 5, b = 5, l = 5)
+    )
 } else {
   p_samples <- NULL
 }
@@ -299,7 +326,7 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       scale_x_continuous(breaks = x_breaks, expand = c(0, 0)) +
       labs(x = "Year", y = NULL) +
       base_theme +
-      ylab(expression(Average~effect~size~"|"*beta*"|")) +
+      ylab(expression(Average ~ effect ~ size ~ "|" * beta * "|")) +
       coord_cartesian(xlim = c(2006 - 0.4, 2024 + 0.4)) +
       theme(
         legend.position = c(0.63, 0.94),
@@ -308,9 +335,12 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       )
   }
   p_beta <- build_beta_plot(beta_df) +
-    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
-          plot.margin = margin(t = 0, r = 5, b = 5, l = 5),
-          legend.position = "none")
+    theme(
+      axis.text.x = element_text(size = 10, face = "plain", margin = margin(t = -1), color = "#434343"),
+      axis.ticks.x = element_blank(), axis.title.x = element_blank(),
+      plot.margin = margin(t = 0, r = 5, b = 5, l = 5),
+      legend.position = "none"
+    )
 } else {
   p_beta <- NULL
 }
@@ -322,10 +352,10 @@ g2 <- ggplotGrob(p_pairs)
 # If new panels exist, align widths across all, then stack with new plots on top
 if (!is.null(p_samples) || !is.null(p_beta)) {
   grobs_list <- list()
-  if (!is.null(p_samples)) grobs_list[[length(grobs_list)+1]] <- ggplotGrob(p_samples)
-  if (!is.null(p_beta))    grobs_list[[length(grobs_list)+1]] <- ggplotGrob(p_beta)
-  grobs_list[[length(grobs_list)+1]] <- g1
-  grobs_list[[length(grobs_list)+1]] <- g2
+  if (!is.null(p_samples)) grobs_list[[length(grobs_list) + 1]] <- ggplotGrob(p_samples)
+  if (!is.null(p_beta)) grobs_list[[length(grobs_list) + 1]] <- ggplotGrob(p_beta)
+  grobs_list[[length(grobs_list) + 1]] <- g1
+  grobs_list[[length(grobs_list) + 1]] <- g2
   # Align widths
   maxw <- grobs_list[[1]]$widths
   if (length(grobs_list) > 1) {
@@ -346,8 +376,8 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
   # Interleave grobs with separators between all adjacent pairs
   sequence <- list()
   for (i in seq_len(length(grobs_list))) {
-    sequence[[length(sequence)+1]] <- grobs_list[[i]]
-    if (i < length(grobs_list)) sequence[[length(sequence)+1]] <- sep_thin
+    sequence[[length(sequence) + 1]] <- grobs_list[[i]]
+    if (i < length(grobs_list)) sequence[[length(sequence) + 1]] <- sep_thin
   }
   # Fold into single gtable
   combined_grob <- sequence[[1]]
@@ -374,4 +404,3 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
 
 # Save output
 ggsave(filename = output_png, plot = combined_grob, width = 4.4, height = 11, dpi = 300, bg = "#ffffff00")
-
