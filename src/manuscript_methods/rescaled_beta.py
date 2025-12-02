@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from matplotlib.pylab import beta
-
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 from pyspark.sql import types as t
@@ -47,20 +45,29 @@ class RescaledStatistics:
         """Get the prevalence of the trait."""
         return self.col.getField("prevalence").alias("prevalence")
 
-    @classmethod
-    def compute_beta_sign(cls, beta: Column) -> Column:
-        """Determine the direction of effect based on beta value."""
-        return f.when(beta < 0, f.lit(-1)).otherwise(f.lit(1)).alias("betaSign")
-
     @staticmethod
     def compute_direction_of_effect(beta: Column) -> Column:
-        """Determine the direction of effect based on beta value."""
-        return f.when(beta < 0, f.lit("-")).otherwise(f.lit("+")).alias("effectDirection")
+        """Determine the direction of effect based on beta value.
+
+        The value is:
+        *  -1 if beta < 0
+        *  1 if beta > 0
+        *  Null if beta is 0 or NULL
+        """
+        return (
+            f.when((beta.isNull()) | (beta == 0), f.lit(None).cast(t.ShortType()))
+            .when(beta < 0, f.lit(-1).cast(t.ShortType()))
+            .when(beta > 0, f.lit(1).cast(t.ShortType()))
+            .alias("directionOfEffect")
+        )
 
     @classmethod
-    def compute_z_score(cls, chi2_stat: Column, beta: Column) -> Column:
-        """Calculate the z-score from the chi-squared statistic."""
-        return cls.compute_beta_sign(beta) * f.sqrt(chi2_stat).alias("zScore")
+    def compute_abs_z_score(cls, chi2_stat: Column, beta: Column) -> Column:
+        """Calculate the z-score from the chi-squared statistic.
+
+        Note z-score sign is not determined here.
+        """
+        return f.sqrt(chi2_stat).alias("zScore")
 
     @classmethod
     def compute_effective_sample_size(cls, prev: Column, n_samples: Column) -> Column:
@@ -100,7 +107,10 @@ class RescaledStatistics:
 
     @classmethod
     def compute_minor_allele_rescaled_beta(cls, major_ancestry_af: Column, rescaled_beta: Column) -> Column:
-        """Compute the minor allele rescaled beta based on the major ancestry allele frequency."""
+        """Compute the minor allele rescaled beta based on the major ancestry allele frequency.
+
+        Note: The function expects `rescaled_beta` to already have the correct sign based on the effect direction.
+        """
         return (
             f.when(major_ancestry_af <= 0.5, rescaled_beta).otherwise(-rescaled_beta).alias("minorAlleleRescaledBeta")
         )
@@ -118,21 +128,21 @@ class RescaledStatistics:
     ) -> RescaledStatistics:
         """Compute rescaled statistics for trait analysis."""
         beta_sign = cls.compute_direction_of_effect(beta)
-        z_score = cls.compute_z_score(chi2_stat, beta)
+        abs_z_score = cls.compute_abs_z_score(chi2_stat, beta)
         var_g = cls.compute_var_g(maf)
         prev = cls.compute_prevalence(n_cases, n_samples)
         se = cls.compute_se(var_g, n_samples, trait_class, prev)
-        rescaled_beta = z_score * se
-        minor_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(af, rescaled_beta)
+        abs_rescaled_beta = f.abs(abs_z_score * se)
+        minor_allele_rescaled_beta = cls.compute_minor_allele_rescaled_beta(af, abs_rescaled_beta * beta_sign)
 
         return cls(
             f.struct(
                 beta_sign.alias("directionOfEffect"),
-                z_score.alias("zScore"),
+                abs_z_score.alias("absZScore"),
                 var_g.alias("varG"),
                 prev.alias("prevalence"),
                 se.alias("estimatedSE"),
-                rescaled_beta.alias("estimatedBeta"),
+                abs_rescaled_beta.alias("absEstimatedBeta"),
                 minor_allele_rescaled_beta.alias("minorAlleleEstimatedBeta"),
             )
         )

@@ -78,6 +78,16 @@
     },
     {
       "metadata": {},
+      "name": "diseaseIds",
+      "nullable": true,
+      "type": {
+        "containsNull": true,
+        "elementType": "string",
+        "type": "array"
+      }
+    },
+    {
+      "metadata": {},
       "name": "originalBeta",
       "nullable": true,
       "type": "double"
@@ -351,12 +361,12 @@
           {
             "metadata": {},
             "name": "directionOfEffect",
-            "nullable": false,
-            "type": "string"
+            "nullable": true,
+            "type": "short"
           },
           {
             "metadata": {},
-            "name": "zScore",
+            "name": "absZScore",
             "nullable": true,
             "type": "double"
           },
@@ -380,7 +390,7 @@
           },
           {
             "metadata": {},
-            "name": "estimatedBeta",
+            "name": "absEstimatedBeta",
             "nullable": true,
             "type": "double"
           },
