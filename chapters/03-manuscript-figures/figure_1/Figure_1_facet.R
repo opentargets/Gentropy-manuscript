@@ -26,8 +26,9 @@ base_theme <- theme_minimal() +
     text = element_text(face = "plain", color = "#434343"),
     plot.title = element_text(face = "plain", size = 10, hjust = 0.5, color = "#434343"),
     axis.title = element_text(size = 12, face = "plain", color = "#434343"),
-    axis.text = element_text(size = 10, face = "plain", color = "#434343"),
-    axis.text.x = element_text(size = 10, face = "bold", margin = margin(t = -1), color = "#434343"),
+    axis.title.y = element_text(size = 12, face = "plain", color = "#434343", margin = margin(r = 8)),
+    axis.text = element_text(size = 8, face = "plain", color = "#434343"),
+    axis.text.x = element_text(size = 8, face = "bold", margin = margin(t = -1), color = "#434343"),
     axis.title.x = element_text(size = 12, face = "plain", color = "#434343", margin = margin(t = 8)),
     axis.ticks = element_blank(),
     # axis.ticks.length.x = grid::unit(1.5, "pt"),
@@ -224,14 +225,14 @@ plot_df_genes <- plot_df %>% filter(metric == "genes")
 plot_df_pairs <- plot_df %>% filter(metric == "pairs")
 
 # Build two plots with y-axis labels including (x 10^3)
-p_genes <- build_plot(plot_df_genes, bquote(Disease ~ associated ~ genes ~ (x ~ 10^3))) +
+p_genes <- build_plot(plot_df_genes, bquote(Disease ~ associated ~ genes ~ (x10^3))) +
   theme(
     axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank(),
     plot.margin = margin(t = 0, r = 5, b = 5, l = 5)
   )
-p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene - disease ~ pairs ~ (x ~ 10^3))) +
+p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene-disease ~ pairs ~ (x10^3))) +
   theme(
-    axis.text.x = element_text(size = 10, face = "plain", margin = margin(t = -1), color = "#434343"),
+    axis.text.x = element_text(size = 8, face = "plain", margin = margin(t = -1), color = "#434343"),
     plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
     legend.position = "none"
   )
@@ -286,13 +287,13 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       scale_linetype_manual(
         breaks = c("Diseases (N samples)", "Measurements (N samples)"),
         labels = c("Diseases", "Measurements"),
-        values = c("Diseases (N samples)" = "solid", "Measurements (N samples)" = "dashed")
+        values = c("Diseases (N samples)" = "solid", "Measurements (N samples)" = "solid")
       ) +
       scale_x_continuous(breaks = x_breaks, expand = c(0, 0)) +
       scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x / 1000, accuracy = 1))) +
       labs(x = "Year", y = NULL) +
       base_theme +
-      ylab(bquote(Average ~ sample ~ size ~ (x ~ 10^3))) +
+      ylab(bquote(Average ~ sample ~ size ~ (x10^3))) +
       coord_cartesian(xlim = c(2006 - 0.4, 2024 + 0.4)) +
       theme(
         legend.position = c(0.02, 0.94),
@@ -322,7 +323,7 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       geom_line(linewidth = 0.8) +
       scale_color_manual(values = c("Diseases" = "#245780", "Measurements" = "#2F735F")) +
       scale_fill_manual(values = c("Diseases" = "#245780", "Measurements" = "#2F735F")) +
-      scale_linetype_manual(values = c("Diseases" = "solid", "Measurements" = "dashed")) +
+      scale_linetype_manual(values = c("Diseases" = "solid", "Measurements" = "solid")) +
       scale_x_continuous(breaks = x_breaks, expand = c(0, 0)) +
       labs(x = "Year", y = NULL) +
       base_theme +
@@ -336,7 +337,7 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
   }
   p_beta <- build_beta_plot(beta_df) +
     theme(
-      axis.text.x = element_text(size = 10, face = "plain", margin = margin(t = -1), color = "#434343"),
+      axis.text.x = element_text(size = 8, face = "plain", margin = margin(t = -1), color = "#434343"),
       axis.ticks.x = element_blank(), axis.title.x = element_blank(),
       plot.margin = margin(t = 0, r = 5, b = 5, l = 5),
       legend.position = "none"
