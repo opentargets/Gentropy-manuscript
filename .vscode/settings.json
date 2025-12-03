@@ -1,20 +1,20 @@
 {
-    "notebook.formatOnSave.enabled": true,
-    "notebook.formatOnCellExecution": true,
-    "notebook.codeActionsOnSave": {
-        "notebook.source.fixAll": "explicit"
-    },
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit"
-        }
-    },
-    "[markdown]": {
-        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
-    },
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
+  "notebook.formatOnSave.enabled": true,
+  "notebook.formatOnCellExecution": true,
+  "notebook.codeActionsOnSave": {
+    "notebook.source.fixAll": "explicit"
+  },
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }
