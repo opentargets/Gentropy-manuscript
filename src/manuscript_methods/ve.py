@@ -77,18 +77,18 @@ class VariantEffect:
 
     Examples
     --------
-    >>> x1 = ("VEP", "intron_variant,", 0.1, None, "ENSG00000123456", 0.1)
+    >>> x1 = ("VEP", "intron_variant", 0.1, None, "ENSG00000123456", 0.1)
     >>> x2 = ("SIFT", "missense_variant", 0.05, None, "ENSG00000123456", 0.05)
     >>> data = [([x1, x2],),]
     >>> schema = f"variantEffects: {VariantEffect.schema}"
     >>> df = spark.createDataFrame(data, schema)
     >>> ve = VariantEffect(df.variantEffects)
     >>> df.select(ve.filter_effect_by_method(SingleVariantEffectMethod.VEP).col).show(truncate=False)
-    +---------------------------------------------------------+
-    |singleVariantEffect                                      |
-    +---------------------------------------------------------+
-    |[{VEP, intron_variant,, 0.1, NULL, ENSG00000123456, 0.1}]|
-    +---------------------------------------------------------+
+    +------------------------------------------------------+
+    |singleVariantEffect                                   |
+    +------------------------------------------------------+
+    |{VEP, intron_variant, 0.1, NULL, ENSG00000123456, 0.1}|
+    +------------------------------------------------------+
     <BLANKLINE>
 
     """
@@ -104,5 +104,5 @@ class VariantEffect:
         """Filter variant effects by method."""
         _filter: Callable[[Column], Column]
         _filter = lambda ve: ve.getField("method") == f.lit(method.value)
-        expr = f.filter(self.col, _filter)
+        expr = f.element_at(f.filter(self.col, _filter), 1)
         return SingleVariantEffect(expr)
