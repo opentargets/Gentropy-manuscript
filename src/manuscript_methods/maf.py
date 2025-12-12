@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from enum import StrEnum
 
+import numpy as np
 from pyspark.sql import Column
 from pyspark.sql import functions as f
 
@@ -340,3 +341,42 @@ class MinorAlleleFrequencyClassification:
         distributions = [vt.from_maf(maf.value) for vt in variant_types]
         expr = f.struct(*distributions).alias("variantMAFClassification")
         return cls(expr)
+
+
+class MinorAlleleFrequencyBin:
+    MAX = 0.5
+    MIN = 0.0
+
+    def __init__(self, col: Column, step: float) -> None:
+        self._col = col
+        self._step = step
+        if step <= self.MIN or step > self.MAX:
+            raise ValueError(f"Step must be in the range ({self.MIN}, {self.MAX}]")
+
+        # prepare bins
+        self._lo = np.arange(self.MIN, self.MAX, self._step)
+        self._hi = self._lo + self._step
+        self._hi[-1] = self.MAX  # ensure last bin ends at MAX
+        self._bins = list(zip(self._lo, self._hi))
+
+        # First bin is a special case where value of col is 0
+        expr = f.when(
+            col == 0,
+            f.struct(
+                f.lit(self._bins[0][0]).alias("lo"),
+                f.lit(round((self._bins[0][1] / 2), 3)).alias("mid"),
+                f.lit(self._bins[0][1]).alias("hi"),
+            ),
+        )
+        for lo, hi in self._bins:
+            mid = round((lo + hi) / 2, 3)
+            expr = expr.when(
+                (col > lo) & (col <= hi),
+                f.struct(f.lit(round(lo, 3)).alias("lo"), f.lit(mid).alias("mid"), f.lit(round(hi, 3)).alias("hi")),
+            )
+        expr = expr.otherwise(None)
+        self._expr = expr
+
+    def bins(self) -> Column:
+        """Get the buns."""
+        return self._expr.alias("mafBins")

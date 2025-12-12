@@ -14,7 +14,7 @@ class RescaledStatistics:
 
     name = "rescaledStatistics"
     """Name of the rescaled statistics."""
-    schema = "struct<estimatedBeta: FLOAT, estimatedSE: FLOAT, varG: FLOAT, prev: FLOAT>"
+    schema = "struct<directionOfEffect: SHORT, absZScore: FLOAT, absEstimatedBeta: FLOAT, estimatedSE: FLOAT, varG: FLOAT, prev: FLOAT, minorAlleleEstimatedBeta: FLOAT>"
 
     def __init__(self, col: Column | None = None):
         """Initialize RescaledBeta with an optional column.
@@ -26,14 +26,14 @@ class RescaledStatistics:
         self.col = col.alias(self.name) if col is not None else f.col(self.name)
 
     @property
-    def estimated_beta(self) -> Column:
+    def estimated_beta_se(self) -> Column:
         """Get the estimated beta value."""
-        return self.col.getField("estimatedBeta").alias("estimatedBeta")
+        return self.col.getField("estimatedSE").alias("estimatedSE")
 
     @property
-    def estimated_se(self) -> Column:
-        """Get the estimated standard error."""
-        return self.col.getField("estimatedSE").alias("estimatedSE")
+    def abs_estimated_beta(self) -> Column:
+        """Get the absolute estimated beta value."""
+        return self.col.getField("absEstimatedBeta").alias("absEstimatedBeta")
 
     @property
     def var_g(self) -> Column:
@@ -44,6 +44,11 @@ class RescaledStatistics:
     def prev(self) -> Column:
         """Get the prevalence of the trait."""
         return self.col.getField("prevalence").alias("prevalence")
+
+    @property
+    def direction_of_effect(self) -> Column:
+        """Get the direction of effect."""
+        return self.col.getField("directionOfEffect").alias("directionOfEffect")
 
     @staticmethod
     def compute_direction_of_effect(beta: Column) -> Column:
