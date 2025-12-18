@@ -181,3 +181,6 @@ data/*
 
 spark-warehouse
 app/
+
+# EPIraction manifest preserved
+!data/epiraction-manifest.tsv
