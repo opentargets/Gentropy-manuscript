@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# This script downloads the Epiraction dataset from ENCODE, processes it by unzipping, sorting,
+# block gzipping, and indexing the files, and organizes them into a specified directory structure
+# Usage: ./scripts/download-epiraction.sh
+# NOTE: run from project root, otherwise data directory will not be found
 
 set -euo pipefail
 pwd
@@ -14,17 +18,17 @@ done
 
 
 echo "Starting"
-DIR=$(dirname $(dirname "$0"))
+ROOT_DIR=$(dirname $(dirname "$0"))
 
-echo "$DIR"
-if [ ! -d "$DIR/data" ]; then
+echo "$ROOT_DIR"
+if [ ! -d "$ROOT_DIR/data" ]; then
     echo "data directory not found, try running the script from the project root"
     exit 1
 fi
 
 
-readonly DATA_DIR="$DIR/data/25.06/EPIraction/raw"
-readonly MANIFEST="$DIR/data/25.06/epiraction-manifest.tsv"
+readonly DATA_DIR="$ROOT_DIR/data/25.06/EPIraction/raw"
+readonly MANIFEST="$ROOT_DIR/data/epiraction-manifest.tsv"
 
 
 if [ ! -f "$MANIFEST" ]; then
@@ -49,13 +53,13 @@ time uvx --from git+https://github.com/project-defiant/encode-crawler@v0.1.0 cra
 echo "Download complete."
 
 echo "Unzipping"
-time find . -name 'ENC*.bed.gz' | parallel 'bgzip -d {}'
+time find "$DATA_DIR" -name 'ENC*.bed.gz' | parallel 'bgzip -d {}'
 echo "Sorting"
-time find . -name 'ENC*.bed' | parallel "head -1 {} | sed '1s%#%%' > {.}.sorted.bed && bedtools sort -i {} >> {.}.sorted.bed"
+time find "$DATA_DIR" -name 'ENC*.bed' | parallel "head -1 {} | sed '1s%#%%' > {.}.sorted.bed && bedtools sort -i {} >> {.}.sorted.bed"
 echo "Block gzipping"
-time find . -name 'ENC*.sorted.bed' | parallel 'bgzip {}'
+time find "$DATA_DIR" -name 'ENC*.sorted.bed' | parallel 'bgzip {}'
 echo "Indexing"
-time find . -name 'ENC*.sorted.bed.gz' | parallel 'tabix -p bed -S 1 {}'
+time find "$DATA_DIR" -name 'ENC*.sorted.bed.gz' | parallel 'tabix -p bed -S 1 {}'
 echo "Cleaning up intermediate files"
-time find . -name 'ENC*.bed' -type f -delete
+time find "$DATA_DIR" -name 'ENC*.bed' -type f -delete
 echo "Completed."
