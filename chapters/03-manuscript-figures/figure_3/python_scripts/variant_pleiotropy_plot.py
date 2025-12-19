@@ -12,18 +12,16 @@ def main() -> None:
     session = Session(extended_spark_conf={"spark.driver.memory": "13g"})
 
     # Core study- and variant-level inputs
-    studies = session.spark.read.parquet(
-        "/Users/polina/Gentropy-manuscript/data/gwas_therapeutic_areas"
-    ).filter(~f.col("measurement") & f.col("binaryLessCases"))
-
-    qualified_cs = session.spark.read.parquet(
-        "/Users/polina/Gentropy-manuscript/data/qualifying_credible_sets"
+    studies = session.spark.read.parquet("/Users/polina/Gentropy-manuscript/data/gwas_therapeutic_areas").filter(
+        ~f.col("measurement") & f.col("binaryLessCases")
     )
 
+    qualified_cs = session.spark.read.parquet("/Users/polina/Gentropy-manuscript/data/qualifying_credible_sets")
+
     # Disease / therapeutic area lookups
-    disease_df = session.spark.read.parquet(
-        "/Users/polina/Gentropy-manuscript/data/disease.parquet"
-    ).select(f.col("id"), f.col("name"))
+    disease_df = session.spark.read.parquet("/Users/polina/Gentropy-manuscript/data/disease.parquet").select(
+        f.col("id"), f.col("name")
+    )
 
     # ============================
     # Analysis / data preparation
@@ -61,7 +59,8 @@ def main() -> None:
 
     # Subset to the variant of interest and extract fields for plotting
     df_for_plot = (
-        qualified_cs.filter(f.col("variantId") == "19_44908684_T_C")
+        # qualified_cs.filter(f.col("variantId") == "19_44908684_T_C")
+        qualified_cs.filter(f.col("variantId") == "19_44908822_C_T")
         .filter(f.col("originalBeta").isNotNull())
         .join(
             studies_with_names.select(
@@ -123,8 +122,8 @@ def main() -> None:
     plt.tight_layout()
     plt.show()
 
-# Save exploded data to CSV as well
-    df_for_plot_exploded.to_csv("variant_pleiotropy_data_exploded.csv", index=False)
+    # Save exploded data to CSV as well
+    df_for_plot_exploded.to_csv("variant_pleiotropy_data_exploded_2.csv", index=False)
     print("Exploded data saved to variant_pleiotropy_data_exploded.csv")
 
 

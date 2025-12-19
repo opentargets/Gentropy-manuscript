@@ -40,7 +40,7 @@ base_theme <- theme_minimal() +
 categorical_dark_colors <- c(
     "#A01813",
     "#D65A1F",
-    "#2E5943",
+    "#30809e",
     "#d9d9d9"
 )
 
@@ -53,12 +53,12 @@ categorical_dark_colors <- c(
 csv_path <- file.path(
     dirname(dirname(sys.frame(1)$ofile %||% "")),
     "data",
-    "variant_pleiotropy_data_exploded.csv"
+    "variant_pleiotropy_data_exploded_2.csv"
 )
 
 # Fallback if the above detection fails (e.g. in interactive use)
 if (!file.exists(csv_path)) {
-    csv_path <- "data/variant_pleiotropy_data_exploded.csv"
+    csv_path <- "data/variant_pleiotropy_data_exploded_2.csv"
 }
 
 message("Reading data from: ", csv_path)
@@ -93,6 +93,15 @@ top_tas <- ta_counts %>%
     filter(therapeuticAreaNames != "Other") %>%
     slice_head(n = n_main) %>%
     pull(therapeuticAreaNames)
+
+# --- Legend order override ---
+# Keep the "top N" behavior above, but force a preferred legend order for readability.
+# Any TAs not listed here will follow afterwards (in their existing order), and "Other" stays last.
+preferred_ta_order <- c(
+    "nervous system disease",
+    "cardiovascular disease"
+)
+top_tas <- c(intersect(preferred_ta_order, top_tas), setdiff(top_tas, preferred_ta_order))
 
 # Helper function to capitalize first letter
 capitalize_first <- function(x) {
@@ -206,11 +215,16 @@ p <- ggplot(df_plot, aes(
     } +
     # Draw points after segments so arrows appear beneath the dots
     geom_point(size = 2, alpha = 0.85) +
-    scale_colour_manual(values = ta_colors, labels = ta_labels, name = "Therapeutic Area") +
+    scale_colour_manual(
+        values = ta_colors,
+        breaks = levels(df_plot$therapeuticAreaGroup),
+        labels = ta_labels,
+        name = "Therapeutic Area"
+    ) +
     scale_x_continuous(limits = c(-0.605, NA)) +
     scale_y_log10() +
     labs(
-        title = "19_44908684_T_C",
+        title = "19_44908822_C_T",
         x = expression("Estimated " * beta),
         y = "-log10(p-value)"
     ) +
@@ -232,6 +246,6 @@ p <- ggplot(df_plot, aes(
 # print(p)
 
 # Save plot to PNG file (always save, regardless of interactive/non-interactive mode)
-out_path <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_3/R_scripts/variant_pleiotropy_plot_R.png"
+out_path <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_3/R_scripts/variant_pleiotropy_plot_R_2.png"
 ggsave(out_path, p, width = 10, height = 3, dpi = 300)
 message("Plot saved to: ", out_path)
