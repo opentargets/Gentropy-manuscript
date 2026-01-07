@@ -56,7 +56,7 @@ studytype_levels <- c("cis-pqtl", "eqtl", "gwas-disease", "gwas-measurement")
 # ---- Plot A ----
 
 # Read data for plot a)
-maf_vep_dataset_part2 <- read.csv("for_figure_2_part_2.csv", stringsAsFactors = FALSE)
+maf_vep_dataset_part2 <- read.csv("figure_2_a.csv", stringsAsFactors = FALSE)
 maf_vep_dataset_part2$studyType <- factor(maf_vep_dataset_part2$studyType, levels = studytype_levels)
 
 # X-axis breaks for plot a) (same as in the python version)
@@ -123,7 +123,7 @@ plot_a <- ggplot(
 # ---- Plot B ----
 
 # Read data for plot b)
-maf_vep_dataset_all <- read.csv("for_figure_2_part_1.csv", stringsAsFactors = FALSE)
+maf_vep_dataset_all <- read.csv("figure_2_b.csv", stringsAsFactors = FALSE)
 
 # Ensure studyType has the same factor levels as plot a)
 maf_vep_dataset_all$studyType <- factor(maf_vep_dataset_all$studyType, levels = studytype_levels)
@@ -196,15 +196,39 @@ plot_b <- ggplot(bin_stats, aes(x = maf_bin, y = p, color = studyType, fill = st
 
 # Categorical palette for consequence categories (used in plot c)
 categorical_dark_colors <- c(
-    "#BC3A19",
-    "#E08145",
-    "#E6CA9C",
-    "#9EBAA8",
-    "#2F735F"
+    # "#BC3A19",
+    # "#E08145",
+    
+    
+    
+    
+    # "#2E5943",
+    # "#528B78",
+    # "#2F735F",
+    # "#78A290",
+    # "#E6CA9C",
+    # "#c2d3cd",
+    # "#4F97CF",
+    # "#6EA9D7",
+    # "#2C6EA0"
+    # "#245780"
+    # "#C0AFFB", 
+    # "#E6A176",
+    # "#00678A",
+    # "#984464",
+    # "#5ECCAB",
+    # "#818B70",
+    
+    
+    "#796880",
+    "#8C9FB7",
+    "#604E3C",
+    "#C7A2A6",
+    "#274D52"
 )
 
 # Expect data exported from Python as data2_for_plot_c.csv (data2 in figure_2.ipynb)
-data_c <- read.csv("data2_for_plot_c.csv", stringsAsFactors = FALSE)
+data_c <- read.csv("figure_2_c.csv", stringsAsFactors = FALSE)
 
 # Set fillLabel factor order: smallest totalCountPerConsequence at bottom, largest at top
 # ggplot2 stacks first factor level at bottom
@@ -287,7 +311,7 @@ plot_c <- ggplot(
 # ---- Plot D ----
 
 # Expect data exported from Python as combined_data_for_plot_d.csv (combined_data in figure_2.ipynb)
-data_d <- read.csv("combined_data_for_plot_d.csv", stringsAsFactors = FALSE)
+data_d <- read.csv("figure_2_d.csv", stringsAsFactors = FALSE)
 
 # Use reverse order: protein_altering at top, intragenic at bottom
 # For horizontal forest plot: first factor level appears at top of y-axis
