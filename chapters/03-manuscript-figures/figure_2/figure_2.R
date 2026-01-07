@@ -217,14 +217,12 @@ categorical_dark_colors <- c(
     # "#00678A",
     # "#984464",
     # "#5ECCAB",
-    # "#818B70",
-    
-    
+    "#818B70",
     "#796880",
     "#8C9FB7",
     "#604E3C",
     "#C7A2A6",
-    "#274D52"
+    # "#274D52"
 )
 
 # Expect data exported from Python as data2_for_plot_c.csv (data2 in figure_2.ipynb)
