@@ -10,9 +10,21 @@ if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
     script_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
     setwd(script_dir)
 } else {
-    # When running via source() or command line
-    # Try to get script path from source() call
-    script_path <- sys.frame(1)$ofile
+    # When running via source() or Rscript
+    # Try to get script path from commandArgs (works with Rscript)
+    script_path <- NULL
+    args <- commandArgs(trailingOnly = FALSE)
+    file_arg <- grep("^--file=", args, value = TRUE)
+    if (length(file_arg) > 0) {
+        script_path <- sub("^--file=", "", file_arg)
+    } else {
+        # Fallback: try sys.frame for source() calls
+        tryCatch({
+            script_path <- sys.frame(1)$ofile
+        }, error = function(e) {
+            script_path <- NULL
+        })
+    }
     if (!is.null(script_path)) {
         script_dir <- dirname(normalizePath(script_path))
         setwd(script_dir)
@@ -196,33 +208,11 @@ plot_b <- ggplot(bin_stats, aes(x = maf_bin, y = p, color = studyType, fill = st
 
 # Categorical palette for consequence categories (used in plot c)
 categorical_dark_colors <- c(
-    # "#BC3A19",
-    # "#E08145",
-    
-    
-    
-    
-    # "#2E5943",
-    # "#528B78",
-    # "#2F735F",
-    # "#78A290",
-    # "#E6CA9C",
-    # "#c2d3cd",
-    # "#4F97CF",
-    # "#6EA9D7",
-    # "#2C6EA0"
-    # "#245780"
-    # "#C0AFFB", 
-    # "#E6A176",
-    # "#00678A",
-    # "#984464",
-    # "#5ECCAB",
-    "#818B70",
-    "#796880",
-    "#8C9FB7",
-    "#604E3C",
-    "#C7A2A6",
-    # "#274D52"
+    "#BC3A19",
+    "#E08145",
+    "#E6CA9C",
+    "#9EBAA8",
+    "#2F735F"
 )
 
 # Expect data exported from Python as data2_for_plot_c.csv (data2 in figure_2.ipynb)
@@ -467,4 +457,4 @@ plot_overlaid_with_legend <- plot_overlaid +
         align_to = "full"
     )
 
-ggsave("figure_2.png", plot = plot_overlaid_with_legend, width = 8.27, height = 2.8, dpi = 300, bg = "#ffffff")
+ggsave("figure_2_new_colors.png", plot = plot_overlaid_with_legend, width = 8.27, height = 2.8, dpi = 300, bg = "#ffffff")
