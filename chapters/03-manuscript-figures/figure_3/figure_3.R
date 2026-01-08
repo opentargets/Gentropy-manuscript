@@ -8,6 +8,8 @@ suppressPackageStartupMessages({
 
 text_colour <- "#434343"
 grid_colour <- "#ececec"
+axis_colour <- "#8a8a8a"
+legend_text_size <- 8
 
 # --- Styling copied from `figure_2/Figure_2.R` / `R_scripts/variant_pleiotropy_plot.R` ---
 base_theme <- theme_minimal() +
@@ -25,7 +27,7 @@ base_theme <- theme_minimal() +
         axis.line = element_blank(),
         legend.position = "bottom",
         legend.title = element_blank(),
-        legend.text = element_text(face = "plain", color = text_colour, size = 8),
+        legend.text = element_text(face = "plain", color = text_colour, size = legend_text_size),
         legend.key = element_rect(fill = "white", colour = NA),
         legend.background = element_rect(fill = "white", colour = NA),
         plot.title = element_text(size = 8, face = "plain", color = text_colour),
@@ -42,8 +44,8 @@ all_text_8_theme <- function() {
         plot.title = element_text(size = 8),
         axis.title = element_text(size = 8),
         axis.text = element_text(size = 8),
-        legend.text = element_text(size = 8),
-        legend.title = element_text(size = 8),
+        legend.text = element_text(size = legend_text_size),
+        legend.title = element_text(size = legend_text_size),
         plot.tag = element_text(size = 8, face = "bold")
     )
 }
@@ -74,21 +76,6 @@ pal_series <- c(
     "Predicted (no power)" = "#D65A1F"
 )
 
-# 4-color categorical palette for pleiotropy plots
-categorical_dark_colors <- c(
-    "#A01813",
-    "#D65A1F",
-    "#2E5943",
-    "#d9d9d9"
-)
-
-# Alternative palette for second pleiotropy plot
-categorical_dark_colors_2 <- c(
-    "#A01813",
-    "#D65A1F",
-    "#30809e",
-    "#d9d9d9"
-)
 
 get_script_path <- function() {
     # When called via source("..."), R sets `sys.frame(1)$ofile`
@@ -276,7 +263,7 @@ create_pleiotropy_plot <- function(csv_path, plot_title, preferred_ta_order = ch
             legend.key = element_rect(fill = "white", colour = NA),
             legend.key.size = unit(0.5, "cm"),
             legend.key.width = unit(0.5, "cm"),
-            legend.text = element_text(size = 8, color = text_colour),
+            legend.text = element_text(size = legend_text_size, color = text_colour),
             legend.spacing.y = unit(0.01, "cm"),
             axis.text.x = element_text(size = 8, margin = margin(t = 2, b = 0), color = text_colour),
             axis.title.x = element_text(size = 8, face = "plain", color = text_colour, margin = margin(t = 2))
@@ -391,7 +378,9 @@ p_a <- ggplot(df_a_plot, aes(
     legend_tight_theme() +
     theme(
         panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_line(color = grid_colour, linewidth = 0.3)
+        panel.grid.major.x = element_line(color = grid_colour, linewidth = 0.3),
+        axis.line = element_line(color = axis_colour, linewidth = 0.3),
+        legend.position = "right"
     )
 
 # -----------------------------
@@ -449,92 +438,183 @@ p_b <- ggplot(df_b_long, aes(
     legend_tight_theme() +
     theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
-        # Nudge legend away from the left border of the panel
-        legend.box.margin = margin(l = 12)
+        axis.line = element_line(color = axis_colour, linewidth = 0.3),
+        axis.title.y = element_text(margin = margin(r = -4)),
+        legend.position = "right",
+        legend.text = element_text(size = legend_text_size),
+        legend.key.size = unit(0.3, "cm"),
+        legend.key.width = unit(0.3, "cm"),
+        legend.box.margin = margin(l = 8)
     )
 
 # -----------------------------
-# Plot c (variant pleiotropy plot 1)
+# Plot c and d (variant pleiotropy plots with shared disease-based legend)
 # -----------------------------
 message("Reading pleiotropy data from: ", pleio_1_csv)
-p_c1 <- create_pleiotropy_plot(
-    csv_path = pleio_1_csv,
-    plot_title = "19_44908684_T_C",
-    preferred_ta_order = character(0),
-    palette = categorical_dark_colors
-) +
-    labs(tag = "c") +
-    guides(
-        colour = guide_legend(title = NULL),
-        fill = guide_legend(title = NULL)
+message("Reading pleiotropy data from: ", pleio_2_csv)
+
+# Read both datasets
+df_pleio_1 <- readr::read_csv(pleio_1_csv, show_col_types = FALSE)
+df_pleio_2 <- readr::read_csv(pleio_2_csv, show_col_types = FALSE)
+
+# Combine both datasets to find top 5 diseases by point count
+df_combined <- bind_rows(
+    df_pleio_1 %>% mutate(plot = "c"),
+    df_pleio_2 %>% mutate(plot = "d")
+) %>%
+    mutate(
+        diseaseNames = trimws(as.character(diseaseNames))
+    )
+
+# Count points per disease across both plots
+disease_counts <- df_combined %>%
+    count(diseaseNames, name = "n_points") %>%
+    arrange(desc(n_points))
+
+# Keep only the top 5 diseases by number of points
+top_diseases <- disease_counts %>%
+    slice_head(n = 5) %>%
+    pull(diseaseNames)
+
+# Capitalize disease names for legend
+top_diseases_capitalized <- capitalize_first(top_diseases)
+
+# Create a shared color scheme for both plots (top 5 diseases + Other)
+disease_palette <- c("#A01813", "#E3A772", "#2E5943", "#4F97CF", "#D65A1F")
+disease_colors <- c(
+    setNames(disease_palette[1:length(top_diseases)], top_diseases),
+    Other = "#d9d9d9"
+)
+
+# Create labels for legend (capitalized)
+disease_labels <- c(
+    setNames(top_diseases_capitalized, top_diseases),
+    Other = "Other"
+)
+
+# Function to prepare disease-based plot data
+prepare_disease_plot <- function(df, top_diseases) {
+    df_plot <- df %>%
+        mutate(
+            diseaseNames = trimws(as.character(diseaseNames)),
+            diseaseGroup = if_else(diseaseNames %in% top_diseases, diseaseNames, "Other"),
+            diseaseGroup = factor(diseaseGroup, levels = c(top_diseases, "Other"))
+        )
+    
+    df_plot
+}
+
+# Prepare data for both plots
+plot_c_data <- prepare_disease_plot(df_pleio_1, top_diseases)
+plot_d_data <- prepare_disease_plot(df_pleio_2, top_diseases)
+
+# Create plot c
+p_c1 <- ggplot(plot_c_data, aes(
+    x = estimatedBeta, y = neg_log10_p,
+    colour = diseaseGroup
+)) +
+    geom_vline(xintercept = 0, colour = "#D65A1F", linetype = "dashed") +
+    geom_point(size = 2, alpha = 0.85) +
+    scale_colour_manual(
+        values = disease_colors,
+        breaks = levels(plot_c_data$diseaseGroup),
+        labels = disease_labels,
+        name = NULL
     ) +
+    scale_x_continuous(limits = c(-0.605, NA)) +
+    scale_y_log10() +
+    labs(
+        tag = "c",
+        x = expression("Estimated " * beta * " for 19_44908684_T_C"),
+        y = "-log10(p-value)"
+    ) +
+    base_theme +
     all_text_8_theme() +
     gap_theme(5) +
     theme(
-        legend.position = c(0, 1.14),
-        legend.justification = c(0, 1),
-        legend.background = element_rect(fill = "white", colour = NA),
-        legend.box.background = element_rect(fill = "white", colour = NA),
+        legend.position = "none",  # Remove legend from plot c
         plot.tag = element_text(face = "bold", size = 8, colour = text_colour),
-        plot.tag.position = c(0, 1)
+        plot.tag.position = c(0, 1),
+        axis.line = element_line(color = axis_colour, linewidth = 0.3)
     )
 
-# -----------------------------
-# Plot d (variant pleiotropy plot 2)
-# -----------------------------
-message("Reading pleiotropy data from: ", pleio_2_csv)
-p_c2 <- create_pleiotropy_plot(
-    csv_path = pleio_2_csv,
-    plot_title = "19_44908822_C_T",
-    preferred_ta_order = c("nervous system disease", "cardiovascular disease"),
-    palette = categorical_dark_colors_2
-) +
-    labs(tag = "d") +
-    guides(
-        colour = guide_legend(title = NULL),
-        fill = guide_legend(title = NULL)
+# Create plot d
+p_c2 <- ggplot(plot_d_data, aes(
+    x = estimatedBeta, y = neg_log10_p,
+    colour = diseaseGroup
+)) +
+    geom_vline(xintercept = 0, colour = "#D65A1F", linetype = "dashed") +
+    geom_point(size = 2, alpha = 0.85) +
+    scale_colour_manual(
+        values = disease_colors,
+        breaks = levels(plot_d_data$diseaseGroup),
+        labels = disease_labels,
+        name = NULL
     ) +
+    scale_x_continuous(limits = c(-0.605, NA)) +
+    scale_y_log10() +
+    labs(
+        tag = "d",
+        x = expression("Estimated " * beta * " for 19_44908822_C_T"),
+        y = "-log10(p-value)"
+    ) +
+    base_theme +
     all_text_8_theme() +
     gap_theme(12) +
     theme(
-        legend.position = c(0, 1.14),
-        legend.justification = c(0, 1),
+        legend.position = c(0.98, 0.02),  # Bottom right corner
+        legend.justification = c(1, 0),
         legend.background = element_rect(fill = "white", colour = NA),
         legend.box.background = element_rect(fill = "white", colour = NA),
+        legend.key = element_rect(fill = "white", colour = NA),
+        legend.key.size = unit(0.5, "cm"),
+        legend.key.width = unit(0.5, "cm"),
+        legend.text = element_text(size = legend_text_size, color = text_colour),
+        legend.spacing.y = unit(0.01, "cm"),
         plot.tag = element_text(face = "bold", size = 8, colour = text_colour),
-        plot.tag.position = c(0, 1)
+        plot.tag.position = c(0, 1),
+        axis.line = element_line(color = axis_colour, linewidth = 0.3)
     )
+
+# Align x-axis limits for plots c and d to ensure zero coordinates match
+x_range_c <- ggplot_build(p_c1)$layout$panel_params[[1]]$x.range
+x_range_d <- ggplot_build(p_c2)$layout$panel_params[[1]]$x.range
+x_min <- min(x_range_c[1], x_range_d[1])
+x_max <- max(x_range_c[2], x_range_d[2])
+
+p_c1 <- p_c1 + scale_x_continuous(limits = c(x_min, x_max))
+p_c2 <- p_c2 + scale_x_continuous(limits = c(x_min, x_max))
 
 # -----------------------------
 # Combine horizontally and save
 # -----------------------------
-out_path <- file.path(figure_3_dir, "figure_3.png")
-if (!nzchar(figure_3_dir)) out_path <- "figure_3.png"
+out_path <- file.path(figure_3_dir, "figure_3_reverted.png")
+if (!nzchar(figure_3_dir)) out_path <- "figure_3_reverted.png"
 
 combined <- NULL
 if (requireNamespace("patchwork", quietly = TRUE)) {
     suppressPackageStartupMessages(library(patchwork))
     # Layout:
-    # Row 1: a | b
-    # Row 2: c spans full width
-    # Row 3: d spans full width
+    # Row 1: a | c
+    # Row 2: b | d
+    # Width ratio: left column (a,b) : right column (c,d) = 1:3
     design <- "
-AB
-CC
-DD
+AC
+BD
 "
     combined <- p_b + p_a + p_c1 + p_c2 +
-        plot_layout(design = design, widths = c(1, 1))
+        plot_layout(design = design, widths = c(1, 3))
 } else if (requireNamespace("cowplot", quietly = TRUE)) {
     suppressPackageStartupMessages(library(cowplot))
-    top_row <- cowplot::plot_grid(p_b, p_a, ncol = 2, rel_widths = c(1, 1))
-    combined <- cowplot::plot_grid(top_row, p_c1, p_c2, ncol = 1, rel_heights = c(1, 1, 1))
+    top_row <- cowplot::plot_grid(p_b, p_c1, ncol = 2, rel_widths = c(1, 3))
+    bottom_row <- cowplot::plot_grid(p_a, p_c2, ncol = 2, rel_widths = c(1, 3))
+    combined <- cowplot::plot_grid(top_row, bottom_row, ncol = 1, rel_heights = c(1, 1))
 } else {
     stop("Please install either 'patchwork' or 'cowplot' to combine the two plots into a grid.")
 }
 
 # Save at A4 portrait width (inches). Keep previous aspect ratio (12x4) to avoid distortion.
 a4_portrait_width_in <- 8.27
-aspect_ratio <- 4 / 12
+aspect_ratio <- 2 / 12
 ggsave(out_path, combined, width = a4_portrait_width_in, height = a4_portrait_width_in * aspect_ratio * 3, units = "in", dpi = 300, bg = "white")
 message("Saved: ", out_path)
