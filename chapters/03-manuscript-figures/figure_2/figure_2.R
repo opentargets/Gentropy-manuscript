@@ -7,26 +7,37 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(readr)
   library(cowplot)
+  library(patchwork)
 })
 
-maf_beta_dataset_path <- "data/intermediate_files/abeta-maf-qualified-replicated-lve.tsv"
-maf_pav_dataset_path <- "data/intermediate_files/pav-maf-qualified-replicated-lve.tsv"
-stopifnot(file.exists(maf_beta_dataset_path))
-stopifnot(file.exists(maf_pav_dataset_path))
-
-maf_beta_dataset <- readr::read_tsv(maf_beta_dataset_path)
-maf_pav_dataset <- readr::read_tsv(maf_pav_dataset_path)
-
-
-consequence_percentage_dataset_path <- "data/intermediate_files/lead_variant_consequence_percentage_by_study_type.tsv"
-consequence_vs_abeta_dataset_path <- "data/intermediate_files/mean_absolute_effect_by_consequence_and_study_type.tsv"
-stopifnot(file.exists(consequence_percentage_dataset_path))
-stopifnot(file.exists(consequence_vs_abeta_dataset_path))
-
-percetage_dataset <- readr::read_tsv(consequence_percentage_dataset_path)
-consequence_vs_abeta_dataset <- readr::read_tsv(
-  consequence_vs_abeta_dataset_path
+tryCatch(
+  {
+    setwd("chapters/03-manuscript-figures/figure_2")
+  },
+  error = function(e) {
+    message(
+      "Could not set working directory"
+    )
+  }
 )
+
+
+data_2a_path <- "data/figure_2_a.csv"
+data_2b_path <- "data/figure_2_b.csv"
+stopifnot(file.exists(data_2a_path))
+stopifnot(file.exists(data_2b_path))
+
+data_2a <- readr::read_csv(data_2a_path)
+data_2b <- readr::read_csv(data_2b_path)
+
+
+data_2c_path <- "data/figure_2_c.csv"
+data_2d_path <- "data/figure_2_d.csv"
+stopifnot(file.exists(data_2c_path))
+stopifnot(file.exists(data_2d_path))
+
+data_2c <- readr::read_csv(data_2c_path)
+data_2d <- readr::read_csv(data_2d_path)
 
 
 # Theme to mimic matplotlib styling (Helvetica, light grid, no spines)
@@ -80,23 +91,23 @@ studytype_levels <- c("cis-pqtl", "eqtl", "gwas-disease", "gwas-measurement")
 
 # ---- Plot A ----
 
-maf_beta_dataset$studyType <- factor(
-  maf_beta_dataset$studyType,
+data_2c$studyType <- factor(
+  data_2c$studyType,
   levels = studytype_levels
 )
 
 # X-axis breaks for plot a) (same as in the python version)
-x_breaks_a <- sort(unique(maf_beta_dataset$mafBinMidpoint))
-x_labels_a <- sort(unique(maf_beta_dataset$mafBinRange))
+x_breaks_a <- sort(unique(data_2c$mafBinMidpoint))
+x_labels_a <- sort(unique(data_2c$mafBinRange))
 
 # Calculate y-axis limits for plot a) to ensure all data is visible
-max_y_a <- max(maf_beta_dataset$avgAbsEstimatedBetaInBucketCIUpper)
+max_y_a <- max(data_2c$avgAbsEstimatedBetaInBucketCIUpper)
 y_upper_a <- ceiling(max_y_a * 10) / 10 # Round up to nearest 0.1
 
 
 # Create plot a)
 plot_a <- ggplot(
-  maf_beta_dataset,
+  data_2c,
   aes(
     x = mafBinMidpoint,
     y = avgAbsEstimatedBetaInBucket,
@@ -153,22 +164,22 @@ plot_a <- ggplot(
 # ---- Plot B ----
 
 # Ensure study type has the same factor levels as plot a)
-maf_pav_dataset$studyType <- factor(
-  maf_pav_dataset$studyType,
+data_2d$studyType <- factor(
+  data_2d$studyType,
   levels = studytype_levels
 )
 
 # Define bins and labels
-x_labels_b <- sort(unique(maf_pav_dataset$mafBinRange))
-x_breaks_b <- sort(unique(maf_pav_dataset$mafBinMidpoint))
+x_labels_b <- sort(unique(data_2d$mafBinRange))
+x_breaks_b <- sort(unique(data_2d$mafBinMidpoint))
 
 # Calculate y-axis limits to ensure all data is visible in plot b)
-max_y <- max(maf_pav_dataset$alteringProportionInBucketCIUpper)
+max_y <- max(data_2d$alteringProportionInBucketCIUpper)
 y_upper <- ceiling(max_y * 10) / 10 # Round up to nearest 0.1
 
 # Create plot b)
 plot_b <- ggplot(
-  maf_pav_dataset,
+  data_2d,
   aes(
     x = mafBinMidpoint,
     y = alteringProportionInBucket,
@@ -244,7 +255,7 @@ fill_label_order <- c(
 
 
 # Format labels: show rounded integers for segments > 5%
-data_c <- percetage_dataset %>%
+data_c <- data_2c %>%
   mutate(
     pConsequenceLabel = ifelse(
       pConsequenceValue > 10.0,
@@ -322,7 +333,7 @@ plot_c <- ggplot(
 
 # ---- Plot D ----
 
-data_d <- consequence_vs_abeta_dataset |>
+data_d <- data_2d |>
   dplyr::mutate(
     consequenceCategory = factor(
       consequenceCategory,
@@ -490,7 +501,6 @@ plots_abcd_x_axes_with_plots <- plot_grid(
   rel_heights = c(1, 0.2)
 )
 
-library(patchwork)
 
 # Overlay plot_b on plot_a
 plot_overlaid <- plots_abcd +
@@ -514,7 +524,7 @@ plot_overlaid_with_legend <- plot_overlaid +
   )
 
 ggsave(
-  "data/figures/figure_2.png",
+  "data/figure_2.png",
   plot = plot_overlaid_with_legend,
   width = 8.27,
   height = 2.8,

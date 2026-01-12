@@ -80,11 +80,11 @@ class ConsequenceCategory(StrEnum):
     def classify_so_terms(cls, so_terms: Column) -> Column:
         """Classify SO terms into consequence categories."""
         return (
-            f.when(so_terms.isin(*IntergenicConsequence.__members__.values()), f.lit(cls.INTERGENIC.value))
-            .when(so_terms.isin(*RegulatoryConsequence.__members__.values()), f.lit(cls.OTHER_REGULATORY.value))
+            f.when(so_terms.isin(*ProteinAlteringConsequence.__members__.values()), f.lit(cls.PROTEIN_ALTERING.value))
             .when(so_terms.isin(*IntragenicConsequence.__members__.values()), f.lit(cls.INTRAGENIC.value))
-            .when(so_terms.isin(*ProteinAlteringConsequence.__members__.values()), f.lit(cls.PROTEIN_ALTERING.value))
-            .otherwise(None)
+            .when(so_terms.isin(*RegulatoryConsequence.__members__.values()), f.lit(cls.OTHER_REGULATORY.value))
+            .when(so_terms.isin(*IntergenicConsequence.__members__.values()), f.lit(cls.INTERGENIC.value))
+            .otherwise(f.lit("UNCLASSIFIED"))
         )
 
     @classmethod
@@ -92,14 +92,14 @@ class ConsequenceCategory(StrEnum):
         """Rank consequence categories based on predefined order."""
         ranking_dict = {
             cls.PROTEIN_ALTERING.value: 1,
-            cls.INTRAGENIC.value: 2,
-            cls.PROMOTER.value: 3,
-            cls.ENHANCER.value: 4,
+            cls.PROMOTER.value: 2,
+            cls.ENHANCER.value: 3,
+            cls.INTRAGENIC.value: 4,
             cls.OTHER_REGULATORY.value: 5,
             cls.INTERGENIC.value: 6,
         }
 
         expr = f.when(f.lit(False), None)
         for category, rank in ranking_dict.items():
-            expr = expr.when(consequence_category == f.lit(category), f.lit(rank))
+            expr = expr.when(consequence_category == f.lit(category), f.lit(rank)).otherwise(0)
         return expr
