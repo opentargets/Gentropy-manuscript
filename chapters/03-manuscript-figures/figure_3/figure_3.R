@@ -71,9 +71,9 @@ pal_model_type <- c(
 
 # NOTE: user-updated palette (keep as-is)
 pal_series <- c(
-    "Observed (traits in cluster)" = "#3583C0",
-    "Predicted (full model)" = "#A01813",
-    "Predicted (no power)" = "#D65A1F"
+    "Observed" = "#3583C0",
+    "Predicted (full)" = "#A01813",
+    "Predicted (np)" = "#D65A1F" 
 )
 
 
@@ -380,7 +380,11 @@ p_a <- ggplot(df_a_plot, aes(
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(color = grid_colour, linewidth = 0.3),
         axis.line = element_line(color = axis_colour, linewidth = 0.3),
-        legend.position = "right"
+        legend.position = "right",
+        axis.ticks.y = element_line(color = axis_colour, linewidth = 0.6),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(margin = margin(t = 6)),
+        # plot.margin = margin(t = 30, r = 12, b = 30, l = 12)
     )
 
 # -----------------------------
@@ -400,14 +404,14 @@ df_b_long <- df_b %>%
     mutate(
         ci = sem * 1.96,
         series = dplyr::recode(series,
-            observed = "Observed (traits in cluster)",
-            predicted_full = "Predicted (full model)",
-            predicted_no_power = "Predicted (no power)"
+            observed = "Observed",
+            predicted_full = "Predicted (full)",
+            predicted_no_power = "Predicted (np)"
         ),
         series = factor(series, levels = c(
-            "Observed (traits in cluster)",
-            "Predicted (full model)",
-            "Predicted (no power)"
+            "Observed",
+            "Predicted (full)",
+            "Predicted (np)"
         ))
     )
 
@@ -439,12 +443,15 @@ p_b <- ggplot(df_b_long, aes(
     theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
         axis.line = element_line(color = axis_colour, linewidth = 0.3),
-        axis.title.y = element_text(margin = margin(r = -4)),
+        axis.title.y = element_text(margin = margin(t = 0, r = 6, b = 0, l = 0)),
+        plot.margin = margin(t = 12, r = 10, b = 12, l = 10),
         legend.position = "right",
         legend.text = element_text(size = legend_text_size),
         legend.key.size = unit(0.3, "cm"),
         legend.key.width = unit(0.3, "cm"),
-        legend.box.margin = margin(l = 8)
+        legend.box.margin = margin(l = 8),
+        axis.ticks.x = element_line(color = axis_colour, linewidth = 0.6),
+        axis.ticks.y = element_blank()
     )
 
 # -----------------------------
@@ -463,7 +470,11 @@ df_combined <- bind_rows(
     df_pleio_2 %>% mutate(plot = "d")
 ) %>%
     mutate(
-        diseaseNames = trimws(as.character(diseaseNames))
+        diseaseNames = trimws(as.character(diseaseNames)),
+        # Remove brackets and quotes from disease names
+        diseaseNames = gsub("^\\['|'\\]$", "", diseaseNames),
+        diseaseNames = gsub("^\\[|\\]$", "", diseaseNames),
+        diseaseNames = trimws(diseaseNames)
     )
 
 # Count points per disease across both plots
@@ -497,6 +508,10 @@ prepare_disease_plot <- function(df, top_diseases) {
     df_plot <- df %>%
         mutate(
             diseaseNames = trimws(as.character(diseaseNames)),
+            # Remove brackets and quotes from disease names
+            diseaseNames = gsub("^\\['|'\\]$", "", diseaseNames),
+            diseaseNames = gsub("^\\[|\\]$", "", diseaseNames),
+            diseaseNames = trimws(diseaseNames),
             diseaseGroup = if_else(diseaseNames %in% top_diseases, diseaseNames, "Other"),
             diseaseGroup = factor(diseaseGroup, levels = c(top_diseases, "Other"))
         )
@@ -535,7 +550,10 @@ p_c1 <- ggplot(plot_c_data, aes(
         legend.position = "none",  # Remove legend from plot c
         plot.tag = element_text(face = "bold", size = 8, colour = text_colour),
         plot.tag.position = c(0, 1),
-        axis.line = element_line(color = axis_colour, linewidth = 0.3)
+        axis.line = element_line(color = axis_colour, linewidth = 0.3),
+        axis.ticks.x = element_line(color = axis_colour, linewidth = 0.6),
+        axis.ticks.y = element_blank(),
+        axis.title.x = element_text(margin = margin(t = 8))
     )
 
 # Create plot d
@@ -564,16 +582,19 @@ p_c2 <- ggplot(plot_d_data, aes(
     theme(
         legend.position = c(0.98, 0.02),  # Bottom right corner
         legend.justification = c(1, 0),
-        legend.background = element_rect(fill = "white", colour = NA),
-        legend.box.background = element_rect(fill = "white", colour = NA),
-        legend.key = element_rect(fill = "white", colour = NA),
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.box.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA, colour = NA),
         legend.key.size = unit(0.5, "cm"),
         legend.key.width = unit(0.5, "cm"),
         legend.text = element_text(size = legend_text_size, color = text_colour),
         legend.spacing.y = unit(0.01, "cm"),
         plot.tag = element_text(face = "bold", size = 8, colour = text_colour),
         plot.tag.position = c(0, 1),
-        axis.line = element_line(color = axis_colour, linewidth = 0.3)
+        axis.line = element_line(color = axis_colour, linewidth = 0.3),
+        axis.ticks.x = element_line(color = axis_colour, linewidth = 0.6),
+        axis.ticks.y = element_blank(),
+        axis.title.x = element_text(margin = margin(t = 8))
     )
 
 # Align x-axis limits for plots c and d to ensure zero coordinates match
@@ -602,8 +623,8 @@ if (requireNamespace("patchwork", quietly = TRUE)) {
 AC
 BD
 "
-    combined <- p_b + p_a + p_c1 + p_c2 +
-        plot_layout(design = design, widths = c(1, 3))
+    combined <- free(p_b) + free(p_a) + p_c1 + p_c2 +
+        plot_layout(design = design, widths = c(2, 3), heights = c(0.7, 0.7))
 } else if (requireNamespace("cowplot", quietly = TRUE)) {
     suppressPackageStartupMessages(library(cowplot))
     top_row <- cowplot::plot_grid(p_b, p_c1, ncol = 2, rel_widths = c(1, 3))
