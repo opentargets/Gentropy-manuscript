@@ -101,5 +101,5 @@ class ConsequenceCategory(StrEnum):
 
         expr = f.when(f.lit(False), None)
         for category, rank in ranking_dict.items():
-            expr = expr.when(consequence_category == f.lit(category), f.lit(rank)).otherwise(0)
-        return expr
+            expr = expr.when(consequence_category == f.lit(category), f.lit(rank))
+        return expr.otherwise(f.lit(0))
