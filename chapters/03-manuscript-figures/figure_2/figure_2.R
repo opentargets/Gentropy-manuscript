@@ -91,23 +91,23 @@ studytype_levels <- c("cis-pqtl", "eqtl", "gwas-disease", "gwas-measurement")
 
 # ---- Plot A ----
 
-data_2c$studyType <- factor(
-  data_2c$studyType,
+data_2a$studyType <- factor(
+  data_2a$studyType,
   levels = studytype_levels
 )
 
 # X-axis breaks for plot a) (same as in the python version)
-x_breaks_a <- sort(unique(data_2c$mafBinMidpoint))
-x_labels_a <- sort(unique(data_2c$mafBinRange))
+x_breaks_a <- sort(unique(data_2a$mafBinMidpoint))
+x_labels_a <- sort(unique(data_2a$mafBinRange))
 
 # Calculate y-axis limits for plot a) to ensure all data is visible
-max_y_a <- max(data_2c$avgAbsEstimatedBetaInBucketCIUpper)
+max_y_a <- max(data_2a$avgAbsEstimatedBetaInBucketCIUpper)
 y_upper_a <- ceiling(max_y_a * 10) / 10 # Round up to nearest 0.1
 
 
 # Create plot a)
 plot_a <- ggplot(
-  data_2c,
+  data_2a,
   aes(
     x = mafBinMidpoint,
     y = avgAbsEstimatedBetaInBucket,
@@ -164,22 +164,22 @@ plot_a <- ggplot(
 # ---- Plot B ----
 
 # Ensure study type has the same factor levels as plot a)
-data_2d$studyType <- factor(
-  data_2d$studyType,
+data_2b$studyType <- factor(
+  data_2b$studyType,
   levels = studytype_levels
 )
 
 # Define bins and labels
-x_labels_b <- sort(unique(data_2d$mafBinRange))
-x_breaks_b <- sort(unique(data_2d$mafBinMidpoint))
+x_labels_b <- sort(unique(data_2b$mafBinRange))
+x_breaks_b <- sort(unique(data_2b$mafBinMidpoint))
 
 # Calculate y-axis limits to ensure all data is visible in plot b)
-max_y <- max(data_2d$alteringProportionInBucketCIUpper)
+max_y <- max(data_2b$alteringProportionInBucketCIUpper)
 y_upper <- ceiling(max_y * 10) / 10 # Round up to nearest 0.1
 
 # Create plot b)
 plot_b <- ggplot(
-  data_2d,
+  data_2b,
   aes(
     x = mafBinMidpoint,
     y = alteringProportionInBucket,
