@@ -88,6 +88,12 @@
     },
     {
       "metadata": {},
+      "name": "biosampleId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "metadata": {},
       "name": "originalBeta",
       "nullable": true,
       "type": "double"

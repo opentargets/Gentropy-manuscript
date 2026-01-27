@@ -81,7 +81,6 @@ class OpenTargetsTheme:
         """Categorical theme for plotnine plots."""
         return p9.theme(
             axis_title=p9.element_text(size=REM, family="sans-serif"),
-            axis_ticks_direction="out",
             axis_ticks=p9.element_line(color="black"),
             axis_ticks_length_major=8,
             axis_ticks_length_minor=4,
@@ -242,9 +241,9 @@ def break_string(string: str, nmin: int = 15) -> str:
     return new_string
 
 
-def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 0.66) -> Column:
+def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 0.66, bucket: str = "mafBin") -> Column:
     """Calculate the proportion of protein-altering variants in each bucket."""
-    w = Window.partitionBy("bucket", "studyType").orderBy("bucket", "studyType")
+    w = Window.partitionBy("bucket", "studyType").orderBy("bucket")
     n_protein_altering = f.count(f.when(vep_score >= threshold, 1)).over(w).alias("nAlteringInBucket")
     n_non_protein_altering = f.count(f.when(vep_score < threshold, 1)).over(w).alias("nNonAlteringInBucket")
     total = (n_protein_altering + n_non_protein_altering).alias("totalInBucket")

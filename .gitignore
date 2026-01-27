@@ -181,3 +181,20 @@ data/*
 
 spark-warehouse
 app/
+
+# EPIraction manifest preserved
+!data/epiraction-manifest.tsv
+.Rproj.user
+
+
+# R
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+.Rproj.user/
+.Rbuildignore
+.Renviron
+.Renviron.site
+.Rds
+gentropy-manuscript.Rproj

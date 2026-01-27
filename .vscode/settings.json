@@ -15,5 +15,6 @@
   "python.testing.pytestArgs": ["src"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.words": ["bucketizer"]
 }

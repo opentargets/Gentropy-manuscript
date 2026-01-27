@@ -7,7 +7,6 @@ import json
 from enum import Enum
 
 from gentropy.dataset.dataset import Dataset
-from gentropy.dataset.study_locus import StudyLocus
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as f
 from pyspark.sql.types import StructType
@@ -70,7 +69,7 @@ class LeadVariantEffect(Dataset):
         rescaled_stats = RescaledStatistics()
         study_stats = StudyStatistics()
         prev = rescaled_stats.prev
-        beta = rescaled_stats.estimated_beta
+        beta = rescaled_stats.abs_estimated_beta
         n_cases = study_stats.n_cases
         n_controls = study_stats.n_controls
         n_samples = study_stats.n_samples
@@ -100,11 +99,11 @@ class LeadVariantEffect(Dataset):
     def effect_size_filter(self, effect_size_threshold: int = 3) -> LeadVariantEffect:
         """Filter lead variants based on effect size."""
         rescaled_stats = RescaledStatistics()
-        beta = rescaled_stats.estimated_beta
+        beta = rescaled_stats.abs_estimated_beta
         df = self.df.filter(f.abs(beta) <= effect_size_threshold)
         return LeadVariantEffect(df)
 
-    def filter_by_study_locus_id(self, sl: StudyLocus) -> LeadVariantEffect:
+    def filter_by_study_locus_id(self, sl: DataFrame) -> LeadVariantEffect:
         """Filter the dataset by study locus.
 
         Args:
@@ -114,12 +113,12 @@ class LeadVariantEffect(Dataset):
             LeadVariantEffect: Filtered dataset.
 
         """
-        sl_dim = sl.df.select("studyLocusId").count()
-        unique_sl_dim = sl.df.select("studyLocusId").distinct().count()
+        sl_dim = sl.select("studyLocusId").count()
+        unique_sl_dim = sl.select("studyLocusId").distinct().count()
         print(f"StudyLocus dimension: {sl_dim}, unique studyLocusId: {unique_sl_dim}")
         if sl_dim != unique_sl_dim:
             raise ValueError("StudyLocus dataframe should have unique studyLocusId values.")
-        df = self.df.join(sl.df.select("studyLocusId"), on=["studyLocusId"], how="inner")
+        df = self.df.join(sl.select("studyLocusId"), on=["studyLocusId"], how="inner")
         count_before = self.df.count()
         count_after = df.count()
         print(f"Initial rows: {count_before}")

@@ -5,8 +5,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from enum import StrEnum
 
-from pyspark.sql import Column
+import numpy as np
+from pyspark.ml.feature import Bucketizer
+from pyspark.sql import Column, DataFrame
 from pyspark.sql import functions as f
+from pyspark.sql import types as t
 
 
 class MinorAlleleFrequencyType(StrEnum):
@@ -340,3 +343,125 @@ class MinorAlleleFrequencyClassification:
         distributions = [vt.from_maf(maf.value) for vt in variant_types]
         expr = f.struct(*distributions).alias("variantMAFClassification")
         return cls(expr)
+
+
+class MinorAlleleFrequencyBin:
+    MAX = 0.5
+    MIN = 0.0
+
+    def __init__(self, col: Column, step: float) -> None:
+        self._col = col
+        self._step = step
+        if step <= self.MIN or step > self.MAX:
+            raise ValueError(f"Step must be in the range ({self.MIN}, {self.MAX}]")
+
+        # prepare bins
+        self._lo = np.arange(self.MIN, self.MAX, self._step)
+        self._hi = self._lo + self._step
+        self._hi[-1] = self.MAX  # ensure last bin ends at MAX
+        self._bins = list(zip(self._lo, self._hi))
+
+        # First bin is a special case where value of col is 0
+        expr = f.when(
+            col == 0,
+            f.struct(
+                f.lit(self._bins[0][0]).alias("lo"),
+                f.lit(round((self._bins[0][1] / 2), 3)).alias("mid"),
+                f.lit(self._bins[0][1]).alias("hi"),
+            ),
+        )
+        for lo, hi in self._bins:
+            mid = round((lo + hi) / 2, 3)
+            expr = expr.when(
+                (col > lo) & (col <= hi),
+                f.struct(f.lit(round(lo, 3)).alias("lo"), f.lit(mid).alias("mid"), f.lit(round(hi, 3)).alias("hi")),
+            )
+        expr = expr.otherwise(None)
+        self._expr = expr
+
+    def bins(self) -> Column:
+        """Get the buns."""
+        return self._expr.alias("mafBins")
+
+
+def prepare_maf_bins(effect_data: DataFrame, splits: list[float]) -> DataFrame:
+    """Prepare MAF bins using Bucketizer and return the transformed DataFrame.
+
+    Args:
+        effect_data (DataFrame): Input DataFrame containing variant effect data with "maf" column.
+        splits (list[float]): List of float values defining the MAF bin edges.
+
+    Returns:
+        DataFrame: Transformed DataFrame with MAF bins.
+
+    Examples:
+    --------
+        >>> data = [(0.0099, "t1", 0, 2.0), (0.01, "t1", 1, 3.0), (0.2, "t1", 0, 1.5), (0.35, "t1", 1, 4.0), (0.5, "t1", 0, 0.5)]
+        >>> schema = "maf DOUBLE, studyType STRING, isProteinAltering SHORT, absEstimatedBeta DOUBLE"
+        >>> splits = [0.0, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+        >>> df = spark.createDataFrame(data, schema)
+        >>> prepare_maf_bins(df, splits=splits).select("maf", "mafBin.*").drop("mafBin").orderBy("mafBinIndex").show()
+        Using following buckets [0.0, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+        +------+-----------+-----------+-----------+--------------+-----------+
+        |   maf|mafBinRange|mafBinLower|mafBinUpper|mafBinMidpoint|mafBinIndex|
+        +------+-----------+-----------+-----------+--------------+-----------+
+        |0.0099|   0.0-0.01|        0.0|       0.01|         0.005|          0|
+        |  0.01|  0.01-0.05|       0.01|       0.05|          0.03|          1|
+        |   0.2|    0.2-0.3|        0.2|        0.3|          0.25|          4|
+        |  0.35|    0.3-0.4|        0.3|        0.4|          0.35|          5|
+        |   0.5|    0.4-0.5|        0.4|        0.5|          0.45|          6|
+        +------+-----------+-----------+-----------+--------------+-----------+
+        <BLANKLINE>
+
+    """
+    assert all(isinstance(v, float) for v in splits), "All split values must be floats"
+    assert all(0.0 <= v <= 0.5 for v in splits), "All split values must be between 0.0 and 0.5"
+    assert set(["studyType", "maf", "isProteinAltering", "absEstimatedBeta"]).issubset(effect_data.columns), (
+        "Input DataFrame is missing required columns"
+    )
+    splits = sorted(splits)
+
+    bucketizer = Bucketizer()
+    print(f"Using following buckets {splits}")
+    bucketizer.setSplits(splits)
+    # Use "maf" column as input to bucketizer
+    bucketizer.setInputCol("maf")
+    # Output column will be "mafBin"
+    bucketizer.setOutputCol("mafBin")
+    # Throw error if invalid value - below or above the split bounds is found
+    bucketizer.setHandleInvalid("error")
+
+    # Expression to map the bucketizer output (which are zero-based indices) to actual bin ranges
+    maf_bin_expr = f.when(f.lit(False), f.lit(None))
+    for i in range(len(splits) - 1):
+        maf_bin_expr = maf_bin_expr.when(
+            f.col("mafBin") == i,
+            f.struct(
+                f.lit(f"{splits[i]}-{splits[i + 1]}").alias("mafBinRange"),
+                f.lit(splits[i]).alias("mafBinLower"),
+                f.lit(splits[i + 1]).alias("mafBinUpper"),
+                f.lit(np.round((splits[i] + splits[i + 1]) / 2, 3)).alias("mafBinMidpoint"),
+                f.lit(i).alias("mafBinIndex"),
+            ),
+        )
+
+    ds = (
+        bucketizer.transform(
+            effect_data.select(
+                "studyType",
+                "maf",
+                "isProteinAltering",
+                "absEstimatedBeta",
+            )
+        )
+        # Since the output of the bucketizer are the zero-based indices of the bins, we cast the mafBin to IntegerType
+        # And we get the actual bin ranges using maf_expression
+        .withColumn("mafBin", f.col("mafBin").cast(t.IntegerType()))
+        .withColumn("mafBin", maf_bin_expr)
+        .cache()
+    )
+
+    # Sanity check - assert that the number of bins is the same as splits - 1
+    num_bins = ds.select("mafBin.mafBinIndex").distinct().count()
+    assert num_bins <= (len(splits) - 1), f"Expected {len(splits) - 1} bins but found {num_bins}"
+    return ds
