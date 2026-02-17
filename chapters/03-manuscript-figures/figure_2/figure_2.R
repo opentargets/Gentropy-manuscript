@@ -54,10 +54,10 @@ base_theme <- theme_minimal() +
     axis.text = element_text(size = 8, face = "plain", color = "#434343"),
     axis.text.x = element_text(
       size = 8,
-      margin = margin(t = 2, b = 0),
+      margin = margin(t = 0, b = 0),
       color = "#434343",
       angle = 45,
-      hjust = 1
+      hjust = 0.9
     ),
     axis.title.x = element_text(
       size = 8,
@@ -65,14 +65,15 @@ base_theme <- theme_minimal() +
       color = "#434343",
       margin = margin(t = 10)
     ),
-    axis.ticks = element_blank(),
+    axis.ticks = element_line(color = "#8a8a8a", linewidth = 0.2),
+    axis.ticks.length = unit(0.08, "cm"),
     panel.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.major.x = element_blank(),
-    panel.grid.major.y = element_line(color = "#ececec", linewidth = 0.3),
+    panel.grid.major.y = element_blank(),
     panel.grid.minor = element_blank(),
     panel.border = element_blank(),
-    axis.line = element_blank(),
+    axis.line = element_line(color = "#8a8a8a", linewidth = 0.3),
     legend.position = "right",
     legend.title = element_blank(),
     legend.text = element_text(face = "plain", color = "#434343", size = 8)
@@ -99,6 +100,7 @@ data_2a$studyType <- factor(
 # X-axis breaks for plot a) (same as in the python version)
 x_breaks_a <- sort(unique(data_2a$mafBinMidpoint))
 x_labels_a <- sort(unique(data_2a$mafBinRange))
+x_labels_a[x_labels_a == "0.01-0.05"] <- ""
 
 # Calculate y-axis limits for plot a) to ensure all data is visible
 max_y_a <- max(data_2a$avgAbsEstimatedBetaInBucketCIUpper)
@@ -155,7 +157,7 @@ plot_a <- ggplot(
       size = 8,
       face = "plain",
       color = "#434343",
-      margin = margin(t = 10)
+      margin = margin(t = 2)
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
     legend.position = "none" # Legend will be placed at bottom
@@ -171,6 +173,7 @@ data_2b$studyType <- factor(
 
 # Define bins and labels
 x_labels_b <- sort(unique(data_2b$mafBinRange))
+x_labels_b[x_labels_b == "0.01-0.05"] <- ""
 x_breaks_b <- sort(unique(data_2b$mafBinMidpoint))
 
 # Calculate y-axis limits to ensure all data is visible in plot b)
@@ -227,7 +230,7 @@ plot_b <- ggplot(
       size = 8,
       face = "plain",
       color = "#434343",
-      margin = margin(t = 10)
+      margin = margin(t = 2)
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
     legend.position = "none" # Legend will be placed at bottom
@@ -285,6 +288,7 @@ plot_c <- ggplot(
     size = 3
   ) +
   scale_y_continuous(
+    expand = c(0, 0),
     labels = function(x) {
       # Remove 0 label and remove % from all labels
       ifelse(x == 0, "", sprintf("%.0f", x * 100))
@@ -308,10 +312,13 @@ plot_c <- ggplot(
   ) +
   base_theme +
   theme(
+    # aspect.ratio = 1.2,
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
     legend.position = "right",
     legend.text = element_text(size = 8, hjust = 0.5),
     legend.key.size = unit(0.45, "cm"),
-    legend.key.height = unit(0.68, "cm"),
+    legend.key.height = unit(0.59, "cm"),
     legend.box.spacing = unit(0.05, "cm"),
     legend.spacing = unit(0.5, "cm"),
     axis.text.x = element_text(
@@ -369,12 +376,6 @@ plot_d <- ggplot(
     position = position_dodge_w,
     size = 1.5
   ) +
-  geom_vline(
-    xintercept = 0,
-    linetype = "dashed",
-    color = "#434343",
-    linewidth = 0.5
-  ) +
   scale_color_manual(
     values = c("diseases" = "#245780", "measurements" = "#2F735F"),
     name = "Study type"
@@ -402,15 +403,16 @@ plot_d <- ggplot(
       size = 8,
       color = "#434343",
       angle = 45,
-      hjust = 1,
-      margin = margin(t = 2, b = 0)
+      hjust = 0.9,
+      margin = margin(t = 0, b = 0)
     ),
     axis.text.y = element_blank(),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
       color = "#434343",
-      margin = margin(t = 10)
+      margin = margin(t = -8),
+      hjust = 0.2
     ),
     axis.title.y = element_blank(),
     plot.margin = margin(t = 5, r = 20, b = 15, l = 0)
@@ -424,27 +426,35 @@ axis_title_b <- get_plot_component(plot_b, "xlab-b", return_all = TRUE)
 axis_title_c <- get_plot_component(plot_c, "xlab-b", return_all = TRUE)
 axis_title_d <- get_plot_component(plot_d, "xlab-b", return_all = TRUE)
 
-rel_widths <- c(1, 1, 1.5, 1 / 2)
+
+rel_widths <- c(1, 0.1, 1, 0.1, 1.5, 0.1, 1 / 2)  # gap a-b, gap b-c, gap c-d
+spacer <- ggplot() + theme_void()
 
 # Combine plots A and B without legends
 plots_abcd <- plot_grid(
   plot_a + theme(legend.position = "none", axis.title.x = element_blank()),
+  spacer,
   plot_b + theme(legend.position = "none", axis.title.x = element_blank()),
+  spacer,
   plot_c + theme(legend.position = "right", axis.title.x = element_blank()),
+  spacer,
   plot_d + theme(legend.position = "none", axis.title.x = element_blank()),
   nrow = 1,
   align = "h",
   rel_widths = rel_widths,
-  labels = c("a", "b", "c", "d"),
+  labels = c("a", "", "b", "", "c", "", "d"),
   label_size = 8,
-  label_x = c(0, 0, 0, -0.1)
+  label_x = c(0, 0, -0.02, 0, -0.02, 0, -0.2)
 )
 
 # Combine plots A and B without legends
 plots_abcd_x_axes <- plot_grid(
   axis_title_a,
+  spacer,
   axis_title_b,
+  spacer,
   axis_title_c,
+  spacer,
   axis_title_d,
   nrow = 1,
   align = "h",
@@ -478,9 +488,9 @@ legend_d <- get_legend(
 )
 
 rel_widths_ab_merged <- c(
-  rel_widths[1] + rel_widths[2],
-  rel_widths[3],
-  rel_widths[4]
+  rel_widths[1] + rel_widths[2] + rel_widths[3],
+  rel_widths[4] + rel_widths[5],
+  rel_widths[6] + rel_widths[7]
 )
 
 plot_legend_abcd <- plot_grid(
@@ -517,17 +527,17 @@ plot_overlaid_with_legend <- plot_overlaid +
   inset_element(
     plot_legend_abcd,
     0,
-    0,
+    0.15,
     1,
-    0.1,
+    0.15,
     align_to = "full"
   )
 
 ggsave(
-  "data/figure_2.png",
+  "figure_2_new.png",
   plot = plot_overlaid_with_legend,
   width = 8.27,
-  height = 2.8,
+  height = 2.5,
   dpi = 300,
   bg = "#ffffff"
 )
