@@ -6,11 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     "altair>=5.5.0",
-<<<<<<< HEAD
-    "arviz>=0.22.0",
-=======
     "blitzgsea>=0.5.0",
->>>>>>> 0384fb5 (feat: add sgea function)
     "bokeh>=3.4.3",
     "dash-bio>=1.0.2",
     "dask>=2025.11.0",
