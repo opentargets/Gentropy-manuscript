@@ -127,7 +127,7 @@ plot_a <- ggplot(
     linewidth = 0,
     na.rm = TRUE
   ) +
-  geom_line(linewidth = 0.5, na.rm = TRUE) +
+  geom_line(linewidth = 0.3, na.rm = TRUE) +
   scale_color_manual(
     values = colors,
     breaks = names(colors),
@@ -200,7 +200,7 @@ plot_b <- ggplot(
     linewidth = 0,
     na.rm = TRUE
   ) +
-  geom_line(linewidth = 0.5, na.rm = TRUE) +
+  geom_line(linewidth = 0.3, na.rm = TRUE) +
   scale_color_manual(
     values = colors,
     breaks = names(colors),
@@ -370,14 +370,15 @@ plot_d <- ggplot(
       xmax = CIUpper
     ),
     width = 0.3,
+    linewidth = 0.3,
     position = position_dodge_w
   ) +
   geom_point(
     position = position_dodge_w,
-    size = 1.5
+    size = 1
   ) +
   scale_color_manual(
-    values = c("diseases" = "#245780", "measurements" = "#2F735F"),
+    values = c("diseases" = "#4F97CF", "measurements" = "#245780"),
     name = "Study type"
   ) +
   guides(
@@ -494,12 +495,13 @@ rel_widths_ab_merged <- c(
 )
 
 plot_legend_abcd <- plot_grid(
+  spacer,
   legend_ab,
   legend_c,
   legend_d,
   nrow = 1,
   align = "h",
-  rel_widths = rel_widths_ab_merged,
+  rel_widths = c(0.3, rel_widths_ab_merged[1] - 0.3, rel_widths_ab_merged[2], rel_widths_ab_merged[3]),
   label_size = 8
 )
 
@@ -534,7 +536,7 @@ plot_overlaid_with_legend <- plot_overlaid +
   )
 
 ggsave(
-  "figure_2_new.png",
+  "figure_2_final.png",
   plot = plot_overlaid_with_legend,
   width = 8.27,
   height = 2.5,
