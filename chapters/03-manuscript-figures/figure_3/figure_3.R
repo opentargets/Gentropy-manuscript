@@ -177,10 +177,10 @@ p_a <- ggplot(df_a_plot, aes(
         aes(xmin = ci_lower, xmax = ci_upper),
         orientation = "y",
         width = 0,
-        linewidth = 0.4,
+        linewidth = 0.3,
         alpha = 0.9
     ) +
-    geom_point(size = 1.8, alpha = 0.95) +
+    geom_point(size = 1, alpha = 1) +
     scale_colour_manual(values = pal_model_type, name = NULL) +
     scale_x_continuous(breaks = c(0.5, 1.0, 1.5, 2.0), limits = c(NA, 2.0), expand = expansion(mult = c(0.05, 0))) +
     scale_y_continuous(
@@ -250,7 +250,7 @@ p_b <- ggplot(df_b_long, aes(
     group = series
 )) +
     geom_ribbon(aes(ymin = mean - ci, ymax = mean + ci), alpha = 0.12, linewidth = 0, na.rm = TRUE) +
-    geom_line(linewidth = 0.6) +
+    geom_line(linewidth = 0.3) +
     scale_colour_manual(values = pal_series, name = NULL) +
     scale_fill_manual(values = pal_series, name = NULL) +
     scale_x_continuous(breaks = maf_lower, labels = maf_labels, limits = c(0, 0.4), expand = c(0, 0)) +
@@ -337,7 +337,7 @@ p_c <- ggplot(df_combined, aes(
     colour = diseaseGroup
 )) +
     geom_vline(xintercept = 0, colour = "#D65A1F", linetype = "dashed") +
-    geom_point(size = 2, alpha = 0.85) +
+    geom_point(size = 1, alpha = 0.85) +
     facet_grid(variant ~ ., scales = "free_y", axes = "all_x", axis.labels = "margins") +
     scale_colour_manual(
         values = disease_colors,
