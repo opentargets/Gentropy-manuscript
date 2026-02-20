@@ -95,7 +95,7 @@ out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
   "."
 }
 png_file <- file.path(out_dir, "plot_b.png")
-png(png_file, width = 7, height = 5, units = "in", res = 300, bg = "white")
+png(png_file, width = 5, height = 4, units = "in", res = 300, bg = "white")
 
 par(
   mar = c(5, 14, 2, 2),
