@@ -21,7 +21,8 @@ input_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/l2g_diseases_full.csv"
 output_png <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_1/Figure_1_facet.png"
 
 text_size <- 9
-beta_ylab_shift <- 20  # shift plot 2 y-axis title closer (pt) to align with other plots
+ylab_shift <- 8        # shift ALL y-axis titles closer to axis (pt)
+beta_ylab_extra <- 20  # additional shift for plot 2 only (pt)
 
 # Theme to mimic matplotlib styling (Helvetica, bold title, light grid, no spines)
 base_theme <- theme_minimal() +
@@ -29,7 +30,7 @@ base_theme <- theme_minimal() +
     text = element_text(face = "plain", color = "#434343", size = text_size),
     plot.title = element_text(face = "plain", size = text_size, hjust = 0.5, color = "#434343"),
     axis.title = element_text(size = text_size, face = "plain", color = "#434343"),
-    axis.title.y = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(r = 6), vjust = 1),
+    axis.title.y = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(r = 2), vjust = 1),
     axis.text = element_text(size = text_size, face = "plain", color = "#434343"),
     axis.text.x = element_text(size = text_size, face = "bold", margin = margin(t = -1), color = "#434343"),
     axis.title.x = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(t = 8)),
@@ -382,12 +383,14 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
     for (i in 2:length(grobs_list)) maxw <- grid::unit.pmax(maxw, grobs_list[[i]]$widths)
     for (i in 1:length(grobs_list)) grobs_list[[i]]$widths <- maxw
   }
-  # Shift plot 2 y-axis title closer to axis
-  ylab_col <- grobs_list[[2]]$layout$l[grobs_list[[2]]$layout$name == "ylab-l"][1]
-  message("Max beta_ylab_shift (pt): ", round(grid::convertWidth(grobs_list[[2]]$widths[ylab_col], "pt", valueOnly = TRUE), 1))
-  shift <- unit(beta_ylab_shift, "pt")
-  grobs_list[[2]]$widths[ylab_col] <- grobs_list[[2]]$widths[ylab_col] - shift
-  grobs_list[[2]]$widths[ylab_col + 1] <- grobs_list[[2]]$widths[ylab_col + 1] + shift
+  # Shift all y-axis titles closer to axis
+  for (i in seq_along(grobs_list)) {
+    yc <- grobs_list[[i]]$layout$l[grobs_list[[i]]$layout$name == "ylab-l"][1]
+    s <- unit(ylab_shift, "pt")
+    if (i == 2) s <- s + unit(beta_ylab_extra, "pt")
+    grobs_list[[i]]$widths[yc] <- grobs_list[[i]]$widths[yc] - s
+    grobs_list[[i]]$widths[yc + 1] <- grobs_list[[i]]$widths[yc + 1] + s
+  }
   rbind_g <- getFromNamespace("rbind_gtable", "gtable")
   # Determine panel column span so separators align with x-axis area
   panel_left <- grobs_list[[1]]$layout$l[grobs_list[[1]]$layout$name == "panel"][1]
