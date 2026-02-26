@@ -29,7 +29,7 @@ base_theme <- theme_minimal() +
     plot.title       = element_text(face = "plain", size = text_size, hjust = 0.5, color = text_colour),
     axis.title       = element_text(size = text_size, face = "plain", color = text_colour),
     axis.title.y     = element_text(size = text_size, face = "plain", color = text_colour,
-                                    margin = margin(r = 2), vjust = 1),
+                                    margin = margin(r = 4), vjust = 1),
     axis.text        = element_text(size = text_size, face = "plain", color = text_colour),
     axis.text.x      = element_text(size = text_size, face = "bold",
                                     margin = margin(t = -1), color = text_colour),
@@ -228,7 +228,7 @@ p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
 # ===========================================================================
 final <- (p_top / p_bot) | p_b | p_c
 final <- final +
-  plot_layout(widths = c(1.2, 1, 1.2)) +
+  plot_layout(widths = c(1.3, 1, 1.2)) +
   plot_annotation(tag_levels = list(c("a", "", "b", "c"))) &
   theme(plot.tag = element_text(face = "bold", size = 8, color = text_colour))
 
@@ -237,6 +237,6 @@ out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
 } else {
   "."
 }
-png_file <- file.path(out_dir, "figure_4_grid.png")
+png_file <- file.path(out_dir, "figure_4_final.png")
 ggsave(png_file, final, width = 12, height = 4.3, dpi = 300, bg = "white")
 message("Saved: ", png_file)
