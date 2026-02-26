@@ -1,19 +1,16 @@
-# Figure 4 combined grid: Plot A | Plot B | Plot D
+# Figure 4 combined grid: Plot A | Plot B | Plot C
 # Produces a single PNG with three panels side by side.
 
 suppressPackageStartupMessages({
   library(ggplot2)
   library(dplyr)
   library(tidyr)
-  library(gtable)
-  library(grid)
   library(MASS)
-  library(ggplotify)
   library(patchwork)
 })
 
 # ---- Common style constants ----
-text_size    <- 9
+text_size    <- 8
 text_colour  <- "#434343"
 axis_colour  <- "#8a8a8a"
 col_gene     <- "#245780"
@@ -24,10 +21,7 @@ col_multi    <- "#528B78"
 col_gwas     <- "#A01813"
 col_other    <- "#245780"
 col_vline    <- "#D65A1F"
-axis_lwd     <- 0.8
-ci_lwd       <- 0.8
-pt_cex       <- 0.8
-base_cex     <- 9 / 12
+ci_lwd       <- 0.4
 
 base_theme <- theme_minimal() +
   theme(
@@ -136,16 +130,8 @@ p_bot <- ggplot(cover_df, aes(x = year, y = mean, color = group, fill = group)) 
     plot.margin  = margin(t = 0, r = 10, b = 5, l = 5)
   )
 
-g_top <- ggplotGrob(p_top)
-g_bot <- ggplotGrob(p_bot)
-max_w <- unit.pmax(g_top$widths, g_bot$widths)
-g_top$widths <- max_w
-g_bot$widths <- max_w
-rbind_g <- getFromNamespace("rbind_gtable", "gtable")
-grob_a  <- rbind_g(g_top, g_bot, size = "max")
-
 # ===========================================================================
-# PLOT B: NB regression forest plot
+# PLOT B: NB regression forest plot (ggplot2)
 # ===========================================================================
 df_b <- read.csv(file.path(data_dir, "gene_pleiotropy_full_model.csv"),
                  stringsAsFactors = FALSE)
@@ -185,88 +171,66 @@ for (i in seq_along(covariates)) {
   multi_ci_upper[i] <- ci[2]
 }
 
-n_cov   <- length(covariates)
-y_pos_b <- seq_len(n_cov) - 1L
-offset  <- 0.12
-x_range_b <- range(c(uni_ci_lower, uni_ci_upper, multi_ci_lower, multi_ci_upper),
-                   na.rm = TRUE)
-x_pad_b   <- diff(x_range_b) * 0.1
+forest_b <- data.frame(
+  label = rep(factor(covariate_labels, levels = covariate_labels), 2),
+  coef  = c(uni_coef, multi_coef),
+  ci_lo = c(uni_ci_lower, multi_ci_lower),
+  ci_hi = c(uni_ci_upper, multi_ci_upper),
+  type  = factor(rep(c("Univariate", "Joint"), each = length(covariates)),
+                 levels = c("Univariate", "Joint"))
+)
 
-draw_plot_b <- function() {
-  par(
-    mar = c(4.5, 14, 1.5, 1),
-    xaxs = "i", yaxs = "i",
-    fg  = axis_colour, col = text_colour,
-    col.axis = text_colour, col.lab = text_colour,
-    cex.axis = base_cex, cex.lab = base_cex,
-    family = "sans"
+p_b <- ggplot(forest_b, aes(x = coef, y = label, colour = type)) +
+  geom_vline(xintercept = 0, colour = col_vline, linetype = "dashed",
+             linewidth = 0.3) +
+  geom_errorbar(aes(xmin = ci_lo, xmax = ci_hi), width = 0,
+                linewidth = 0.4, position = position_dodge(0.45),
+                orientation = "y") +
+  geom_point(size = 1.5, position = position_dodge(0.45)) +
+  scale_colour_manual(values = c("Univariate" = col_uni, "Joint" = col_multi)) +
+  labs(x = "Coefficient", y = NULL) +
+  base_theme +
+  theme(
+    axis.text.x = element_text(size = text_size, face = "plain", color = text_colour),
+    legend.position      = c(1, 0),
+    legend.justification = c(1, 0),
+    legend.background    = element_rect(fill = NA, color = NA),
+    legend.key.size      = unit(0.35, "cm")
   )
-  plot(NULL,
-       xlim = c(-2, x_range_b[2] + x_pad_b),
-       ylim = c(-0.6, max(y_pos_b) + 0.6),
-       xlab = "Coefficient", ylab = "",
-       yaxt = "n", xaxt = "n", main = "", bty = "n")
-  abline(v = 0, col = col_vline, lty = 2, lwd = axis_lwd)
-  arrows(uni_ci_lower, y_pos_b - offset, uni_ci_upper, y_pos_b - offset,
-         length = 0.015, angle = 90, code = 3, col = col_uni, lwd = ci_lwd)
-  points(uni_coef, y_pos_b - offset, pch = 19, col = col_uni, cex = pt_cex)
-  arrows(multi_ci_lower, y_pos_b + offset, multi_ci_upper, y_pos_b + offset,
-         length = 0.015, angle = 90, code = 3, col = col_multi, lwd = ci_lwd)
-  points(multi_coef, y_pos_b + offset, pch = 19, col = col_multi, cex = pt_cex)
-  axis(1, tck = -0.008, col = axis_colour, col.axis = text_colour,
-       lwd = axis_lwd, cex.axis = base_cex)
-  axis(2, at = par("usr")[3:4], labels = FALSE, tck = 0,
-       lwd = axis_lwd, col = axis_colour)
-  axis(2, at = y_pos_b, labels = covariate_labels, las = 1, tck = -0.008,
-       col = NA, col.ticks = axis_colour, col.axis = text_colour,
-       cex.axis = base_cex, lwd.ticks = axis_lwd)
-  legend("bottomright", legend = c("Univariate", "Joint"),
-         col = c(col_uni, col_multi), pch = 19, lty = 1, lwd = ci_lwd,
-         bty = "n", cex = base_cex, text.col = text_colour)
-}
 
 # ===========================================================================
-# PLOT D: Enrichment of Pleiotropy in Gene Sets
+# PLOT C: Enrichment of Pleiotropy in Gene Sets (ggplot2)
 # ===========================================================================
 results_df <- read.csv(file.path(data_dir, "gene_pleiotropy_by_category.csv"),
                        stringsAsFactors = FALSE)
 results_df <- results_df[order(results_df$log_odds_ratio), ]
 plot_data  <- results_df[complete.cases(results_df[, c("log_ci_lower", "log_ci_upper")]), ]
-y_pos_d    <- seq_len(nrow(plot_data)) - 1L
-pt_col     <- ifelse(grepl("gwas", tolower(plot_data$category)), col_gwas, col_other)
 
-draw_plot_d <- function() {
-  par(
-    mar = c(4.5, 20, 1.5, 0.5),
-    xaxs = "i", yaxs = "i",
-    fg = axis_colour, col = text_colour,
-    col.axis = text_colour, col.lab = text_colour, col.main = text_colour,
-    cex.axis = base_cex, cex.lab = base_cex,
-    family = "sans"
+plot_data$label   <- factor(plot_data$label, levels = plot_data$label)
+plot_data$is_gwas <- grepl("gwas", tolower(plot_data$category))
+
+p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
+  geom_vline(xintercept = 0, colour = col_vline, linetype = "dashed",
+             linewidth = 0.3) +
+  geom_errorbar(aes(xmin = log_ci_lower, xmax = log_ci_upper), width = 0,
+                colour = col_other, linewidth = 0.4, orientation = "y") +
+  geom_point(aes(colour = is_gwas), shape = 19, size = 1.5) +
+  scale_colour_manual(values = c("TRUE" = col_gwas, "FALSE" = col_other),
+                      guide  = "none") +
+  labs(x = "log(OR)", y = NULL) +
+  base_theme +
+  theme(
+    axis.text.x = element_text(size = text_size, face = "plain", color = text_colour)
   )
-  plot(plot_data$log_odds_ratio, y_pos_d, type = "n",
-       xlim = c(-0.4, max(plot_data$log_ci_upper) * 1.1),
-       ylim = c(-0.6, max(y_pos_d) + 0.6),
-       xlab = "log(OR)", ylab = "",
-       yaxt = "n", xaxt = "n", main = "", bty = "n")
-  abline(v = 0, col = col_vline, lty = 2, lwd = axis_lwd)
-  arrows(plot_data$log_ci_lower, y_pos_d, plot_data$log_ci_upper, y_pos_d,
-         length = 0.015, angle = 90, code = 3, col = col_other, lwd = ci_lwd)
-  points(plot_data$log_odds_ratio, y_pos_d, pch = 21, bg = pt_col, col = pt_col, cex = pt_cex)
-  axis(1, tck = -0.008, col = axis_colour, col.axis = text_colour,
-       lwd = axis_lwd, cex.axis = base_cex)
-  axis(2, at = par("usr")[3:4], labels = FALSE, tck = 0,
-       lwd = axis_lwd, col = axis_colour)
-  axis(2, at = y_pos_d, labels = plot_data$label, las = 1, tck = -0.008,
-       col = NA, col.ticks = axis_colour, col.axis = text_colour,
-       cex.axis = base_cex, lwd.ticks = axis_lwd)
-}
 
 # ===========================================================================
-# COMBINE: Plot A | Plot B | Plot D  (grid layout for exact alignment)
+# COMBINE: (p_top / p_bot) | p_b | p_c  — all ggplot2, patchwork aligns heights
 # ===========================================================================
-grob_b <- as.grob(draw_plot_b)
-grob_d <- as.grob(draw_plot_d)
+final <- (p_top / p_bot) | p_b | p_c
+final <- final +
+  plot_layout(widths = c(1.2, 1, 1.2)) +
+  plot_annotation(tag_levels = list(c("a", "", "b", "c"))) &
+  theme(plot.tag = element_text(face = "bold", size = 8, color = text_colour))
 
 out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
   "chapters/03-manuscript-figures/figure_4"
@@ -274,33 +238,5 @@ out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
   "."
 }
 png_file <- file.path(out_dir, "figure_4_grid.png")
-png(png_file, width = 16, height = 6.5, units = "in", res = 300, bg = "white")
-
-grid.newpage()
-tag_gp <- gpar(fontface = "bold", fontsize = 12, col = text_colour)
-
-pushViewport(viewport(x = 0.5, y = 0.5, width = 0.98, height = 0.96))
-lay <- grid.layout(
-  nrow = 2, ncol = 3,
-  heights = unit.c(unit(14, "pt"), unit(1, "null")),
-  widths  = unit(c(1, 1.2, 1.6), "null")
-)
-pushViewport(viewport(layout = lay))
-
-tags  <- c("a", "b", "c")
-grobs <- list(grob_a, grob_b, grob_d)
-
-for (i in seq_along(grobs)) {
-  pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
-  grid.text(tags[i], x = unit(2, "pt"), y = 0.5,
-            just = c("left", "center"), gp = tag_gp)
-  popViewport()
-
-  pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
-  grid.draw(grobs[[i]])
-  popViewport()
-}
-
-popViewport(2)
-dev.off()
+ggsave(png_file, final, width = 12, height = 4.3, dpi = 300, bg = "white")
 message("Saved: ", png_file)
