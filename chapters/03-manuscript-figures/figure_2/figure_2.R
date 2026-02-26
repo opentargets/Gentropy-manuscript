@@ -90,6 +90,12 @@ colors <- c(
 # Ensure studyType has a consistent order across both plots
 studytype_levels <- c("cis-pqtl", "eqtl", "gwas-disease", "gwas-measurement")
 
+# X-axis title position for plot a and b (hjust: 0 = left, 0.5 = center, 1 = right; vjust: vertical)
+x_axis_title_hjust_a <- 0.8
+x_axis_title_vjust_a <- 1
+x_axis_title_hjust_b <- 0.8
+x_axis_title_vjust_b <- 1
+
 # ---- Plot A ----
 
 data_2a$studyType <- factor(
@@ -97,10 +103,10 @@ data_2a$studyType <- factor(
   levels = studytype_levels
 )
 
-# X-axis breaks for plot a) (same as in the python version)
+# X-axis breaks for plot a) (show all labels except 0.3-0.4)
 x_breaks_a <- sort(unique(data_2a$mafBinMidpoint))
 x_labels_a <- sort(unique(data_2a$mafBinRange))
-x_labels_a[x_labels_a == "0.01-0.05"] <- ""
+x_labels_a[x_labels_a == "0.3-0.4"] <- ""
 
 # Calculate y-axis limits for plot a) to ensure all data is visible
 max_y_a <- max(data_2a$avgAbsEstimatedBetaInBucketCIUpper)
@@ -140,24 +146,26 @@ plot_a <- ggplot(
     labels = c("cis-pQTL", "eQTL", "GWAS (disease)", "GWAS (measurement)"),
     name = "studyType"
   ) +
-  scale_x_continuous(
+  scale_x_log10(
     breaks = x_breaks_a,
     labels = x_labels_a,
     expand = c(0, 0)
   ) +
   labs(
-    x = "MAF bins",
+    x = expression(log[10](mean~MAF)),
     y = expression(mean("|" * hat(beta) * "|"))
   ) +
   base_theme +
   coord_cartesian(ylim = c(0, y_upper_a)) +
   theme(
-    plot.margin = margin(t = 5, r = 5, b = 15, l = 5),
+    plot.margin = margin(t = 5, r = 0, b = 15, l = 10),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
       color = "#434343",
-      margin = margin(t = 2)
+      margin = margin(t = 4),
+      hjust = x_axis_title_hjust_a,
+      vjust = x_axis_title_vjust_a
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
     legend.position = "none" # Legend will be placed at bottom
@@ -171,9 +179,9 @@ data_2b$studyType <- factor(
   levels = studytype_levels
 )
 
-# Define bins and labels
+# Define bins and labels (show all except 0.3-0.4)
 x_labels_b <- sort(unique(data_2b$mafBinRange))
-x_labels_b[x_labels_b == "0.01-0.05"] <- ""
+x_labels_b[x_labels_b == "0.3-0.4"] <- ""
 x_breaks_b <- sort(unique(data_2b$mafBinMidpoint))
 
 # Calculate y-axis limits to ensure all data is visible in plot b)
@@ -213,24 +221,26 @@ plot_b <- ggplot(
     labels = c("cis-pQTL", "eQTL", "GWAS (disease)", "GWAS (measurement)"),
     name = "studyType"
   ) +
-  scale_x_continuous(
+  scale_x_log10(
     breaks = x_breaks_b,
     labels = x_labels_b,
     expand = c(0, 0)
   ) +
   labs(
-    x = "MAF bins",
+    x = expression(log[10](mean~MAF)),
     y = "Proportion of PAV"
   ) +
   base_theme +
   coord_cartesian(ylim = c(0, max(y_upper, 0.6))) +
   theme(
-    plot.margin = margin(t = 5, r = 5, b = 15, l = 5),
+    plot.margin = margin(t = 5, r = 0, b = 15, l = 15),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
       color = "#434343",
-      margin = margin(t = 2)
+      margin = margin(t = 4),
+      hjust = x_axis_title_hjust_b,
+      vjust = x_axis_title_vjust_b
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
     legend.position = "none" # Legend will be placed at bottom
@@ -431,11 +441,11 @@ axis_title_d <- get_plot_component(plot_d, "xlab-b", return_all = TRUE)
 rel_widths <- c(1, 0.1, 1, 0.1, 1.5, 0.1, 1 / 2)  # gap a-b, gap b-c, gap c-d
 spacer <- ggplot() + theme_void()
 
-# Combine plots A and B without legends
+# Combine plots (first panel = plot b, third = plot a; labels "a"/"b" unchanged)
 plots_abcd <- plot_grid(
-  plot_a + theme(legend.position = "none", axis.title.x = element_blank()),
-  spacer,
   plot_b + theme(legend.position = "none", axis.title.x = element_blank()),
+  spacer,
+  plot_a + theme(legend.position = "none", axis.title.x = element_blank()),
   spacer,
   plot_c + theme(legend.position = "right", axis.title.x = element_blank()),
   spacer,
@@ -448,11 +458,11 @@ plots_abcd <- plot_grid(
   label_x = c(0, 0, -0.02, 0, -0.02, 0, -0.2)
 )
 
-# Combine plots A and B without legends
+# Combine x-axis titles (swapped to match panels: first = b, third = a)
 plots_abcd_x_axes <- plot_grid(
-  axis_title_a,
-  spacer,
   axis_title_b,
+  spacer,
+  axis_title_a,
   spacer,
   axis_title_c,
   spacer,
