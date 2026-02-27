@@ -212,11 +212,13 @@ p_a <- ggplot(df_a_plot, aes(
 # -----------------------------
 maf_levels <- c("0-0.01", "0.01-0.05", "0.05-0.1", "0.1-0.2", "0.2-0.3", "0.3-0.4", "0.4-0.5")
 
-# Extract lower bound of each MAF bin for continuous positioning
+# Use bin midpoints for x (log scale); extract lower bound for compatibility
 maf_lower <- as.numeric(sub("-.*", "", maf_levels))
-maf_bin_to_x <- setNames(maf_lower, maf_levels)
-# Remove label (but keep tick) for second interval (0.01-0.05)
-maf_labels <- ifelse(maf_levels == "0.01-0.05", "", maf_levels)
+maf_upper <- as.numeric(sub(".*-", "", maf_levels))
+maf_midpoints <- (maf_lower + maf_upper) / 2
+maf_bin_to_x <- setNames(maf_midpoints, maf_levels)
+# Remove label for 0.3-0.4 (tick kept)
+maf_labels <- ifelse(maf_levels == "0.3-0.4", "", maf_levels)
 
 df_b_long <- df_b %>%
     mutate(maxMAF_bin = as.character(maxMAF_bin)) %>%
@@ -253,10 +255,11 @@ p_b <- ggplot(df_b_long, aes(
     geom_line(linewidth = 0.3) +
     scale_colour_manual(values = pal_series, name = NULL) +
     scale_fill_manual(values = pal_series, name = NULL) +
-    scale_x_continuous(breaks = maf_lower, labels = maf_labels, limits = c(0, 0.4), expand = c(0, 0)) +
+    scale_x_log10(breaks = maf_midpoints, labels = maf_labels, expand = c(0, 0)) +
+    coord_cartesian(xlim = c(min(maf_midpoints), 0.5)) +
     labs(
         tag = "a",
-        x = "MAF bin",
+        x = expression(log[10](mean~MAF)),
         y = "Number of traits"
     ) +
     base_theme +
