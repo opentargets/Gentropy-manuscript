@@ -206,7 +206,12 @@ results_df <- read.csv(file.path(data_dir, "gene_pleiotropy_by_category.csv"),
 results_df <- results_df[order(results_df$log_odds_ratio), ]
 plot_data  <- results_df[complete.cases(results_df[, c("log_ci_lower", "log_ci_upper")]), ]
 
-plot_data$label   <- factor(plot_data$label, levels = plot_data$label)
+# FDR from p-values (Benjamini–Hochberg); asterisk when FDR < 5%
+plot_data$fdr     <- p.adjust(plot_data$p_value, method = "fdr")
+plot_data$label_display <- ifelse(plot_data$fdr < 0.05,
+                                  paste0(as.character(plot_data$label), " *"),
+                                  as.character(plot_data$label))
+plot_data$label   <- factor(plot_data$label_display, levels = plot_data$label_display)
 plot_data$is_gwas <- grepl("gwas", tolower(plot_data$category))
 
 p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
@@ -228,7 +233,7 @@ p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
 # ===========================================================================
 final <- (p_top / p_bot) | p_b | p_c
 final <- final +
-  plot_layout(widths = c(1.3, 1, 1.2)) +
+  plot_layout(widths = c(1.2, 1, 1.2)) +
   plot_annotation(tag_levels = list(c("a", "", "b", "c"))) &
   theme(plot.tag = element_text(face = "bold", size = 8, color = text_colour))
 
