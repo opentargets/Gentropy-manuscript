@@ -379,7 +379,7 @@ plot_d <- ggplot(
       xmin = CILower,
       xmax = CIUpper
     ),
-    width = 0.3,
+    width = 0,
     linewidth = 0.3,
     position = position_dodge_w
   ) +
