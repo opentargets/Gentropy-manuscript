@@ -96,6 +96,9 @@ x_axis_title_vjust_a <- 1
 x_axis_title_hjust_b <- 0.8
 x_axis_title_vjust_b <- 1
 
+# Aspect ratio for all four panels (height/width; same value keeps panels uniform)
+panel_aspect_ratio <- 0.6
+
 # ---- Plot A ----
 
 data_2a$studyType <- factor(
@@ -168,7 +171,8 @@ plot_a <- ggplot(
       vjust = x_axis_title_vjust_a
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
-    legend.position = "none" # Legend will be placed at bottom
+    legend.position = "none", # Legend will be placed at bottom
+    aspect.ratio = panel_aspect_ratio
   )
 
 # ---- Plot B ----
@@ -243,7 +247,8 @@ plot_b <- ggplot(
       vjust = x_axis_title_vjust_b
     ),
     axis.title.y = element_text(size = 8, face = "plain", color = "#434343"),
-    legend.position = "none" # Legend will be placed at bottom
+    legend.position = "none", # Legend will be placed at bottom
+    aspect.ratio = panel_aspect_ratio
   )
 
 # ---- Plot C ----
@@ -266,6 +271,14 @@ fill_label_order <- c(
   "intergenic"
 )
 
+# Human-readable labels for consequence categories (shared by forest plot c and barplot d)
+consequence_labels <- c(
+  "protein_altering" = "Protein altering",
+  "intragenic" = "Intragenic",
+  "promoter" = "Promoter",
+  "enhancer" = "Enhancer",
+  "intergenic" = "Intergenic"
+)
 
 # Format labels: show rounded integers for segments > 5%
 data_c <- data_2c %>%
@@ -314,6 +327,7 @@ plot_c <- ggplot(
   ) +
   scale_fill_manual(
     values = categorical_dark_colors,
+    labels = consequence_labels,
     name = "Consequence category"
   ) +
   labs(
@@ -322,7 +336,7 @@ plot_c <- ggplot(
   ) +
   base_theme +
   theme(
-    # aspect.ratio = 1.2,
+    aspect.ratio = panel_aspect_ratio,
     axis.ticks = element_blank(),
     axis.line = element_blank(),
     legend.position = "right",
@@ -338,6 +352,7 @@ plot_c <- ggplot(
       angle = 45,
       hjust = 0.95
     ),
+    axis.text.y = element_text(size = 8, color = "#434343"),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
@@ -387,6 +402,7 @@ plot_d <- ggplot(
     position = position_dodge_w,
     size = 1
   ) +
+  scale_y_discrete(labels = consequence_labels) +
   scale_color_manual(
     values = c("diseases" = "#4F97CF", "measurements" = "#245780"),
     name = "Study type"
@@ -404,29 +420,32 @@ plot_d <- ggplot(
   base_theme +
   theme(
     legend.position = "bottom",
+    legend.justification = c(1.5, 0.5),
     legend.text = element_text(size = 8),
     legend.key.size = unit(0.5, "cm"),
     legend.direction = "horizontal",
-    # legend.spacing.y = unit(0, "cm"),
-    legend.box.spacing = unit(0.1, "cm"),
+    legend.spacing.y = unit(-1, "cm"),
+    # legend.box.spacing = unit(-1, "cm"),
     legend.margin = margin(t = 0, r = 0, b = 0, l = 0),
     axis.text.x = element_text(
       size = 8,
       color = "#434343",
       angle = 45,
-      hjust = 0.9,
+      # vjust = 0.8,
+      # hjust = 0.5,
       margin = margin(t = 0, b = 0)
     ),
-    axis.text.y = element_blank(),
+    axis.text.y = element_text(size = 8, color = "#434343"),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
       color = "#434343",
       margin = margin(t = -8),
-      hjust = 0.2
+      hjust = 0.9
     ),
     axis.title.y = element_blank(),
-    plot.margin = margin(t = 5, r = 20, b = 15, l = 0)
+    plot.margin = margin(t = 5, r = 5, b = 15, l = 5)
+    # No aspect.ratio: width controlled by rel_widths only, height fills row
   )
 
 # ---- Combine all plots horizontally using cowplot ----
@@ -438,38 +457,74 @@ axis_title_c <- get_plot_component(plot_c, "xlab-b", return_all = TRUE)
 axis_title_d <- get_plot_component(plot_d, "xlab-b", return_all = TRUE)
 
 
-rel_widths <- c(1, 0.1, 1, 0.1, 1.5, 0.1, 1 / 2)  # gap a-b, gap b-c, gap c-d
+rel_widths <- c(1.2, 1.2, 1.1, 2)  # minimal gaps between panels
 spacer <- ggplot() + theme_void()
 
-# Combine plots (first panel = plot b, third = plot a; labels "a"/"b" unchanged)
+
+# Combine plots (a/b and c/d: labels unchanged; panel "c" = plot d, panel "d" = plot c)
+# Minimal margins so plot content fills each panel (no gap between label and graph)
+margin_fill <- margin(t = 2, r = 2, b = 15, l = 5)
 plots_abcd <- plot_grid(
-  plot_b + theme(legend.position = "none", axis.title.x = element_blank()),
-  spacer,
-  plot_a + theme(legend.position = "none", axis.title.x = element_blank()),
-  spacer,
-  plot_c + theme(legend.position = "right", axis.title.x = element_blank()),
-  spacer,
-  plot_d + theme(legend.position = "none", axis.title.x = element_blank()),
+  plot_a + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin_fill),
+  plot_b + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin_fill),
+  plot_d + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(t = 0, r = 0, b = 0, l = 15)),
+  plot_c + theme(legend.position = "right", axis.title.x = element_blank(), plot.margin = margin(t = 2, r = 0, b = 1, l = 5), legend.text.align = 0),
   nrow = 1,
   align = "h",
   rel_widths = rel_widths,
-  labels = c("a", "", "b", "", "c", "", "d"),
-  label_size = 8,
-  label_x = c(0, 0, -0.02, 0, -0.02, 0, -0.2)
+  labels = c("a", "b", "c", "d"),
+  label_size = 8
+  # label_x = c(0.02, 0, 0.02, 0, 0.02, 0, 0.02)
 )
 
-# Combine x-axis titles (swapped to match panels: first = b, third = a)
+ggsave(
+  "figure_2_final_plot_c.png",
+  plot = plot_c,
+  width = 3.5,
+  height = 2.5,
+  dpi = 300,
+  bg = "#ffffff"
+)
+
+ggsave(
+  "figure_2_final_plot_d.png",
+  plot = plot_d + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(t = 0, r = 0, b = 0, l = 15)),
+  width = 3.5,
+  height = 3.5,
+  dpi = 300,
+  bg = "#ffffff"
+)
+
+ggsave(
+  "figure_2_final_plots_abcd.png",
+  plot = plots_abcd,
+  width = 8.27,
+  height = 2.5,
+  dpi = 300,
+  bg = "#ffffff"
+)
+
+# Combine x-axis titles (match panels: c = axis d, d = axis c)
 plots_abcd_x_axes <- plot_grid(
-  axis_title_b,
-  spacer,
   axis_title_a,
-  spacer,
-  axis_title_c,
-  spacer,
+  # spacer,
+  axis_title_b,
+  # spacer,
   axis_title_d,
+  # spacer,
+  axis_title_c,
   nrow = 1,
   align = "h",
   rel_widths = rel_widths
+)
+
+ggsave(
+  "figure_2_final_plots_abcd_x_axes.png",
+  plot = plots_abcd_x_axes,
+  width = 8.27,
+  height = 0.5,
+  dpi = 300,
+  bg = "#ffffff"
 )
 
 # Extract legend from plot A (same legend for A and B)
@@ -499,16 +554,16 @@ legend_d <- get_legend(
 )
 
 rel_widths_ab_merged <- c(
-  rel_widths[1] + rel_widths[2] + rel_widths[3],
-  rel_widths[4] + rel_widths[5],
-  rel_widths[6] + rel_widths[7]
+  rel_widths[1] + rel_widths[2],
+  rel_widths[3],
+  rel_widths[4]
 )
 
 plot_legend_abcd <- plot_grid(
   spacer,
   legend_ab,
-  legend_c,
   legend_d,
+  legend_c,
   nrow = 1,
   align = "h",
   rel_widths = c(0.3, rel_widths_ab_merged[1] - 0.3, rel_widths_ab_merged[2], rel_widths_ab_merged[3]),
