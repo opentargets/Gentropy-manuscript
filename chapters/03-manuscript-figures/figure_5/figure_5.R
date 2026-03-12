@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
   library(tidyr)
   library(readr)
   library(patchwork)
+  library(cowplot)
 })
 
 # ---- Paths ----
@@ -40,6 +41,9 @@ point_size_b <- 1.5
 # Uniform margins for axis alignment across panels
 mar_top <- margin(t = 5, r = 6, b = 2, l = 10)
 mar_bot <- margin(t = 2, r = 6, b = 8, l = 10)
+# Plot A: no right margin to eliminate gap with col_middle
+mar_a_top <- margin(t = 5, r = 0, b = 2, l = 10)
+mar_a_bot <- margin(t = 2, r = 10, b = 8, l = 10)
 
 base_theme <- theme_minimal() +
   theme(
@@ -83,14 +87,22 @@ temporal_4 <- temporal %>%
 # Crop to 2010-2024
 temporal_4_crop <- temporal_4 %>% filter(datasource_num >= 2010, datasource_num <= 2024)
 
+# Main and minor year breaks for x-axis
+x_breaks_main <- seq(2010, 2024, 2)
+x_breaks_minor <- seq(2011, 2023, 2)
+
 # Top: Odds ratios (figure_4 colors: col_gene, col_vline)
+# X-axis at y=2 (bottom of plot) with ticks oriented down, no labels
 p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
   geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = col_gene, alpha = 0.12) +
   geom_line(color = col_gene, linewidth = line_lwd) +
   geom_hline(yintercept = 3.619, color = col_vline, linetype = "dashed", linewidth = ci_lwd) +
   scale_x_continuous(
-    breaks = temporal_4_crop$datasource_num[seq(1, nrow(temporal_4_crop), by = 2)],
-    expand = c(0.02, 0)
+    breaks = x_breaks_main,
+    minor_breaks = x_breaks_minor,
+    limits = c(2010, 2024),
+    expand = c(0, 0),
+    guide = guide_axis(minor.ticks = TRUE, n.dodge = 1)
   ) +
   scale_y_continuous(limits = c(2, 16), expand = c(0, 0)) +
   labs(x = NULL, y = "Odds Ratio") +
@@ -98,23 +110,30 @@ p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
   theme(
     axis.text.x       = element_blank(),
     axis.title.x      = element_blank(),
-    axis.line.x       = element_blank(),
-    axis.ticks.x      = element_blank()
+    axis.line.x       = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.x      = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.length.x = unit(0.15, "cm")
   )
 
 # Bottom: T-D pairs (figure_4 color: col_variant)
-p_a_bot <- ggplot(temporal_4, aes(x = datasource_num, y = yes_evid_high_clinphase)) +
+# Same x-axis breaks and tick sizes as top plot
+p_a_bot <- ggplot(temporal_4_crop, aes(x = datasource_num, y = yes_evid_high_clinphase)) +
   geom_line(color = col_variant, linewidth = line_lwd) +
   scale_x_continuous(
-    breaks = temporal_4$datasource_num[seq(1, nrow(temporal_4), by = 2)],
-    expand = c(0.02, 0)
+    breaks = x_breaks_main,
+    minor_breaks = x_breaks_minor,
+    limits = c(2010, 2024),
+    expand = c(0, 0),
+    guide = guide_axis(minor.ticks = TRUE)
   ) +
+  scale_y_continuous(limits = c(0, NA), expand = c(0, 0.05)) +
   labs(x = "Year", y = "T-I pairs with approved drug") +
-  base_theme
+  base_theme +
+  theme(axis.ticks.length.x = unit(0.08, "cm"))
 
-# Stack A (shared x) - uniform margins for axis alignment
-p_a_top <- p_a_top + theme(plot.margin = mar_top)
-p_a_bot <- p_a_bot + theme(plot.margin = mar_bot)
+# Stack A (shared x) - use mar_a with r=0 to eliminate gap with col_middle
+p_a_top <- p_a_top + theme(plot.margin = mar_a_top)
+p_a_bot <- p_a_bot + theme(plot.margin = mar_a_bot)
 p_a <- p_a_top / p_a_bot +
   plot_layout(heights = c(1, 1))
 
@@ -188,13 +207,14 @@ p_b <- ggplot(forest_df, aes(x = odds_ratio, y = label, color = drugsource)) +
   geom_point(size = point_size_b, position = position_dodge(width = 0.3)) +
   scale_color_manual(values = colors_drug) +
   scale_x_continuous(limits = c(2, 8), breaks = 2:8, expand = c(0, 0)) +
-  labs(x = "Odds Ratio", y = NULL) +
+  labs(x = "Odds Ratio", y = "Transition Probability") +
   base_theme +
   theme(
-    axis.text.y  = element_text(size = 6),
-    axis.title.x = element_blank(),
-    # Large left margin pushes OR plot right so bar plot y-axis appears left of it
-    plot.margin  = margin(t = 5, r = 6, b = 2, l = 10)
+    axis.text.y     = element_text(size = 6),
+    axis.title.y    = element_text(color = "transparent"),
+    legend.position = "none",
+    plot.margin     = margin(t = 5, r = 14, b = 2, l = 0),
+    plot.tag.position = c(0.15, 1.02)  # b label further right than a, c
   )
 
 # =============================================================================
@@ -211,9 +231,9 @@ df_phase <- df_reg %>%
   )
 
 transitions <- list(
-  list(start = 1, end = 2, name = "P1 -> P2"),
-  list(start = 2, end = 3, name = "P2 -> P3"),
-  list(start = 3, end = 4, name = "P3 -> P4")
+  list(start = 1, end = 2, name = "P1 → P2"),
+  list(start = 2, end = 3, name = "P2 → P3"),
+  list(start = 3, end = 4, name = "P3 → P4")
 )
 labels_pleio <- c("Low (1)", "Medium (2-5)", "High (6+)")
 
@@ -244,8 +264,8 @@ trans_df$Transition <- factor(trans_df$Transition,
                               levels = sapply(transitions, function(x) x$name))
 trans_df$Pleiotropy <- factor(trans_df$Pleiotropy, levels = labels_pleio)
 
-# Manual bar positioning to match Python (Blues_d palette)
-blues_pal <- c("Low (1)" = "#3182BD", "Medium (2-5)" = "#6BAED6", "High (6+)" = "#9ECAE1")
+# Manual bar positioning (Blues: light to dark for Low -> Medium -> High)
+blues_pal <- c("Low (1)" = "#9ECAE1", "Medium (2-5)" = "#6BAED6", "High (6+)" = "#3182BD")
 
 p_d <- ggplot(trans_df, aes(x = Transition, y = Success_Rate, fill = Pleiotropy)) +
   geom_bar(stat = "identity", position = position_dodge(0.8), width = 0.7) +
@@ -255,21 +275,29 @@ p_d <- ggplot(trans_df, aes(x = Transition, y = Success_Rate, fill = Pleiotropy)
   scale_fill_manual(values = blues_pal) +
   coord_cartesian(ylim = c(0.2, 0.9)) +
   scale_y_continuous(breaks = seq(0.2, 0.9, 0.1)) +
-  labs(x = NULL, y = "Transition Probability") +
+  labs(x = NULL, y = "Transition probability") +
   base_theme +
   theme(
-    axis.title.x = element_blank(),
-    plot.margin  = mar_bot
+    axis.title.x   = element_blank(),
+    axis.ticks.x   = element_blank(),
+    axis.title.y   = element_text(margin = margin(r = 0)),  # very close to y-axis
+    plot.margin    = margin(t = 2, r = 14, b = 8, l = 0),
+    legend.position      = c(1, 1),
+    legend.justification  = c(1, 1),
+    legend.background    = element_rect(fill = NA, color = NA),
+    legend.key.size      = unit(0.35, "cm"),
+    plot.tag.position = c(0.15, 1.02)  # d label further right than a, c
   )
 
 # =============================================================================
 # PLOT C: Pleiotropy regression (Right column - TA top, gPS bottom)
 # =============================================================================
-run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL) {
+run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL, show_legend = FALSE,
+                           top_panel = FALSE) {
   df_valid <- filter(df_full, .data[[x_var]] >= 1)
-  x_min <- min(df_valid[[x_var]])
+  x_min <- max(1, min(df_valid[[x_var]]))
   x_max <- max(df_valid[[x_var]])
-  x_grid <- exp(seq(log(x_min), log(x_max), length.out = 200))
+  x_grid <- exp(seq(log(1), log(x_max), length.out = 200))
 
   formula_str <- paste0("outcome ~ geneticSupport + I(log(", x_var, "+1)) + I(log(", x_var, "+1)^2)")
   fit_base <- glm(as.formula(formula_str), data = df_full, family = binomial)
@@ -315,33 +343,59 @@ run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL) {
   pred_base_gs1 <- predict(fit_base, newdata = pred_df_gs1, type = "response")
   pred_base_gs0 <- predict(fit_base, newdata = pred_df_gs0, type = "response")
 
-  rug_data <- df_full[df_full$geneticSupport == 1 & df_full[[x_var]] >= 1, ]
-
   if (is.null(x_breaks)) x_breaks <- scales::breaks_log()(c(x_min, x_max))
+
+  # Long-format for legend
+  leg_df <- data.frame(
+    x = rep(x_grid, 3),
+    y = c(pred_base_gs1, lowess_m1, pred_base_gs0),
+    series = rep(c("Model (with GWAS)", "Observed (with GWAS)", "Model (no GWAS)"),
+                 each = length(x_grid))
+  )
 
   p <- ggplot() +
     geom_ribbon(aes(x = x_grid, ymin = logit_ci1[1, ], ymax = logit_ci1[2, ]),
                 fill = col_gene, alpha = 0.12) +
-    geom_line(aes(x = x_grid, y = pred_base_gs1), color = col_gene, linewidth = line_lwd) +
     geom_ribbon(aes(x = x_grid, ymin = lowess_ci1[1, ], ymax = lowess_ci1[2, ]),
                 fill = col_gene, alpha = 0.07) +
-    geom_line(aes(x = x_grid, y = lowess_m1), color = col_gene, linewidth = 0.5, linetype = "dashed") +
     geom_ribbon(aes(x = x_grid, ymin = logit_ci0[1, ], ymax = logit_ci0[2, ]),
                 fill = "gray", alpha = 0.12) +
-    geom_line(aes(x = x_grid, y = pred_base_gs0), color = "gray", linewidth = line_lwd) +
-    geom_rug(data = rug_data, aes(x = .data[[x_var]]), sides = "b", alpha = 0.2, color = col_gene) +
-    scale_x_log10(breaks = x_breaks, labels = as.character(x_breaks)) +
-    coord_cartesian(ylim = c(0.1, NA), xlim = c(x_min, x_max)) +
+    geom_line(data = leg_df, aes(x = x, y = y, color = series, linetype = series),
+              linewidth = ifelse(leg_df$series == "Observed (with GWAS)", 0.5, line_lwd)) +
+    scale_color_manual(
+      values = c("Model (with GWAS)" = col_gene, "Observed (with GWAS)" = col_gene,
+                 "Model (no GWAS)" = "gray"),
+      guide = if (show_legend) {
+        guide_legend(override.aes = list(linetype = c("solid", "dashed", "solid"),
+                                         linewidth = c(line_lwd, 0.5, line_lwd)),
+                     spacing = 0.1, keyheight = 0.4)
+      } else "none"
+    ) +
+    scale_linetype_manual(values = c("Model (with GWAS)" = "solid", "Observed (with GWAS)" = "dashed",
+                                     "Model (no GWAS)" = "solid"), guide = "none") +
+    scale_x_log10(breaks = x_breaks, labels = as.character(x_breaks),
+                  limits = c(1, x_max), expand = expansion(mult = 0, add = 0),
+                  guide = guide_axis(minor.ticks = FALSE)) +
+    coord_cartesian(ylim = c(0.1, NA)) +
     labs(x = x_label, y = "P(Success)") +
   base_theme +
   theme(
-    plot.margin = margin(5, 6, 5, 10)
+    plot.margin = margin(5, 6, if (top_panel) 2 else 5, 14),
+    axis.ticks         = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.x       = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.x.top   = element_blank(),
+    axis.ticks.length.x = unit(0.08, "cm"),
+    legend.position      = c(0.4, 1),
+    legend.justification = c(0, 1),
+    legend.spacing.y    = unit(0.08, "cm"),
+    legend.key.height   = unit(0.3, "cm"),
+    legend.background   = element_rect(fill = NA, color = NA)
   )
   p
 }
 
 p_c_top <- run_pleio_plot(df_reg, "uniqueTherapeuticAreas", "Pleiotropy (Therapeutic Areas)",
-                         x_breaks = c(1, 2, 5, 10, 20))
+                         x_breaks = c(1, 2, 5, 10, 20), show_legend = TRUE, top_panel = TRUE)
 p_c_bot <- run_pleio_plot(df_reg, "uniqueDiseases", "Pleiotropy (gPS)",
                          x_breaks = c(1, 2, 5, 10, 20, 50))
 
@@ -363,8 +417,8 @@ final <- (col_left | col_middle | col_right) +
   plot_layout(widths = c(1, 1, 1), axes = "keep") +
   plot_annotation(tag_levels = list(c("a", "", "b", "d", "c", ""))) &
   theme(
-    plot.tag = element_text(face = "plain", size = text_size, color = text_colour),
-    plot.tag.position = c(0.02, 0.98)
+    plot.tag = element_text(face = "bold", size = text_size, color = text_colour, vjust = 1)
+    # plot.tag.position: set per-column (a,c=0.02 in col_left/col_right; b,d=0.10 in p_b/p_d)
   )
 
 out_dir <- if (dir.exists("chapters/03-manuscript-figures/figure_5")) {
