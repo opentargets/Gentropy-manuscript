@@ -16,9 +16,20 @@ if (getRversion() >= "2.15.1") {
   ))
 }
 
+# Resolve script directory (works both when sourced and run standalone via Rscript)
+if (!exists("fig1_dir")) {
+  .argv     <- commandArgs(trailingOnly = FALSE)
+  .file_arg <- .argv[startsWith(.argv, "--file=")]
+  fig1_dir  <- if (length(.file_arg) > 0) {
+    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
+  } else {
+    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
+  }
+}
+
 # Input and output paths
-input_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/l2g_diseases_full.csv"
-output_png <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_1/Figure_1_facet.png"
+input_csv  <- file.path(fig1_dir, "data", "l2g_diseases_full.csv")
+output_png <- file.path(fig1_dir, "Figure_1_b_c.png")
 
 text_size <- 9
 ylab_shift <- 8        # shift ALL y-axis titles closer to axis (pt)
@@ -30,8 +41,9 @@ base_theme <- theme_minimal() +
     text = element_text(face = "plain", color = "#434343", size = text_size),
     plot.title = element_text(face = "plain", size = text_size, hjust = 0.5, color = "#434343"),
     axis.title = element_text(size = text_size, face = "plain", color = "#434343"),
-    axis.title.y = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(r = 2), vjust = 1),
+    axis.title.y = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(r = 0), vjust = 1),
     axis.text = element_text(size = text_size, face = "plain", color = "#434343"),
+    axis.text.y = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(r = 1)),
     axis.text.x = element_text(size = text_size, face = "bold", margin = margin(t = -1), color = "#434343"),
     axis.title.x = element_text(size = text_size, face = "plain", color = "#434343", margin = margin(t = 8)),
     axis.ticks = element_line(color = "#8a8a8a", linewidth = 0.3),
@@ -238,26 +250,32 @@ p_genes <- build_plot(plot_df_genes, bquote(Disease ~ associated ~ genes ~ (x10^
   geom_hline(data = hline_genes, aes(yintercept = y, color = biobank), linetype = "dashed", linewidth = 0.5, show.legend = FALSE) +
   scale_color_manual(values = hline_colors) +
   theme(
-    axis.text.x = element_blank(), axis.title.x = element_blank(),
+    axis.text.x = element_text(size = text_size, face = "plain", margin = margin(t = -1), color = "#434343"),
     axis.line.x.top = element_blank(),
-    plot.margin = margin(t = 0, r = 5, b = 0, l = 5)
+    plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
+    legend.position = "none"
   )
 p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene-disease ~ pairs ~ (x10^3))) +
   geom_hline(data = hline_pairs, aes(yintercept = y, color = biobank), linetype = "dashed", linewidth = 0.5) +
   scale_color_manual(values = hline_colors) +
-  guides(fill = "none") +
+  guides(color = guide_legend(override.aes = list(linetype = "dashed", linewidth = 0.5))) +
+  labs(tag = "c") +
   theme(
-    axis.text.x = element_text(size = text_size, face = "plain", margin = margin(t = -1), color = "#434343"),
+    axis.text.x = element_blank(), axis.title.x = element_blank(),
     axis.line.x.top = element_blank(),
     plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
+    legend.box = "horizontal",
+    legend.spacing.x = unit(2, "pt"),
     legend.position = c(0.02, 0.94),
     legend.justification = c(0, 1),
-    legend.background = element_rect(fill = NA, color = NA)
+    legend.background = element_rect(fill = NA, color = NA),
+    plot.tag = element_text(size = 12, face = "bold", color = "#434343"),
+    plot.tag.position = "topleft"
   )
 
 # Read additional data for line panels (from b.ipynb)
-qd_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/qd_sl_eff.csv"
-qm_csv <- "/Users/polina/genetics_gsea/scr/paper_figs/qm_sl_eff.csv"
+qd_csv <- file.path(fig1_dir, "data", "qd_sl_eff.csv")
+qm_csv <- file.path(fig1_dir, "data", "qm_sl_eff.csv")
 qd_df <- if (file.exists(qd_csv)) suppressMessages(readr::read_csv(qd_csv, show_col_types = FALSE)) else NULL
 qm_df <- if (file.exists(qm_csv)) suppressMessages(readr::read_csv(qm_csv, show_col_types = FALSE)) else NULL
 
@@ -375,8 +393,17 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
   grobs_list <- list()
   if (!is.null(p_samples)) grobs_list[[length(grobs_list) + 1]] <- ggplotGrob(p_samples)
   if (!is.null(p_beta)) grobs_list[[length(grobs_list) + 1]] <- ggplotGrob(p_beta)
-  grobs_list[[length(grobs_list) + 1]] <- g1
   grobs_list[[length(grobs_list) + 1]] <- g2
+  grobs_list[[length(grobs_list) + 1]] <- g1
+  # Panels 1 & 2 get relative height 1; panels 3 & 4 get 1.2 (1.2× taller)
+  for (i in 1:2) {
+    pr <- grobs_list[[i]]$layout$t[grobs_list[[i]]$layout$name == "panel"][1]
+    grobs_list[[i]]$heights[pr] <- unit(0.9, "null")
+  }
+  for (i in 3:4) {
+    pr <- grobs_list[[i]]$layout$t[grobs_list[[i]]$layout$name == "panel"][1]
+    grobs_list[[i]]$heights[pr] <- unit(1, "null")
+  }
   # Align widths
   maxw <- grobs_list[[1]]$widths
   if (length(grobs_list) > 1) {
@@ -402,7 +429,10 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
     grobs = grid::rectGrob(gp = grid::gpar(fill = "#d0d0d0", col = NA)),
     t = 1, l = panel_left, b = 1, r = panel_right
   )
-  sequence <- grobs_list
+  # Insert a gap spacer between plot 2 (p_beta) and plot 3 (p_pairs)
+  gap_h      <- 20   # pt – increase to widen the gap
+  gap_spacer <- gtable::gtable(widths = grobs_list[[1]]$widths, heights = grid::unit(gap_h, "pt"))
+  sequence <- list(grobs_list[[1]], grobs_list[[2]], gap_spacer, grobs_list[[3]], grobs_list[[4]])
   # Fold into single gtable
   combined_grob <- sequence[[1]]
   if (length(sequence) > 1) {
@@ -423,7 +453,7 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
     grobs = grid::rectGrob(gp = grid::gpar(fill = "#d0d0d0", col = NA)),
     t = 1, l = panel_left, b = 1, r = panel_right
   )
-  combined_grob <- rbind_g(g1, sep_thin, g2, size = "max")
+  combined_grob <- rbind_g(g2, sep_thin, g1, size = "max")
 }
 
 # Save output

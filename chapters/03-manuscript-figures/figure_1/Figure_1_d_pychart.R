@@ -58,7 +58,6 @@ p <- ggplot(df, aes(x = 2, y = fraction, fill = ancestry)) +
   ) +
   scale_color_manual(values = text_colors, guide = "none")
 
-# No center text
 
 # Output directory (kept tidy within this experiment folder)
 out_dir <- file.path("scr", "paper_figs", "pychart_R", "out")

@@ -1,6 +1,17 @@
 # Circular Manhattan Plot using circlize library
 # Dataset: unique_measurement_count_per_gene.parquet
 
+# Resolve script directory (works both when sourced and run standalone via Rscript)
+if (!exists("fig1_dir")) {
+  .argv     <- commandArgs(trailingOnly = FALSE)
+  .file_arg <- .argv[startsWith(.argv, "--file=")]
+  fig1_dir  <- if (length(.file_arg) > 0) {
+    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
+  } else {
+    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
+  }
+}
+
 # Load required libraries
 library(circlize)
 library(dplyr)
@@ -61,7 +72,7 @@ add_gene_labels_outside <- function(manhattan_data, chr_regions) {
   # Initialize container for labeled points used for highlighting
   .labeled_points <<- data.frame(sector = character(), x = numeric(), label = character(), stringsAsFactors = FALSE)
   # Load the full dataset to get approvedSymbol and uniqueDiseases
-  full_data <- read.csv("/Users/polina/genetics_gsea/data/disease_ta_index_pandas.csv")
+  full_data <- read.csv(file.path(fig1_dir, "data", "disease_ta_index_pandas.csv"))
   
   # Filter genes with uniqueDiseases > n
   high_disease_genes <- full_data %>%
@@ -104,7 +115,7 @@ add_gene_labels_outside <- function(manhattan_data, chr_regions) {
         labels = label_data$label,
         side = "outside",
         col = "#434343",
-        cex = 0.5,
+        cex = 0.8,
         font = 2,
         connection_height = mm_h(3),
         line_lwd = 0.5
@@ -114,7 +125,9 @@ add_gene_labels_outside <- function(manhattan_data, chr_regions) {
 }
 
 # Function to create circular Manhattan plot
-create_circular_manhattan <- function(data, output_file = NULL) {
+create_circular_manhattan <- function(data, output_file = NULL,
+                                      center_plot = NULL,
+                                      center_r = 0.50) {
   
   # If an output file is provided, open a PNG device with fixed size/DPI
   if(!is.null(output_file)) {
@@ -293,7 +306,13 @@ create_circular_manhattan <- function(data, output_file = NULL) {
   # Apply the gap configuration
   circos.par(gap.degree = gap_vector)
   
+  # Zero out base-R margins so circlize fills the entire figure region
+  par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
+
   # Initialize with our custom chromosome regions
+  # pty="s" forces a square plot region; without it the quartz PDF device can
+  # produce a very slightly non-square figure region which makes the circle elliptical.
+  par(pty = "s")
   circos.initialize(
     factors = chr_regions$chromosome,
     xlim = as.matrix(chr_regions[, c("start", "end")])
@@ -366,7 +385,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
           chr_data$y_value_diseases,
           col = point_col,
           pch = 16,
-          cex = 0.3  # Smaller dot size
+          cex = 0.5  # Smaller dot size
         )
         
         # Overlay highlighted points for labeled genes
@@ -376,7 +395,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
             # Find y values for the labeled x positions within current chromosome data
             merge_df <- merge(lp_chr, chr_data[, c("start", "y_value_diseases")], by.x = "x", by.y = "start")
             if(nrow(merge_df) > 0) {
-              circos.points(merge_df$x, merge_df$y_value_diseases, col = "#A01813", pch = 16, cex = 0.45)
+              circos.points(merge_df$x, merge_df$y_value_diseases, col = "#A01813", pch = 16, cex = 0.65)
             }
           }
         }
@@ -390,7 +409,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
           circos.yaxis(side = "left", 
                       at = c(25, 50, 75, 100, 125, 150),
                       labels = c("25", "50", "75", "100", "125", "150"),
-                      labels.cex = 0.3,
+                      labels.cex = 0.55,
                       col = "#434343",
                       labels.col = "#434343")
         }
@@ -508,7 +527,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
           chr_data$y_value_therapeutic,
           col = point_col,
           pch = 16,  # Same circle shape as other tracks
-          cex = 0.3  # Smaller dot size
+          cex = 0.5  # Smaller dot size
         )
         
         # Overlay red highlights for genes with high disease counts on TA track
@@ -522,7 +541,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
               chr_data$y_value_therapeutic[high_dis_idx],
               col = "#A01813",
               pch = 16,
-              cex = 0.45
+              cex = 0.65
             )
           }
         }
@@ -536,7 +555,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
           circos.yaxis(side = "left", 
                       at = c(5, 10, 15, 20, 25),
                       labels = c("5", "10", "15", "20", "25"),
-                      labels.cex = 0.3,
+                      labels.cex = 0.55,
                       tick.length = 0.01,
                       col = "#434343",
                       labels.col = "#434343")
@@ -557,7 +576,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
       ylim = get.cell.meta.data("ylim")
       circos.axis(h = "bottom", major.at = mean(xlim), labels = chr,
                   major.tick = FALSE, minor.ticks = 0,
-                  labels.cex = 0.4, direction = "inside", labels.facing = "reverse.clockwise",
+                  labels.cex = 0.65, direction = "inside", labels.facing = "reverse.clockwise",
                   labels.niceFacing = TRUE, col = "white", labels.col = "#434343", labels.font = 2) 
     }
   )
@@ -586,7 +605,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
          border = NA,
          title = "Data tracks",
          text.col = "#434343",
-         cex = 0.6,
+         cex = 0.9,
          text.font = 1,
          bty = "n",
          xpd = TRUE,  # Allow plotting outside plot area
@@ -605,6 +624,69 @@ create_circular_manhattan <- function(data, output_file = NULL) {
   #   }
   # }
   
+  # Draw center plot in the inner hole (before circos.clear resets par)
+  if (!is.null(center_plot)) {
+    usr <- par("usr")   # user coord range, e.g. c(-1.07, 1.07, -1.07, 1.07)
+    fig <- par("fig")   # figure region in device NDC: c(x1,x2,y1,y2)
+    plt <- par("plt")   # plot region as fractions of figure: c(x1,x2,y1,y2)
+
+    # Canvas centre (0,0) → device NDC
+    px <- (0 - usr[1]) / (usr[2] - usr[1])          # 0..1 within plot region
+    py <- (0 - usr[3]) / (usr[4] - usr[3])
+    fx <- plt[1] + px * (plt[2] - plt[1])            # 0..1 within figure
+    fy <- plt[3] + py * (plt[4] - plt[3])
+    cx <- fig[1] + fx * (fig[2] - fig[1])            # device NDC x
+    cy <- fig[3] + fy * (fig[4] - fig[3])            # device NDC y
+
+    # center_r canvas units → NDC size (diameter of the viewport)
+    r_ndc <- center_r / (usr[2] - usr[1]) * (plt[2] - plt[1]) * (fig[2] - fig[1])
+    diam  <- r_ndc * 2
+
+    grid::pushViewport(grid::viewport(
+      x      = grid::unit(cx,   "npc"),
+      y      = grid::unit(cy,   "npc"),
+      width  = grid::unit(diam, "npc"),
+      height = grid::unit(diam, "npc"),
+      just   = c("centre", "centre")
+    ))
+    grid::grid.draw(ggplot2::ggplotGrob(center_plot))
+
+    # Draw logo in the center hole of the donut (aspect-ratio preserved in inches)
+    center_logo_path <- file.path(fig1_dir, "assets", "OT_helix_colour_RGB.png")
+    if (file.exists(center_logo_path)) {
+      logo_img <- png::readPNG(center_logo_path)
+      img_w    <- dim(logo_img)[2]          # pixel width
+      img_h    <- dim(logo_img)[1]          # pixel height
+      img_ar   <- img_w / img_h             # true width-to-height ratio
+
+      # Convert viewport size to physical inches so aspect ratio is exact
+      dev_in    <- grDevices::dev.size("in")  # c(device_width_in, device_height_in)
+      vp_w_in   <- diam * dev_in[1]           # physical width of the donut viewport
+      vp_h_in   <- diam * dev_in[2]           # physical height of the donut viewport
+
+      max_frac  <- 0.22                        # logo fills at most this fraction of the smaller dimension
+      max_in    <- max_frac * min(vp_w_in, vp_h_in)
+
+      if (img_ar >= 1) {                       # wider than tall → constrain width
+        logo_w_in <- max_in
+        logo_h_in <- max_in / img_ar
+      } else {                                 # taller than wide → constrain height
+        logo_h_in <- max_in
+        logo_w_in <- max_in * img_ar
+      }
+
+      logo_grob <- grid::rasterGrob(logo_img, interpolate = TRUE,
+        x      = grid::unit(0.5, "npc"),
+        y      = grid::unit(0.5, "npc"),
+        width  = grid::unit(logo_w_in, "inches"),
+        height = grid::unit(logo_h_in, "inches"),
+        just   = c("centre", "centre"))
+      grid::grid.draw(logo_grob)
+    }
+
+    grid::popViewport()
+  }
+
   # Clear the plot
   circos.clear()
   
@@ -618,7 +700,7 @@ create_circular_manhattan <- function(data, output_file = NULL) {
 # Main execution
 main <- function() {
   # Path to the parquet file
-  parquet_file <- "/Users/polina/genetics_gsea/data/disease_ta_measur_index/part-00000-6aad212f-e927-4ad8-8e92-57687d88f801-c000.snappy.parquet"
+  parquet_file <- file.path(fig1_dir, "data", "disease_ta_measur_index.snappy.parquet")
   
   cat("Loading data from:", parquet_file, "\n")
   

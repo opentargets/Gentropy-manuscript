@@ -4,8 +4,8 @@
 # plot (right) into a single vector PDF without rasterising either panel.
 #
 # Strategy:
-#   Left  – source Figure_1_facet.R (skip ggsave) → combined_grob drawn via grid
-#   Right – source manh_plot.R (skip main()) → call create_circular_manhattan()
+#   Left  – source Figure_1_b_c.R (skip ggsave) → combined_grob drawn via grid
+#   Right – source Figure_1_d.R (skip main()) → call create_circular_manhattan()
 #            with output_file = NULL so it draws to the active PDF device,
 #            constrained to the right column by par(fig = ...)
 #
@@ -18,13 +18,22 @@ suppressPackageStartupMessages({
   library(circlize); library(arrow); library(RColorBrewer); library(png)
 })
 
-fig1_dir          <- "/Users/polina/Gentropy-manuscript/chapters/03-manuscript-figures/figure_1"
-facet_script_path <- file.path(fig1_dir, "Figure_1_facet.R")
-manh_script_path  <- file.path(fig1_dir, "manh_plot.R")
-output_path       <- file.path(fig1_dir, "Figure_1_combined.pdf")
-top_panel_pdf     <- file.path(fig1_dir, "Fig1 a (cropped).pdf")
+# Detect this script's directory so all paths stay relative
+.argv     <- commandArgs(trailingOnly = FALSE)
+.file_arg <- .argv[startsWith(.argv, "--file=")]
+fig1_dir  <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
+} else {
+  tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
+}
 
-# ── 1. Build facet grob from Figure_1_facet.R ────────────────────────────────
+facet_script_path   <- file.path(fig1_dir, "Figure_1_b_c.R")
+manh_script_path    <- file.path(fig1_dir, "Figure_1_d.R")
+pychart_script_path <- file.path(fig1_dir, "Figure_1_d_pychart.R")
+output_path         <- file.path(fig1_dir, "Figure_1_combined.pdf")
+top_panel_pdf       <- file.path(fig1_dir, "assets", "Fig1 a (cropped).pdf")
+
+# ── 1. Build facet grob from Figure_1_b_c.R ─────────────────────────────────
 # Drop the final ggsave() so combined_grob stays in memory
 facet_lines <- readLines(facet_script_path)
 save_idx    <- tail(grep("^ggsave\\(", facet_lines), 1)
@@ -32,7 +41,7 @@ if (length(save_idx)) facet_lines <- facet_lines[-save_idx]
 eval(parse(text = paste(facet_lines, collapse = "\n")), envir = environment())
 # combined_grob is now in scope
 
-# ── 2. Load circular Manhattan functions from manh_plot.R ────────────────────
+# ── 2. Load circular Manhattan functions from Figure_1_d.R ───────────────────
 # Drop the final main() call so only functions are defined, not executed
 manh_lines    <- readLines(manh_script_path)
 main_call_idx <- tail(grep("^main\\(\\)$", manh_lines), 1)
@@ -40,13 +49,18 @@ if (length(main_call_idx)) manh_lines <- manh_lines[-main_call_idx]
 eval(parse(text = paste(manh_lines, collapse = "\n")), envir = environment())
 # create_circular_manhattan(), read_parquet_data(), etc. are now available
 
-# Load the data (path from manh_plot.R's main())
-parquet_file <- paste0(
-  "/Users/polina/genetics_gsea/data/disease_ta_measur_index/",
-  "part-00000-6aad212f-e927-4ad8-8e92-57687d88f801-c000.snappy.parquet"
-)
+# Load the data (path from Figure_1_d.R's main())
+parquet_file <- file.path(fig1_dir, "data", "disease_ta_measur_index.snappy.parquet")
 cat("Loading parquet data...\n")
 circo_data <- read_parquet_data(parquet_file)
+
+# ── 2b. Build donut chart grob from Figure_1_d_pychart.R ─────────────────────
+# Skip the ggsave() so `p` (the ggplot object) stays in memory
+pychart_lines  <- readLines(pychart_script_path)
+gsave_idx      <- grep("^ggsave\\(", pychart_lines)
+if (length(gsave_idx)) pychart_lines <- head(pychart_lines, gsave_idx[1] - 1)
+eval(parse(text = paste(pychart_lines, collapse = "\n")), envir = environment())
+# `p` (the donut ggplot) is now in scope
 
 # ── 3. Compose the combined PDF ───────────────────────────────────────────────
 # Independent size controls:
@@ -56,13 +70,13 @@ circo_data <- read_parquet_data(parquet_file)
 #   left_w must equal 0.3 × total_w to keep right_x1_ndc at exactly 0.3
 #
 # Device height = tallest of A or B+pad; the shorter panel is centred vertically.
-total_w      <- 16.5
+total_w      <- 15
 left_w       <- 4.8          # = 0.3 × total_w  →  right_x1_ndc exactly 0.3
-left_h       <- 11           # ← Plot A height (change independently)
 a_top_margin <- 0.3          # ← white space above Plot A (inches)
 right_sq     <- total_w - left_w       # B's square side
-circ_pad     <- 0.5                    # inches below circle for gene labels
-panels_h     <- max(left_h, right_sq + circ_pad)  # height of the A+B area
+circ_pad     <- 0.1                    # inches below circle for gene labels
+panels_h     <- right_sq + circ_pad   # A+B area height (B determines it)
+left_h       <- panels_h - 0.75           # Plot A matches exactly → no bottom gap
 
 # Top panel: derive height from PDF aspect ratio so nothing distorts
 if (!requireNamespace("pdftools", quietly = TRUE)) install.packages("pdftools", repos = "https://cloud.r-project.org")
@@ -89,7 +103,7 @@ par(
   mar = c(0, 0, 0, 0),
   oma = c(0, 0, 0, 0)
 )
-create_circular_manhattan(circo_data, output_file = NULL)
+create_circular_manhattan(circo_data, output_file = NULL, center_plot = p)
 
 # — Left panel: ggplot2 grob via grid ————————————————————————————————————
 pushViewport(viewport(
@@ -131,17 +145,6 @@ grid.raster(top_raster, width = unit(1, "npc"), height = unit(1, "npc"))
 grid.text("a", x = unit(4, "pt"), y = unit(1, "npc") - unit(4, "pt"),
   just = c("left", "top"), gp = gpar(fontsize = 12, fontface = "bold", col = "#434343"))
 popViewport()
-
-# — Debug borders ————————————————————————————————————————————————————————
-grid.rect(x=0, y=unit(a_y_off,"inches"),
-  width=unit(right_x1_ndc,"npc"), height=unit(left_h,"inches"),
-  just=c("left","bottom"), gp=gpar(col="#E74C3C",fill=NA,lwd=1.2,lty="dashed"))
-grid.rect(x=unit(right_x1_ndc,"npc"), y=unit(bottom_pad_ndc,"npc"),
-  width=unit(1-right_x1_ndc,"npc"), height=unit(top_ndc-bottom_pad_ndc,"npc"),
-  just=c("left","bottom"), gp=gpar(col="#3498DB",fill=NA,lwd=1.2,lty="dashed"))
-grid.rect(x=0, y=unit(panels_top_ndc,"npc"),
-  width=unit(1,"npc"), height=unit(1-panels_top_ndc,"npc"),
-  just=c("left","bottom"), gp=gpar(col="#27AE60",fill=NA,lwd=1.2,lty="dashed"))
 
 # — Panel labels ——————————————————————————————————————————————————————————
 lbl_gp <- gpar(fontsize = 12, fontface = "bold", col = "#434343")
