@@ -96,7 +96,9 @@ x_breaks_minor <- seq(2011, 2023, 2)
 p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
   geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = col_gene, alpha = 0.12) +
   geom_line(color = col_gene, linewidth = line_lwd) +
-  geom_hline(yintercept = 3.619, color = col_vline, linetype = "dashed", linewidth = ci_lwd) +
+  geom_hline(data = data.frame(y = 3.619, label = "2025 enrichment"),
+             aes(yintercept = y, color = label), linetype = "dashed", linewidth = ci_lwd) +
+  scale_color_manual(values = c("2025 enrichment" = col_vline), name = NULL) +
   scale_x_continuous(
     breaks = x_breaks_main,
     minor_breaks = x_breaks_minor,
@@ -104,25 +106,35 @@ p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
     expand = c(0, 0),
     guide = guide_axis(minor.ticks = TRUE, n.dodge = 1)
   ) +
-  scale_y_continuous(limits = c(2, 16), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(2, 12), expand = c(0, 0)) +
   labs(x = NULL, y = "Odds Ratio") +
   base_theme +
   theme(
-    axis.text.x       = element_blank(),
-    axis.title.x      = element_blank(),
-    axis.line.x       = element_line(color = axis_colour, linewidth = 0.3),
-    axis.ticks.x      = element_line(color = axis_colour, linewidth = 0.3),
-    axis.ticks.length.x = unit(0.15, "cm")
-  )
+    axis.text.x         = element_blank(),
+    axis.title.x        = element_blank(),
+    axis.line.x         = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.x        = element_line(color = axis_colour, linewidth = 0.3),
+    axis.ticks.length.x = unit(0.15, "cm"),
+    legend.position     = c(1, 1),
+    legend.justification = c(1, 1),
+    legend.background   = element_rect(fill = NA, color = NA),
+    legend.key          = element_rect(fill = NA, color = NA),
+    legend.key.width    = unit(0.6, "cm"),
+    legend.key.height   = unit(0.3, "cm"),
+    legend.text         = element_text(size = text_size - 1, color = text_colour)
+  ) +
+  guides(color = guide_legend(
+    override.aes = list(linetype = "dashed", linewidth = ci_lwd)
+  ))
 
 # Bottom: T-D pairs (figure_4 color: col_variant)
 # Same x-axis breaks and tick sizes as top plot
 p_a_bot <- ggplot(temporal_4_crop, aes(x = datasource_num, y = yes_evid_high_clinphase)) +
-  geom_line(color = col_variant, linewidth = line_lwd) +
+  geom_col(fill = "#3583C0", width = 0.7) +
   scale_x_continuous(
     breaks = x_breaks_main,
     minor_breaks = x_breaks_minor,
-    limits = c(2010, 2024),
+    limits = c(2009.5, 2024.5),
     expand = c(0, 0),
     guide = guide_axis(minor.ticks = TRUE)
   ) +
@@ -138,24 +150,25 @@ p_a <- p_a_top / p_a_bot +
   plot_layout(heights = c(1, 1))
 
 # =============================================================================
-# PLOT B: Forest plot - gene categories (Middle top)
+# PLOT B: Forest plot - gene categories with faceted category panels
 # =============================================================================
 all_enrich <- read_csv(file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g.csv"),
                        show_col_types = FALSE)
 
 datasource_map <- c(
-  "PAV_base"           = "Without PAV",
-  "PAV_subEvid"        = "With PAV",
-  "rare_base"          = "Common Variants",
-  "rare_subEvid"       = "Rare Variants",
-  "high-gPS_base"      = "gPS<10",
-  "high-gPS_subEvid"   = "gPS>=10",
-  "full_l2g"           = "All GWAS",
-  "Gene-based tests"   = "Gene-based",
-  "BigEffect_base"     = "Small effect",
-  "BigEffect_subEvid"  = "Large effect",
-  "low-gPS-5_subEvid"  = "gPS<=5",
-  "low-gPS-5_base"     = "gPS>5"
+  "PAV_base"              = "Without PAV",
+  "PAV_subEvid"           = "With PAV",
+  "rare_base"             = "Common Variants",
+  "rare_subEvid"          = "Rare Variants",
+  "high-gPS_base"         = "gPS<10",
+  "high-gPS_subEvid"      = "gPS>=10",
+  "full_l2g"              = "All GWAS",
+  "Gene-based tests"              = "Gene-based",
+  "The Genomics England PanelApp" = "GEL PanelApp",
+  "BigEffect_base"        = "Small effect",
+  "BigEffect_subEvid"     = "Large effect",
+  "low-gPS-5_subEvid"     = "gPS<=5",
+  "low-gPS-5_base"        = "gPS>5"
 )
 
 enrich_4 <- all_enrich %>%
@@ -166,127 +179,102 @@ enrich_4 <- all_enrich %>%
   ) %>%
   filter(
     !datasource %in% c("Not replicated CSs", "Replicated CSs", "gPS>5", "gPS<10",
-                       "Large effect (|b|>1)", "Small effect (|b|<=1)")
+                       "Large effect (|b|>1)", "Small effect (|b|<=1)",
+                       "MoreBigEffect_base", "MoreBigEffect_subEvid")
   ) %>%
-  arrange(desc(row_number()))
+  mutate(
+    category = case_when(
+      datasource == "All GWAS"                                              ~ "All GWAS",
+      datasource %in% c("gPS>=10", "gPS<=5")                               ~ "gPS",
+      datasource %in% c("Rare Variants", "Common Variants")                 ~ "Rare vs Common",
+      datasource %in% c("Large effect", "Small effect")                      ~ "Large vs Small Effect",
+      datasource %in% c("With PAV", "Without PAV")                         ~ "With vs Without PAV",
+      TRUE                                                                   ~ "Other"
+    )
+  )
 
-unique_datasources <- unique(enrich_4$datasource)
+category_order <- c("All GWAS", "gPS", "Rare vs Common",
+                    "Large vs Small Effect", "With vs Without PAV", "Other")
+enrich_4$category <- factor(enrich_4$category, levels = category_order)
+
 unique_drugsources <- unique(enrich_4$drugsource)
-# figure_4 forest colors: col_uni, col_multi
 colors_drug <- setNames(c(col_gene, col_variant)[seq_along(unique_drugsources)], unique_drugsources)
 
+# Desired top-to-bottom display order within each category
+ds_order <- c(
+  "All GWAS",
+  "gPS>=10", "gPS<=5",
+  "Rare Variants", "Common Variants",
+  "Large effect", "Small effect",
+  "With PAV", "Without PAV",
+  "Gene-based", "ClinVar/ClinGen", "OMIM", "Orphanet",
+  "GEL PanelApp", "UniProt"
+)
+
+# Panel-level significance from diffence_pval (difference between subgroups):
+#   gPS:              min(high-gPS 0.0163, low-gPS-5 0.0149) = 0.0149  → *
+#   Rare vs Common:   0.00772                                            → **
+#   With vs Without PAV: 0.000244                                        → ***
+panel_sig_df <- tibble(
+  category = c("gPS", "Rare vs Common", "With vs Without PAV"),
+  sig      = c("*",   "*",              "*"),
+  y_mid    = 1.5   # all three panels have 2 rows; midpoint between positions 1 and 2
+)
+
 forest_rows <- list()
-y_pos <- 0
-for (ds in unique_datasources) {
+for (ds in ds_order) {
   ds_data <- filter(enrich_4, datasource == ds)
+  if (nrow(ds_data) == 0) next
   for (drg in unique_drugsources) {
     drg_data <- filter(ds_data, drugsource == drg)
     for (k in seq_len(nrow(drg_data))) {
       r <- drg_data[k, ]
-      # Label: datasource (n) where n = yes_evid_high_clinphase; remove underscores
       lab <- gsub("_", " ", sprintf("%s (%s)", r$datasource, r$yes_evid_high_clinphase))
       forest_rows[[length(forest_rows) + 1]] <- tibble(
         odds_ratio = r$odds_ratio,
-        ci_low = r$ci_low,
-        ci_high = r$ci_high,
-        y_pos = y_pos,
-        label = lab,
-        drugsource = r$drugsource
+        ci_low     = r$ci_low,
+        ci_high    = r$ci_high,
+        label      = lab,
+        drugsource = r$drugsource,
+        category   = as.character(r$category)
       )
-      y_pos <- y_pos + 1
     }
   }
-  y_pos <- y_pos + 0.5
 }
 forest_df <- bind_rows(forest_rows)
-forest_df$label <- factor(forest_df$label, levels = rev(forest_df$label))
+# Reverse so top of ds_order displays at top of each facet panel
+forest_df$label    <- factor(forest_df$label, levels = rev(unique(forest_df$label)))
+forest_df$category <- factor(forest_df$category, levels = category_order)
 
-p_b <- ggplot(forest_df, aes(x = odds_ratio, y = label, color = drugsource)) +
+# X axis ends at 10; truncate CIs that extend beyond
+x_b_min <- 2
+x_b_max <- 10
+x_b_breaks <- seq(x_b_min, x_b_max, 2)
+forest_df_plot <- forest_df %>%
+  mutate(ci_low = pmax(ci_low, x_b_min), ci_high = pmin(ci_high, x_b_max))
+
+p_b <- ggplot(forest_df_plot, aes(x = odds_ratio, y = label, color = drugsource)) +
   geom_errorbar(aes(xmin = ci_low, xmax = ci_high), width = 0, linewidth = ci_lwd,
                 position = position_dodge(width = 0.3)) +
   geom_point(size = point_size_b, position = position_dodge(width = 0.3)) +
+  geom_text(data = panel_sig_df, aes(x = x_b_max + 0.15, y = y_mid, label = sig),
+            inherit.aes = FALSE, hjust = 0, vjust = 0.5,
+            color = text_colour, size = (text_size + 1) / ggplot2::.pt) +
   scale_color_manual(values = colors_drug) +
-  scale_x_continuous(limits = c(2, 8), breaks = 2:8, expand = c(0, 0)) +
-  labs(x = "Odds Ratio", y = "Transition Probability") +
+  scale_x_continuous(breaks = x_b_breaks, expand = c(0, 0)) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  coord_cartesian(xlim = c(x_b_min, x_b_max), clip = "off") +
+  labs(x = "Odds Ratio", y = NULL) +
   base_theme +
   theme(
-    axis.text.y     = element_text(size = 6),
-    axis.title.y    = element_text(color = "transparent"),
-    legend.position = "none",
-    plot.margin     = margin(t = 5, r = 14, b = 2, l = 0),
-    plot.tag.position = c(0.15, 1.02)  # b label further right than a, c
-  )
-
-# =============================================================================
-# PLOT D: Transition success by pleiotropy (Middle bottom)
-# =============================================================================
-df_reg <- read_csv(file.path(data_dir, "df_for_enrichment_regression.csv"),
-                   show_col_types = FALSE)
-
-df_phase <- df_reg %>%
-  mutate(
-    pleio_bin = cut(uniqueTherapeuticAreas,
-                    breaks = c(0, 1, 5, Inf),
-                    labels = c("Low (1)", "Medium (2-5)", "High (6+)"))
-  )
-
-transitions <- list(
-  list(start = 1, end = 2, name = "P1 → P2"),
-  list(start = 2, end = 3, name = "P2 → P3"),
-  list(start = 3, end = 4, name = "P3 → P4")
-)
-labels_pleio <- c("Low (1)", "Medium (2-5)", "High (6+)")
-
-trans_results <- list()
-for (lb in labels_pleio) {
-  subset_df <- filter(df_phase, pleio_bin == lb)
-  for (tr in transitions) {
-    at_start <- sum(subset_df$maxClinicalPhase >= tr$start)
-    at_end   <- sum(subset_df$maxClinicalPhase >= tr$end)
-    rate <- if (at_start > 0) at_end / at_start else 0
-    ci <- if (at_start > 0) {
-      prop.test(at_end, at_start, conf.level = 0.95)$conf.int
-    } else {
-      c(0, 0)
-    }
-    trans_results[[length(trans_results) + 1]] <- tibble(
-      Pleiotropy = lb,
-      Transition = tr$name,
-      Success_Rate = rate,
-      N_at_start = at_start,
-      ci_low = ci[1],
-      ci_high = ci[2]
-    )
-  }
-}
-trans_df <- bind_rows(trans_results)
-trans_df$Transition <- factor(trans_df$Transition,
-                              levels = sapply(transitions, function(x) x$name))
-trans_df$Pleiotropy <- factor(trans_df$Pleiotropy, levels = labels_pleio)
-
-# Manual bar positioning (Blues: light to dark for Low -> Medium -> High)
-blues_pal <- c("Low (1)" = "#9ECAE1", "Medium (2-5)" = "#6BAED6", "High (6+)" = "#3182BD")
-
-p_d <- ggplot(trans_df, aes(x = Transition, y = Success_Rate, fill = Pleiotropy)) +
-  geom_bar(stat = "identity", position = position_dodge(0.8), width = 0.7) +
-  geom_errorbar(aes(ymin = ci_low, ymax = ci_high),
-                position = position_dodge(0.8), width = 0.2,
-                linewidth = 0.4, color = "black") +
-  scale_fill_manual(values = blues_pal) +
-  coord_cartesian(ylim = c(0.2, 0.9)) +
-  scale_y_continuous(breaks = seq(0.2, 0.9, 0.1)) +
-  labs(x = NULL, y = "Transition probability") +
-  base_theme +
-  theme(
-    axis.title.x   = element_blank(),
-    axis.ticks.x   = element_blank(),
-    axis.title.y   = element_text(margin = margin(r = 0)),  # very close to y-axis
-    plot.margin    = margin(t = 2, r = 14, b = 8, l = 0),
-    legend.position      = c(1, 1),
-    legend.justification  = c(1, 1),
-    legend.background    = element_rect(fill = NA, color = NA),
-    legend.key.size      = unit(0.35, "cm"),
-    plot.tag.position = c(0.15, 1.02)  # d label further right than a, c
+    axis.text.y      = element_text(size = 6, margin = margin(r = 4)),
+    legend.position  = "none",
+    plot.margin      = margin(t = 5, r = 18, b = 8, l = 0),
+    strip.text       = element_blank(),
+    strip.background = element_blank(),
+    panel.border     = element_rect(color = axis_colour, fill = NA, linewidth = 0.3),
+    panel.spacing    = unit(0.2, "cm"),
+    axis.line        = element_blank()
   )
 
 # =============================================================================
@@ -385,7 +373,7 @@ run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL, show_legend
     axis.ticks.x       = element_line(color = axis_colour, linewidth = 0.3),
     axis.ticks.x.top   = element_blank(),
     axis.ticks.length.x = unit(0.08, "cm"),
-    legend.position      = c(0.4, 1),
+    legend.position      = c(0.35, 1),
     legend.justification = c(0, 1),
     legend.spacing.y    = unit(0.08, "cm"),
     legend.key.height   = unit(0.3, "cm"),
@@ -393,6 +381,9 @@ run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL, show_legend
   )
   p
 }
+
+df_reg <- read_csv(file.path(data_dir, "df_for_enrichment_regression.csv"),
+                   show_col_types = FALSE)
 
 p_c_top <- run_pleio_plot(df_reg, "uniqueTherapeuticAreas", "Pleiotropy (Therapeutic Areas)",
                          x_breaks = c(1, 2, 5, 10, 20), show_legend = TRUE, top_panel = TRUE)
@@ -405,20 +396,19 @@ p_c <- p_c_top / p_c_bot +
 # =============================================================================
 # COMBINE: 3 columns with aligned axes
 # =============================================================================
-# Left: p_a (stacked), Middle: p_b / p_d, Right: p_c (stacked)
+# Left: p_a (stacked), Middle: p_b, Right: p_c (stacked)
 # Use patchwork with aligned widths; shared margin/axis settings
 
 col_left   <- p_a
-col_middle <- p_b / p_d + plot_layout(heights = c(1, 1))
+col_middle <- p_b
 col_right  <- p_c
 
 # Middle column wider for bar plot; axes="keep" avoids aligning y-axes with OR plot
 final <- (col_left | col_middle | col_right) +
-  plot_layout(widths = c(1, 1, 1), axes = "keep") +
-  plot_annotation(tag_levels = list(c("a", "", "b", "d", "c", ""))) &
+  plot_layout(widths = c(0.9, 1, 1), axes = "keep") +
+  plot_annotation(tag_levels = list(c("a", "", "b", "c", ""))) &
   theme(
     plot.tag = element_text(face = "bold", size = text_size, color = text_colour, vjust = 1)
-    # plot.tag.position: set per-column (a,c=0.02 in col_left/col_right; b,d=0.10 in p_b/p_d)
   )
 
 out_dir <- if (dir.exists("chapters/03-manuscript-figures/figure_5")) {
@@ -426,6 +416,6 @@ out_dir <- if (dir.exists("chapters/03-manuscript-figures/figure_5")) {
 } else {
   "."
 }
-ggsave(file.path(out_dir, "figure_5_final.pdf"), final, width = 11, height = 5, dpi = 300, bg = "white")
-ggsave(file.path(out_dir, "figure_5_final.png"), final, width = 11, height = 5, dpi = 300, bg = "white")
+ggsave(file.path(out_dir, "figure_5_final.pdf"), final, width = 10, height = 4.5, dpi = 300, bg = "white")
+# ggsave(file.path(out_dir, "figure_5_final.png"), final, width = 11, height = 4, dpi = 300, bg = "white")
 message("Saved: ", file.path(out_dir, "figure_5_final.pdf"))
