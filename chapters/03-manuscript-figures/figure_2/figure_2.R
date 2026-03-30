@@ -133,7 +133,7 @@ plot_a <- ggplot(
       ymax = avgAbsEstimatedBetaInBucketCIUpper
     ),
     alpha = 0.12,
-    linewidth = 0,
+    colour = NA,
     na.rm = TRUE
   ) +
   geom_line(linewidth = 0.3, na.rm = TRUE) +
@@ -209,7 +209,7 @@ plot_b <- ggplot(
       ymax = alteringProportionInBucketCIUpper
     ),
     alpha = 0.12,
-    linewidth = 0,
+    colour = NA,
     na.rm = TRUE
   ) +
   geom_line(linewidth = 0.3, na.rm = TRUE) +
@@ -308,13 +308,12 @@ plot_c <- ggplot(
     aes(label = pConsequenceLabel),
     position = position_stack(vjust = 0.5),
     colour = "white",
-    size = 3
+    size = 8 / .pt
   ) +
   scale_y_continuous(
     expand = c(0, 0),
     labels = function(x) {
-      # Remove 0 label and remove % from all labels
-      ifelse(x == 0, "", sprintf("%.0f", x * 100))
+      ifelse(x == 0, "", sprintf("%.0f%%", x * 100))
     }
   ) +
   scale_x_discrete(
@@ -332,7 +331,7 @@ plot_c <- ggplot(
   ) +
   labs(
     x = "",
-    y = "%"
+    y = "Replicated credible sets"
   ) +
   base_theme +
   theme(
@@ -352,7 +351,7 @@ plot_c <- ggplot(
       angle = 45,
       hjust = 0.95
     ),
-    axis.text.y = element_text(size = 8, color = "#434343"),
+    axis.text.y = element_text(size = 8, color = "#434343", margin = margin(r = -3)),
     axis.title.x = element_text(
       size = 8,
       face = "plain",
@@ -420,11 +419,11 @@ plot_d <- ggplot(
   base_theme +
   theme(
     legend.position = "bottom",
-    legend.justification = c(1.5, 0.5),
+    legend.justification = c(1.16, 0.5),
     legend.text = element_text(size = 8),
     legend.key.size = unit(0.5, "cm"),
     legend.direction = "horizontal",
-    legend.spacing.y = unit(-1, "cm"),
+    legend.spacing.y = unit(-2, "cm"),
     # legend.box.spacing = unit(-1, "cm"),
     legend.margin = margin(t = 0, r = 0, b = 0, l = 0),
     axis.text.x = element_text(
@@ -457,7 +456,7 @@ axis_title_c <- get_plot_component(plot_c, "xlab-b", return_all = TRUE)
 axis_title_d <- get_plot_component(plot_d, "xlab-b", return_all = TRUE)
 
 
-rel_widths <- c(1.2, 1.2, 1.1, 2)  # minimal gaps between panels
+rel_widths <- c(1.2, 1.2, 1.2, 2)  # minimal gaps between panels
 spacer <- ggplot() + theme_void()
 
 
@@ -466,15 +465,15 @@ spacer <- ggplot() + theme_void()
 margin_fill <- margin(t = 2, r = 2, b = 15, l = 5)
 plots_abcd <- plot_grid(
   plot_a + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin_fill),
-  plot_b + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin_fill),
-  plot_d + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(t = 0, r = 0, b = 0, l = 15)),
+  plot_b + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(t = 2, r = 0, b = 15, l = 5)),
+  plot_d + theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(t = 0, r = 15, b = 0, l = 0)),
   plot_c + theme(legend.position = "right", axis.title.x = element_blank(), plot.margin = margin(t = 2, r = 0, b = 1, l = 5), legend.text.align = 0),
   nrow = 1,
   align = "h",
   rel_widths = rel_widths,
   labels = c("a", "b", "c", "d"),
-  label_size = 8
-  # label_x = c(0.02, 0, 0.02, 0, 0.02, 0, 0.02)
+  label_size = 8,
+  label_x = c(0, -0.02, -0.08, -0.04)
 )
 
 ggsave(
@@ -547,9 +546,10 @@ legend_d <- get_legend(
     theme(
       legend.position = "bottom",
       legend.direction = "horizontal",
-      legend.text = element_text(size = 8), # Half of the default size 12
-      legend.key.size = unit(0.3, "cm"), # Adjust key size if needed
-      legend.key.width = unit(0.5, "cm") # Adjust key width for horizontal legend
+      legend.text = element_text(size = 8),
+      legend.key.size = unit(0.3, "cm"),
+      legend.key.width = unit(0.5, "cm"),
+      legend.spacing.y = unit(-1.5, "cm")
     )
 )
 
@@ -601,7 +601,7 @@ plot_overlaid_with_legend <- plot_overlaid +
   )
 
 ggsave(
-  "figure_2_final.png",
+  "figure_2_final.pdf",
   plot = plot_overlaid_with_legend,
   width = 8.27,
   height = 2.5,
