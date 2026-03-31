@@ -31,7 +31,7 @@ if (!exists("fig1_dir")) {
 input_csv  <- file.path(fig1_dir, "data", "l2g_diseases_full.csv")
 output_png <- file.path(fig1_dir, "Figure_1_b_c.png")
 
-text_size <- 9
+text_size <- 10
 ylab_shift <- 8        # shift ALL y-axis titles closer to axis (pt)
 beta_ylab_extra <- 20  # additional shift for plot 2 only (pt)
 
@@ -259,18 +259,15 @@ p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene-disease ~ pairs ~ (x10
   geom_hline(data = hline_pairs, aes(yintercept = y, color = biobank), linetype = "dashed", linewidth = 0.5) +
   scale_color_manual(values = hline_colors) +
   guides(color = guide_legend(override.aes = list(linetype = "dashed", linewidth = 0.5))) +
-  labs(tag = "c") +
   theme(
     axis.text.x = element_blank(), axis.title.x = element_blank(),
     axis.line.x.top = element_blank(),
-    plot.margin = margin(t = 0, r = 5, b = 0, l = 5),
+    plot.margin = margin(t = 0, r = 5, b = 4, l = 5),
     legend.box = "horizontal",
-    legend.spacing.x = unit(2, "pt"),
+    legend.spacing.x = unit(-10, "pt"),
     legend.position = c(0.02, 0.94),
     legend.justification = c(0, 1),
-    legend.background = element_rect(fill = NA, color = NA),
-    plot.tag = element_text(size = 12, face = "bold", color = "#434343"),
-    plot.tag.position = "topleft"
+    legend.background = element_rect(fill = NA, color = NA)
   )
 
 # Read additional data for line panels (from b.ipynb)
@@ -341,7 +338,7 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
     theme(
       axis.text.x = element_blank(), axis.title.x = element_blank(),
       axis.line.x.top = element_blank(),
-      plot.margin = margin(t = 0, r = 5, b = 0, l = 5)
+      plot.margin = margin(t = 0, r = 5, b = 4, l = 5)
     )
 } else {
   p_samples <- NULL
@@ -377,7 +374,7 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
       axis.text.x = element_text(size = text_size, face = "plain", margin = margin(t = -1), color = "#434343"),
       axis.title.x = element_blank(),
       axis.line.x.top = element_blank(),
-      plot.margin = margin(t = 0, r = 5, b = 5, l = 5),
+      plot.margin = margin(t = 0, r = 5, b = 8, l = 5),
       legend.position = "none"
     )
 } else {
@@ -429,10 +426,16 @@ if (!is.null(p_samples) || !is.null(p_beta)) {
     grobs = grid::rectGrob(gp = grid::gpar(fill = "#d0d0d0", col = NA)),
     t = 1, l = panel_left, b = 1, r = panel_right
   )
-  # Insert a gap spacer between plot 2 (p_beta) and plot 3 (p_pairs)
-  gap_h      <- 20   # pt – increase to widen the gap
-  gap_spacer <- gtable::gtable(widths = grobs_list[[1]]$widths, heights = grid::unit(gap_h, "pt"))
-  sequence <- list(grobs_list[[1]], grobs_list[[2]], gap_spacer, grobs_list[[3]], grobs_list[[4]])
+  # Gaps are controlled by plot.margin (b=) on each plot:
+  #   p_samples b=4pt → 4pt gap to p_beta
+  #   p_beta    b=8pt → 8pt gap to p_pairs
+  #   p_pairs   b=4pt → 4pt gap to p_genes
+  sequence <- list(
+    grobs_list[[1]],
+    grobs_list[[2]],
+    grobs_list[[3]],
+    grobs_list[[4]]
+  )
   # Fold into single gtable
   combined_grob <- sequence[[1]]
   if (length(sequence) > 1) {

@@ -95,6 +95,22 @@ bottom_pad_ndc <- (b_y_off + circ_pad) / total_h
 top_ndc        <- (b_y_off + circ_pad + right_sq) / total_h
 panels_top_ndc <- panels_h / total_h
 
+# — Inject "c" label into combined_grob (mirrors "b": 4 pt from panel top) ──
+# p_pairs is the 3rd grob in the stack; its first row in combined_grob starts
+# immediately after grobs_list[[1]] (p_samples) and [[2]] (p_beta).
+.c_first_row <- nrow(grobs_list[[1]]) + nrow(grobs_list[[2]]) + 1
+combined_grob <- gtable::gtable_add_grob(
+  combined_grob,
+  grobs = grid::textGrob("c",
+    x    = grid::unit(4, "pt"),
+    y    = grid::unit(1, "npc") + grid::unit(12, "pt"),
+    just = c("left", "top"),
+    gp   = grid::gpar(fontsize = 12, fontface = "bold", col = "#434343")
+  ),
+  t = .c_first_row, b = .c_first_row, l = 1, r = ncol(combined_grob),
+  clip = "off", name = "c-label"
+)
+
 quartz(type = "pdf", file = output_path, width = total_w, height = total_h, bg = "white")
 
 # — Right panel: circlize ————————————————————————————————————————————————

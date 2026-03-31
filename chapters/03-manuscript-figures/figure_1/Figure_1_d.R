@@ -127,7 +127,7 @@ add_gene_labels_outside <- function(manhattan_data, chr_regions) {
 # Function to create circular Manhattan plot
 create_circular_manhattan <- function(data, output_file = NULL,
                                       center_plot = NULL,
-                                      center_r = 0.50) {
+                                      center_r = 0.48) {
   
   # If an output file is provided, open a PNG device with fixed size/DPI
   if(!is.null(output_file)) {
@@ -569,19 +569,17 @@ create_circular_manhattan <- function(data, output_file = NULL,
     ylim = c(0, 1),
     bg.col = NA,
     bg.border = NA,
-    track.height = 0.00000000001,
+    track.height = 0.1,
     panel.fun = function(x, y) {
       chr = get.cell.meta.data("sector.index")
       xlim = get.cell.meta.data("xlim")
       ylim = get.cell.meta.data("ylim")
-      circos.axis(h = "bottom", major.at = mean(xlim), labels = chr,
+      circos.axis(h = "top", major.at = mean(xlim), labels = chr,
                   major.tick = FALSE, minor.ticks = 0,
                   labels.cex = 0.65, direction = "inside", labels.facing = "reverse.clockwise",
-                  labels.niceFacing = TRUE, col = "white", labels.col = "#434343", labels.font = 2) 
+                  labels.niceFacing = TRUE, col = NA, labels.col = "#434343", labels.font = 2) 
     }
   )
-
-
 
   # Title removed as requested
   

@@ -54,7 +54,7 @@ p <- ggplot(df, aes(x = 2, y = fraction, fill = ancestry)) +
     aes(x = 2, label = label, color = ancestry),
     position = position_stack(vjust = 0.5),
     fontface = "bold",
-    size = 4
+    size = 3
   ) +
   scale_color_manual(values = text_colors, guide = "none")
 
