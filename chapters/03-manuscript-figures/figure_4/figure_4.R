@@ -101,7 +101,7 @@ p_top <- ggplot(pleio_df, aes(x = year, y = mean, color = group, fill = group)) 
                      guide = guide_axis(minor.ticks = TRUE)) +
   scale_y_continuous(breaks = 1:4, expand = c(0, 0)) +
   coord_cartesian(xlim = c(2006, 2024), ylim = c(1, 5)) +
-  labs(x = NULL, y = "Number of traits") +
+  labs(x = NULL, y = "Number of diseases") +
   base_theme +
   theme(
     axis.text.x  = element_blank(),
@@ -217,6 +217,9 @@ plot_data  <- results_df[complete.cases(results_df[, c("log_ci_lower", "log_ci_u
 col_insig <- "#9e9e9e"
 
 # FDR from p-values (Benjamini–Hochberg); asterisk when FDR < 5%
+plot_data$label <- gsub("^ChEMBL\\b", "ChEMBL approved drugs", plot_data$label)
+plot_data$label <- gsub("^Withdrawn Drug\\b", "Targets of withdrawn drugs", plot_data$label)
+
 plot_data$fdr     <- p.adjust(plot_data$p_value, method = "fdr")
 plot_data$label_display <- ifelse(plot_data$fdr < 0.05,
                                   paste0(as.character(plot_data$label), " *"),
