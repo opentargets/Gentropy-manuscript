@@ -53,10 +53,15 @@ base_theme <- theme_minimal() +
   )
 
 # ---- Data directory ----
+# Data is at project root/data/figure_4. Ensure wd is project root.
+if (file.exists("data/figure_4")) {
+  # already at project root
+} else if (file.exists("../../../data/figure_4")) {
+  setwd("../../..")  # from figure_4 folder to project root
+} else {
+  stop("Cannot find figure_4 data directory. Run from repo root or cd to chapters/03-manuscript-figures/figure_4 first.")
+}
 data_dir <- "data/figure_4"
-if (!dir.exists(data_dir)) data_dir <- "../../data/figure_4"
-if (!dir.exists(data_dir)) data_dir <- "chapters/03-manuscript-figures/figure_4"
-if (!dir.exists(data_dir)) stop("Cannot find figure_4 data directory.")
 
 # ===========================================================================
 # PLOT A: Pleiotropy over time (two-panel facet)
@@ -80,8 +85,8 @@ cover_df <- gene_coverage %>%
          ci_lo = mean - se * 1.96, ci_hi = mean + se * 1.96,
          year  = as.integer(year))
 
-x_breaks <- seq(2006, 2024, by = 2)
-x_minor  <- seq(2007, 2023, by = 2)
+x_breaks <- seq(2006, 2024, by = 3)
+x_minor  <- setdiff(seq(2006, 2024, by = 1), x_breaks)
 
 p_top <- ggplot(pleio_df, aes(x = year, y = mean, color = group, fill = group)) +
   geom_ribbon(aes(ymin = ci_lo, ymax = ci_hi),
@@ -171,8 +176,11 @@ for (i in seq_along(covariates)) {
   multi_ci_upper[i] <- ci[2]
 }
 
+mean_effect_b  <- (uni_coef + multi_coef) / 2
+sorted_labels_b <- covariate_labels[order(mean_effect_b)]   # ascending: lowest at bottom, highest at top
+
 forest_b <- data.frame(
-  label = rep(factor(covariate_labels, levels = covariate_labels), 2),
+  label = rep(factor(covariate_labels, levels = sorted_labels_b), 2),
   coef  = c(uni_coef, multi_coef),
   ci_lo = c(uni_ci_lower, multi_ci_lower),
   ci_hi = c(uni_ci_upper, multi_ci_upper),
@@ -206,26 +214,34 @@ results_df <- read.csv(file.path(data_dir, "gene_pleiotropy_by_category.csv"),
 results_df <- results_df[order(results_df$log_odds_ratio), ]
 plot_data  <- results_df[complete.cases(results_df[, c("log_ci_lower", "log_ci_upper")]), ]
 
+col_insig <- "#9e9e9e"
+
 # FDR from p-values (Benjamini–Hochberg); asterisk when FDR < 5%
 plot_data$fdr     <- p.adjust(plot_data$p_value, method = "fdr")
 plot_data$label_display <- ifelse(plot_data$fdr < 0.05,
                                   paste0(as.character(plot_data$label), " *"),
                                   as.character(plot_data$label))
-plot_data$label   <- factor(plot_data$label_display, levels = plot_data$label_display)
-plot_data$is_gwas <- grepl("gwas", tolower(plot_data$category))
+plot_data$label     <- factor(plot_data$label_display, levels = plot_data$label_display)
+plot_data$sig_label <- ifelse(plot_data$fdr < 0.05, "FDR < 5%", "FDR ≥ 5%")
 
-p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
+p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label, colour = sig_label)) +
   geom_vline(xintercept = 0, colour = col_vline, linetype = "dashed",
              linewidth = 0.3) +
   geom_errorbar(aes(xmin = log_ci_lower, xmax = log_ci_upper), width = 0,
-                colour = col_other, linewidth = 0.4, orientation = "y") +
-  geom_point(aes(colour = is_gwas), shape = 19, size = 1.5) +
-  scale_colour_manual(values = c("TRUE" = col_gwas, "FALSE" = col_other),
-                      guide  = "none") +
+                linewidth = 0.4, orientation = "y") +
+  geom_point(shape = 19, size = 1.5) +
+  scale_colour_manual(
+    values = c("FDR < 5%" = col_other, "FDR ≥ 5%" = col_insig),
+    breaks = c("FDR < 5%", "FDR ≥ 5%")
+  ) +
   labs(x = "log(OR)", y = NULL) +
   base_theme +
   theme(
-    axis.text.x = element_text(size = text_size, face = "plain", color = text_colour)
+    axis.text.x          = element_text(size = text_size, face = "plain", color = text_colour),
+    legend.position      = c(1, 0),
+    legend.justification = c(1, 0),
+    legend.background    = element_rect(fill = NA, color = NA),
+    legend.key.size      = unit(0.35, "cm")
   )
 
 # ===========================================================================
@@ -233,7 +249,7 @@ p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label)) +
 # ===========================================================================
 final <- (p_top / p_bot) | p_b | p_c
 final <- final +
-  plot_layout(widths = c(1.2, 1, 1.2)) +
+  plot_layout(widths = c(0.9, 1, 1.2)) +
   plot_annotation(tag_levels = list(c("a", "", "b", "c"))) &
   theme(plot.tag = element_text(face = "bold", size = 8, color = text_colour))
 
@@ -242,6 +258,7 @@ out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
 } else {
   "."
 }
-png_file <- file.path(out_dir, "figure_4_final.png")
-ggsave(png_file, final, width = 12, height = 4.3, dpi = 300, bg = "white")
+png_file <- file.path(out_dir, "figure_4_final.pdf")
+ggsave(png_file, final, width = 12, height = 4.3, dpi = 300, bg = "white",
+       device = cairo_pdf)
 message("Saved: ", png_file)
