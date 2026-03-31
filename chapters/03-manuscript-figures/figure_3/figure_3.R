@@ -164,9 +164,20 @@ df_a_plot <- df_a %>%
         model_type = factor(model_type, levels = c("Univariate", "Joint"))
     )
 
+# Sort covariates by mean absolute OR across model types; highest mean |OR| at top
+covariate_rank <- df_a_plot %>%
+    group_by(y_numerical) %>%
+    summarise(mean_abs_coef = mean(abs(coefficient)), .groups = "drop") %>%
+    arrange(mean_abs_coef) %>%
+    mutate(y_plot = row_number())
+
+df_a_plot <- df_a_plot %>%
+    select(-any_of("y_plot")) %>%
+    left_join(covariate_rank %>% select(y_numerical, y_plot), by = "y_numerical")
+
 y_breaks <- df_a_plot %>%
-    distinct(y_numerical, covariate_label) %>%
-    arrange(y_numerical)
+    distinct(y_plot, covariate_label) %>%
+    arrange(y_plot)
 
 p_a <- ggplot(df_a_plot, aes(
     x = coefficient,
@@ -184,7 +195,7 @@ p_a <- ggplot(df_a_plot, aes(
     scale_colour_manual(values = pal_model_type, name = NULL) +
     scale_x_continuous(breaks = c(0.5, 1.0, 1.5, 2.0), limits = c(NA, 2.0), expand = expansion(mult = c(0.05, 0))) +
     scale_y_continuous(
-        breaks = y_breaks$y_numerical,
+        breaks = y_breaks$y_plot,
         labels = y_breaks$covariate_label
     ) +
     labs(
@@ -251,7 +262,7 @@ p_b <- ggplot(df_b_long, aes(
     fill = series,
     group = series
 )) +
-    geom_ribbon(aes(ymin = mean - ci, ymax = mean + ci), alpha = 0.12, linewidth = 0, na.rm = TRUE) +
+    geom_ribbon(aes(ymin = mean - ci, ymax = mean + ci), alpha = 0.12, colour = NA, na.rm = TRUE) +
     geom_line(linewidth = 0.3) +
     scale_colour_manual(values = pal_series, name = NULL) +
     scale_fill_manual(values = pal_series, name = NULL) +
@@ -379,8 +390,8 @@ p_c <- ggplot(df_combined, aes(
 # -----------------------------
 # Combine and save
 # -----------------------------
-out_path <- file.path(figure_3_dir, "figure_3_final.png")
-if (!nzchar(figure_3_dir)) out_path <- "figure_3_final.png"
+out_path <- file.path(figure_3_dir, "figure_3_final.pdf")
+if (!nzchar(figure_3_dir)) out_path <- "figure_3_final.pdf"
 
 if (!requireNamespace("patchwork", quietly = TRUE)) {
     stop("Please install 'patchwork' to combine the plots into a grid.")
