@@ -317,20 +317,34 @@ disease_counts <- df_combined %>%
     count(diseaseNames, name = "n_points") %>%
     arrange(desc(n_points))
 
-# Keep top 7 diseases by number of points
-top_diseases <- disease_counts %>%
-    slice_head(n = 7) %>%
+# Diseases highlighted in the manuscript (always included regardless of point count)
+manuscript_diseases <- c(
+    "familial hyperlipidemia",
+    "age-related macular degeneration",
+    "non-alcoholic fatty liver disease"
+)
+manuscript_diseases <- manuscript_diseases[manuscript_diseases %in% df_combined$diseaseNames]
+
+# Fill remaining slots (up to 7 total) with top diseases by point count,
+# dropping the lowest-count ones to make room for manuscript_diseases
+n_auto <- 7L - length(manuscript_diseases)
+top_auto <- disease_counts %>%
+    filter(!diseaseNames %in% manuscript_diseases) %>%
+    slice_head(n = n_auto) %>%
     pull(diseaseNames)
+
+top_diseases <- c(top_auto, manuscript_diseases)
 
 # Capitalize disease names for legend
 top_diseases_capitalized <- capitalize_first(top_diseases)
 
-# 7-color palette for disease categories + Other
+# Original 7-color palette for disease categories + Other
 disease_palette <- c("#A01813", "#E3A772", "#2E5943", "#4F97CF", "#D65A1F", "#C9A020", "#359e80")
 disease_colors <- c(
     setNames(disease_palette[seq_along(top_diseases)], top_diseases),
     Other = "#d9d9d9"
 )
+disease_colors["age-related macular degeneration"] <- "#7B5EA7"
 
 # Create labels for legend (capitalized)
 disease_labels <- c(
@@ -369,7 +383,7 @@ p_c <- ggplot(df_combined, aes(
     all_text_8_theme() +
     theme(plot.margin = margin(0, 8, 0, 0, unit = "pt")) +
     theme(
-        legend.position = c(0.60, 0.25),
+        legend.position = c(0.55, 0.25),
         legend.justification = c(0, 0.5),
         legend.background = element_rect(fill = NA, colour = NA),
         legend.box.background = element_rect(fill = NA, colour = NA),
