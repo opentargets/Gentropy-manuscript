@@ -251,3 +251,12 @@ def calculate_protein_altering_proportion(vep_score: Column, threshold: float = 
     stderr = f.sqrt((proportion * (1 - proportion)) / (total)).alias("stderr")
     interval = (f.lit(1.96) * stderr).alias("confidenceInterval")  # 1.96 is the z-score for a 95% confidence interval
     return f.struct(n_protein_altering, n_non_protein_altering, proportion, stderr, total, interval)
+
+
+def make_data_dir(release_path: str) -> None:
+    """Make the release directory if it does not exist."""
+    if release_path.startswith("gs://"):
+        pass
+    else:
+        import os
+        os.makedirs(release_path, exist_ok=True)
