@@ -221,11 +221,48 @@ plot_data$label <- gsub("^ChEMBL\\b", "ChEMBL approved drugs", plot_data$label)
 plot_data$label <- gsub("^Withdrawn Drug\\b", "Targets of withdrawn drugs", plot_data$label)
 
 plot_data$fdr     <- p.adjust(plot_data$p_value, method = "fdr")
-plot_data$label_display <- ifelse(plot_data$fdr < 0.05,
-                                  paste0(as.character(plot_data$label), " *"),
-                                  as.character(plot_data$label))
+
+# Label renaming (format: "Name |Source")
+plot_data$label <- sub("^Q4 LoF constraint", "High (Q4) LoF constraint | GnomAD", plot_data$label)
+plot_data$label <- sub("^Q1 LoF constraint", "Low (Q1) LoF constraint | GnomAD", plot_data$label)
+plot_data$label <- sub("^ChEMBL", "Drugs / clinical candidates | ChEMBL", plot_data$label)
+plot_data$label <- sub("^Mouse KO Mortality", "Mouse KO Mortality | IMPC", plot_data$label)
+plot_data$label <- sub("^Trial Safety", "Safety stopped trial | OT", plot_data$label)
+plot_data$label <- sub("^DD panel \\(gene2phenotype\\)", "Developmental Disease | g2p", plot_data$label)
+plot_data$label <- sub("^OMIM", "Mendelian disease | OMIM", plot_data$label)
+plot_data$label <- sub("^Withdrawn Drug", "Withdrawn drug | ChEMBL", plot_data$label)
+plot_data$label <- sub("^Gene-based analysis", "Gene-based analysis | OT", plot_data$label)
+plot_data$label <- sub("^Orphanet", "Orphan disease | Orphanet", plot_data$label)
+plot_data$label <- sub("^Known safety events", "Known safety events | OT", plot_data$label)
+plot_data$label <- sub("^Human Knockout", "Human Knockout | RGC-ME", plot_data$label)
+plot_data$label <- sub("^Drosophila distant orthologs", "Drosophila ortholog | Ensembl", plot_data$label)
+plot_data$label <- sub("^Essential Gene \\(DepMap\\)", "Cell essential | DepMap", plot_data$label)
+plot_data$label <- sub("^Non-essential Gene \\(DepMap\\)", "Cell non-essential | DepMap", plot_data$label)
+plot_data$label <- sub("^Cancer Driver \\(COSMIC\\)", "Cancer Driver | COSMIC", plot_data$label)
+plot_data$label <- sub("^Cellular lethal \\(FUSIL\\)", "Cellular lethal | FUSIL", plot_data$label)
+plot_data$label <- sub("^Developmental lethal \\(FUSIL\\)", "Developmental lethal | FUSIL", plot_data$label)
+plot_data$label <- sub("^Subviable \\(FUSIL\\)", "Subviable | FUSIL", plot_data$label)
+plot_data$label <- sub("^Viable with phenotype \\(FUSIL\\)", "Viable with phenotype | FUSIL", plot_data$label)
+plot_data$label <- sub("^Viable with no phenotype \\(FUSIL\\)", "Viable with no phenotype | FUSIL", plot_data$label)
+
+# Extract count and percentage separately, then clean label
+plot_data$n_label   <- formatC(as.integer(sub(".*\\(([0-9]+)/[0-9.]+%\\)$", "\\1", plot_data$label)),
+                               format = "d", big.mark = ",")
+plot_data$pct_label <- sub(".*\\([0-9]+/([0-9.]+%)\\)$", "\\1", plot_data$label)
+plot_data$label     <- sub(" \\([0-9]+/[0-9.]+%\\)$", "", plot_data$label)
+
+plot_data$label_display <- as.character(plot_data$label)
 plot_data$label     <- factor(plot_data$label_display, levels = plot_data$label_display)
 plot_data$sig_label <- ifelse(plot_data$fdr < 0.05, "FDR < 5%", "FDR ≥ 5%")
+
+x_lo   <- min(plot_data$log_ci_lower, na.rm = TRUE)
+x_hi   <- max(plot_data$log_ci_upper, na.rm = TRUE)
+x_span <- x_hi - x_lo
+x_col1 <- x_hi + x_span * 0.22   # right edge of "Genes" column
+x_col2 <- x_hi + x_span * 0.42   # right edge of "In set" column
+y_hdr  <- nlevels(plot_data$label) + 1.2
+x_axis_lo <- x_lo - 0.05 * x_span
+x_axis_hi <- x_hi + 0.05 * x_span
 
 p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label, colour = sig_label)) +
   geom_vline(xintercept = 0, colour = col_vline, linetype = "dashed",
@@ -233,18 +270,33 @@ p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label, colour = sig_label))
   geom_errorbar(aes(xmin = log_ci_lower, xmax = log_ci_upper), width = 0,
                 linewidth = 0.4, orientation = "y") +
   geom_point(shape = 19, size = 1.5) +
+  geom_text(aes(x = x_col1, y = label, label = n_label),
+            hjust = 1, size = text_size / .pt, color = text_colour,
+            inherit.aes = FALSE) +
+  geom_text(aes(x = x_col2, y = label, label = pct_label),
+            hjust = 1, size = text_size / .pt, color = text_colour,
+            inherit.aes = FALSE) +
+  annotate("text", x = -Inf, y = y_hdr, label = "Gene/Target Set",
+           hjust = 1.15, size = text_size / .pt, color = text_colour, fontface = "bold") +
+  annotate("text", x = x_col1, y = y_hdr, label = "Genes",
+           hjust = 1, size = text_size / .pt, color = text_colour, fontface = "bold") +
+  annotate("text", x = x_col2, y = y_hdr, label = "In set",
+           hjust = 1, size = text_size / .pt, color = text_colour, fontface = "bold") +
   scale_colour_manual(
     values = c("FDR < 5%" = col_other, "FDR ≥ 5%" = col_insig),
     breaks = c("FDR < 5%", "FDR ≥ 5%")
   ) +
-  labs(x = "log(OR)", y = NULL) +
+  coord_cartesian(xlim = c(x_axis_lo, x_axis_hi), clip = "off") +
+  labs(x = "Pleiotropy enrichment (logOR)", y = NULL) +
   base_theme +
   theme(
     axis.text.x          = element_text(size = text_size, face = "plain", color = text_colour),
     legend.position      = c(1, 0),
     legend.justification = c(1, 0),
     legend.background    = element_rect(fill = NA, color = NA),
-    legend.key.size      = unit(0.35, "cm")
+    legend.key.size      = unit(0.35, "cm"),
+    legend.margin        = margin(r = 15, b = 15),
+    plot.margin          = margin(t = 10, r = 55, b = 5, l = 5)
   )
 
 # ===========================================================================
