@@ -107,7 +107,7 @@ p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
     guide = guide_axis(minor.ticks = TRUE, n.dodge = 1)
   ) +
   scale_y_continuous(limits = c(2, 12), expand = c(0, 0)) +
-  labs(x = NULL, y = "Odds Ratio") +
+  labs(x = NULL, y = "GWAS clinical success (OR)") +
   base_theme +
   theme(
     axis.text.x         = element_blank(),
@@ -139,7 +139,7 @@ p_a_bot <- ggplot(temporal_4_crop, aes(x = datasource_num, y = yes_evid_high_cli
     guide = guide_axis(minor.ticks = TRUE)
   ) +
   scale_y_continuous(limits = c(0, NA), expand = c(0, 0.05)) +
-  labs(x = "Year", y = "T-I pairs with approved drug") +
+  labs(x = "Year", y = "Drug-supported GWAS (T-I)") +
   base_theme +
   theme(axis.ticks.length.x = unit(0.08, "cm"))
 
