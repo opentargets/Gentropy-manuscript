@@ -1329,6 +1329,7 @@ dependencies = [
     { name = "streamlit" },
     { name = "sunburst" },
     { name = "tagore" },
+    { name = "upsetplot" },
     { name = "wordcloud" },
 ]
 
@@ -1373,6 +1374,7 @@ requires-dist = [
     { name = "streamlit", specifier = ">=1.47.1" },
     { name = "sunburst", specifier = ">=1.0.0a2" },
     { name = "tagore", specifier = ">=1.1.2" },
+    { name = "upsetplot", specifier = ">=0.9.0" },
     { name = "wordcloud", specifier = ">=1.9.4" },
 ]
 
@@ -5148,6 +5150,16 @@ sdist = { url = "https://files.pythonhosted.org/packages/91/7a/146a99696aee0609e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/37/87/1f677586e8ac487e29672e4b17455758fce261de06a0d086167bb760361a/uc_micro_py-1.0.3-py3-none-any.whl", hash = "sha256:db1dffff340817673d7b466ec86114a9dc0e9d4d9b5ba229d9d60e5c12600cd5", size = 6229 },
 ]
+
+[[package]]
+name = "upsetplot"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "pandas" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/63/a5a1628898729bcfb67ea785a152e424d78e0f57dfbba46213a652532d6a/UpSetPlot-0.9.0.tar.gz", hash = "sha256:95b76ac38c624c9dfb1eca1de1a37e30e07e83678b1c57839c943184247b8592", size = 23797 }
 
 [[package]]
 name = "uri-template"
