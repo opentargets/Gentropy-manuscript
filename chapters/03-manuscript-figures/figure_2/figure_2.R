@@ -156,7 +156,7 @@ plot_a <- ggplot(
   ) +
   labs(
     x = expression(log[10](mean~MAF)),
-    y = expression(mean("|" * hat(beta) * "|"))
+    y = expression(mean("|" * beta * "|"))
   ) +
   base_theme +
   coord_cartesian(ylim = c(0, y_upper_a)) +
@@ -413,7 +413,7 @@ plot_d <- ggplot(
     )
   ) +
   labs(
-    x = expression(mean("|" * hat(beta) * "|")),
+    x = expression(mean("|" * beta * "|")),
     y = ""
   ) +
   base_theme +
