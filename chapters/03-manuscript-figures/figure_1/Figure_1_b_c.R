@@ -73,7 +73,7 @@ get_cumulative <- function(df, mask, year_col, group_cols) {
   mask_quo <- enquo(mask)
   df %>%
     filter(!!mask_quo) %>%
-    select(all_of(c(group_cols, year_col))) %>%
+    dplyr::select(all_of(c(group_cols, year_col))) %>%
     distinct() %>%
     filter(.data[[year_col]] != 2025) %>%
     group_by(across(all_of(group_cols))) %>%
@@ -163,16 +163,16 @@ pairs_cum_all <- get_cumulative(
 # Genes
 years_genes <- sort(unique(c(genes_cum_nfe$year, genes_cum_common$year, genes_cum_all$year)))
 genes_df <- tibble(year = years_genes) %>%
-  left_join(select(genes_cum_nfe, year, nfe = cumulative), by = "year") %>%
-  left_join(select(genes_cum_common, year, common_all = cumulative), by = "year") %>%
-  left_join(select(genes_cum_all, year, all = cumulative), by = "year") %>%
+  left_join(dplyr::select(genes_cum_nfe, year, nfe = cumulative), by = "year") %>%
+  left_join(dplyr::select(genes_cum_common, year, common_all = cumulative), by = "year") %>%
+  left_join(dplyr::select(genes_cum_all, year, all = cumulative), by = "year") %>%
   mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
   mutate(
     layer_nfe = nfe,
     layer_common_other = pmax(common_all - nfe, 0),
     layer_rare = pmax(all - common_all, 0)
   ) %>%
-  select(year, layer_nfe, layer_common_other, layer_rare) %>%
+  dplyr::select(year, layer_nfe, layer_common_other, layer_rare) %>%
   mutate(
     panel = "Disease~associated~genes~(x~10^3)",
     metric = "genes"
@@ -181,16 +181,16 @@ genes_df <- tibble(year = years_genes) %>%
 # Pairs
 years_pairs <- sort(unique(c(pairs_cum_nfe$year, pairs_cum_common$year, pairs_cum_all$year)))
 pairs_df <- tibble(year = years_pairs) %>%
-  left_join(select(pairs_cum_nfe, year, nfe = cumulative), by = "year") %>%
-  left_join(select(pairs_cum_common, year, common_all = cumulative), by = "year") %>%
-  left_join(select(pairs_cum_all, year, all = cumulative), by = "year") %>%
+  left_join(dplyr::select(pairs_cum_nfe, year, nfe = cumulative), by = "year") %>%
+  left_join(dplyr::select(pairs_cum_common, year, common_all = cumulative), by = "year") %>%
+  left_join(dplyr::select(pairs_cum_all, year, all = cumulative), by = "year") %>%
   mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
   mutate(
     layer_nfe = nfe,
     layer_common_other = pmax(common_all - nfe, 0),
     layer_rare = pmax(all - common_all, 0)
   ) %>%
-  select(year, layer_nfe, layer_common_other, layer_rare) %>%
+  dplyr::select(year, layer_nfe, layer_common_other, layer_rare) %>%
   mutate(
     panel = "Unique~gene-disease~pairs~(x~10^3)",
     metric = "pairs"
@@ -205,7 +205,7 @@ plot_df <- bind_rows(genes_df, pairs_df) %>%
   mutate(
     layer = factor(layer,
       levels = c("layer_nfe", "layer_common_other", "layer_rare"),
-      labels = c("EUR common (MAF \u2265 0.01)", "Non-EUR common (MAF \u2265 0.01)", "Rare variants (MAF \u2265 0.01)")
+      labels = c("EUR common (MAF \u2265 0.01)", "Non-EUR common (MAF \u2265 0.01)", "Rare variants (MAF < 0.01)")
     ),
     year = as.integer(year)
   )
@@ -221,7 +221,7 @@ build_plot <- function(df, ylab_expr) {
     scale_fill_manual(values = c(
       "EUR common (MAF \u2265 0.01)" = color_nfe,
       "Non-EUR common (MAF \u2265 0.01)" = color_common,
-      "Rare variants (MAF \u2265 0.01)" = color_all
+      "Rare variants (MAF < 0.01)" = color_all
     )) +
     scale_x_continuous(breaks = x_breaks, minor_breaks = x_minor_breaks, expand = c(0, 0), guide = guide_axis(minor.ticks = TRUE)) +
     scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x / 1000, accuracy = 1)), expand = expansion(mult = c(0, 0.05))) +
@@ -258,15 +258,27 @@ p_genes <- build_plot(plot_df_genes, bquote(Disease ~ associated ~ genes ~ (x10^
 p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene-disease ~ pairs ~ (x10^3))) +
   geom_hline(data = hline_pairs, aes(yintercept = y, color = biobank), linetype = "dashed", linewidth = 0.5) +
   scale_color_manual(values = hline_colors) +
-  guides(color = guide_legend(override.aes = list(linetype = "dashed", linewidth = 0.5))) +
+  guides(
+    fill = guide_legend(
+      position = "inside",
+      theme = theme(
+        legend.position.inside      = c(0.02, 0.94),
+        legend.justification.inside = c(0, 1)
+      )
+    ),
+    color = guide_legend(
+      override.aes = list(linetype = "dashed", linewidth = 0.5),
+      position = "inside",
+      theme = theme(
+        legend.position.inside      = c(0.65, 0.94),
+        legend.justification.inside = c(0, 1)
+      )
+    )
+  ) +
   theme(
     axis.text.x = element_blank(), axis.title.x = element_blank(),
     axis.line.x.top = element_blank(),
     plot.margin = margin(t = 0, r = 5, b = 4, l = 5),
-    legend.box = "horizontal",
-    legend.spacing.x = unit(-10, "pt"),
-    legend.position = c(0.02, 0.94),
-    legend.justification = c(0, 1),
     legend.background = element_rect(fill = NA, color = NA)
   )
 
