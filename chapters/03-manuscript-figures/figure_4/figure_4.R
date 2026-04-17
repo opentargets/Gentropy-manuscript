@@ -81,7 +81,7 @@ pleio_df <- bind_rows(
          year  = as.integer(year))
 
 cover_df <- gene_coverage %>%
-  mutate(group = "Gene coverage by variants",
+  mutate(group = "Variants per gene",
          ci_lo = mean - se * 1.96, ci_hi = mean + se * 1.96,
          year  = as.integer(year))
 
@@ -101,7 +101,7 @@ p_top <- ggplot(pleio_df, aes(x = year, y = mean, color = group, fill = group)) 
                      guide = guide_axis(minor.ticks = TRUE)) +
   scale_y_continuous(breaks = 1:4, expand = c(0, 0)) +
   coord_cartesian(xlim = c(2006, 2024), ylim = c(1, 5)) +
-  labs(x = NULL, y = "Number of diseases") +
+  labs(x = NULL, y = "Mean pleiotropy score") +
   base_theme +
   theme(
     axis.text.x  = element_blank(),
@@ -116,8 +116,8 @@ p_bot <- ggplot(cover_df, aes(x = year, y = mean, color = group, fill = group)) 
   geom_ribbon(aes(ymin = ci_lo, ymax = ci_hi),
               alpha = 0.12, linewidth = 0, color = NA) +
   geom_line(linewidth = 0.8) +
-  scale_color_manual(values = c("Gene coverage by variants" = col_cover)) +
-  scale_fill_manual(values  = c("Gene coverage by variants" = col_cover)) +
+  scale_color_manual(values = c("Variants per gene" = col_cover)) +
+  scale_fill_manual(values  = c("Variants per gene" = col_cover)) +
   scale_x_continuous(breaks = x_breaks, minor_breaks = x_minor,
                      expand = c(0, 0),
                      guide = guide_axis(minor.ticks = TRUE)) +
@@ -196,14 +196,15 @@ p_b <- ggplot(forest_b, aes(x = coef, y = label, colour = type)) +
                 orientation = "y") +
   geom_point(size = 1.5, position = position_dodge(0.45)) +
   scale_colour_manual(values = c("Univariate" = col_uni, "Joint" = col_multi)) +
-  labs(x = "Coefficient", y = NULL) +
+  labs(x = "Regression coefficient (95% CI)", y = NULL) +
   base_theme +
   theme(
     axis.text.x = element_text(size = text_size, face = "plain", color = text_colour),
     legend.position      = c(1, 0),
     legend.justification = c(1, 0),
     legend.background    = element_rect(fill = NA, color = NA),
-    legend.key.size      = unit(0.35, "cm")
+    legend.key.size      = unit(0.35, "cm"),
+    legend.title         = element_text(size = text_size, face = "plain", color = text_colour)
   )
 
 # ===========================================================================
@@ -253,7 +254,7 @@ plot_data$label     <- sub(" \\([0-9]+/[0-9.]+%\\)$", "", plot_data$label)
 
 plot_data$label_display <- as.character(plot_data$label)
 plot_data$label     <- factor(plot_data$label_display, levels = plot_data$label_display)
-plot_data$sig_label <- ifelse(plot_data$fdr < 0.05, "FDR < 5%", "FDR ≥ 5%")
+plot_data$sig_label <- ifelse(plot_data$fdr < 0.05, "FDR < 5%", "FDR \u2265 5%")
 
 x_lo   <- min(plot_data$log_ci_lower, na.rm = TRUE)
 x_hi   <- max(plot_data$log_ci_upper, na.rm = TRUE)
@@ -283,8 +284,8 @@ p_c <- ggplot(plot_data, aes(x = log_odds_ratio, y = label, colour = sig_label))
   annotate("text", x = x_col2, y = y_hdr, label = "In set",
            hjust = 1, size = text_size / .pt, color = text_colour, fontface = "bold") +
   scale_colour_manual(
-    values = c("FDR < 5%" = col_other, "FDR ≥ 5%" = col_insig),
-    breaks = c("FDR < 5%", "FDR ≥ 5%")
+    values = c("FDR < 5%" = col_other, "FDR \u2265 5%" = col_insig),
+    breaks = c("FDR < 5%", "FDR \u2265 5%")
   ) +
   coord_cartesian(xlim = c(x_axis_lo, x_axis_hi), clip = "off") +
   labs(x = "Pleiotropy enrichment (logOR)", y = NULL) +
@@ -314,6 +315,7 @@ out_dir <- if (file.exists("chapters/03-manuscript-figures/figure_4")) {
   "."
 }
 png_file <- file.path(out_dir, "figure_4_final.pdf")
-ggsave(png_file, final, width = 12, height = 4.3, dpi = 300, bg = "white",
-       device = cairo_pdf)
+quartz(file = png_file, type = "pdf", width = 12, height = 4.3, bg = "white")
+print(final)
+invisible(dev.off())
 message("Saved: ", png_file)
