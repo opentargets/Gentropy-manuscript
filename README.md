@@ -1,6 +1,6 @@
 # Gentropy Manuscript Analysis
 
-Code repository for: **A Panoramic View of the Pleiotropic Genetic Architecture of Common Traits and Therapeutic Implications** (Tsepilov, Ochoa et al., 2026).
+Code repository for: **The Human Pleiotropic Map of GWAS Associations and Therapeutic Implications** (Tsepilov, Ochoa et al., 2026).
 
 ## System requirements
 
