@@ -1,6 +1,6 @@
 # Gentropy Manuscript Analysis
 
-Code repository for: **The Human Pleiotropic Map of GWAS Associations and Therapeutic Implications** (Tsepilov, Ochoa et al., 2026).
+Code repository for: **The Human Pleiotropic Map of GWAS Associations and Therapeutic Implications** ([preprint](https://www.biorxiv.org/content/10.64898/2026.04.28.721048v1)).
 
 ## System requirements
 
