@@ -198,3 +198,6 @@ app/
 .Renviron.site
 .Rds
 gentropy-manuscript.Rproj
+# reviewer-facing notes (contain verbatim referee comments, kept local only)
+chapters/06-review-r1/**/README.md
+chapters/06-review-r1/**/MAPPING_REVIEW.md
