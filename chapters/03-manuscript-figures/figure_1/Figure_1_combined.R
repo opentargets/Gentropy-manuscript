@@ -30,7 +30,7 @@ fig1_dir  <- if (length(.file_arg) > 0) {
 facet_script_path   <- file.path(fig1_dir, "Figure_1_b_c.R")
 manh_script_path    <- file.path(fig1_dir, "Figure_1_d.R")
 pychart_script_path <- file.path(fig1_dir, "Figure_1_d_pychart.R")
-output_path         <- file.path(fig1_dir, "Figure_1_combined.pdf")
+output_path         <- file.path(fig1_dir, "Figure_1_combined-r1.pdf")
 top_panel_pdf       <- file.path(fig1_dir, "assets", "Fig1 a (cropped).pdf")
 
 # ── 1. Build facet grob from Figure_1_b_c.R ─────────────────────────────────
@@ -51,6 +51,7 @@ eval(parse(text = paste(manh_lines, collapse = "\n")), envir = environment())
 
 # Load the data (path from Figure_1_d.R's main())
 parquet_file <- file.path(fig1_dir, "data", "disease_ta_measur_index.snappy.parquet")
+stopifnot(file.exists(parquet_file))
 cat("Loading parquet data...\n")
 circo_data <- read_parquet_data(parquet_file)
 

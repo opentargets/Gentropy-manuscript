@@ -10,9 +10,8 @@ suppressPackageStartupMessages({
 
 if (getRversion() >= "2.15.1") {
   utils::globalVariables(c(
-    "first_year", "cumulative", "nfe", "common_all", "all",
-    "layer_nfe", "layer_common_other", "layer_rare", "year",
-    "diseaseIds", "geneId"
+    "metric", "year", "layer", "layer_label", "height", "value", "panel",
+    "mean", "ci", "group", "nSamples", "absEstimatedBeta", "biobank"
   ))
 }
 
@@ -28,8 +27,8 @@ if (!exists("fig1_dir")) {
 }
 
 # Input and output paths
-input_csv  <- file.path(fig1_dir, "data", "l2g_diseases_full.csv")
-output_png <- file.path(fig1_dir, "Figure_1_b_c.png")
+input_csv  <- file.path(fig1_dir, "data", "fig1c_layers-r1.csv")
+output_png <- file.path(fig1_dir, "Figure_1_b_c-r1.png")
 
 text_size <- 10
 ylab_shift <- 8        # shift ALL y-axis titles closer to axis (pt)
@@ -63,151 +62,48 @@ base_theme <- theme_minimal() +
     strip.text.y = element_text(size = text_size, face = "plain", color = "#434343")
   )
 
-# Colors to match the python version
-color_nfe <- "#BFDAEE"
-color_common <- "#8ABADE"
-color_all <- "#245780"
+# Colors to match the python version. One step was added to the blue ramp for the `mixed` layer,
+# which the published figure did not separate out.
+color_eur <- "#BFDAEE"
+color_non_eur <- "#8ABADE"
+color_mixed <- "#4E85B0"
+color_rare <- "#245780"
 
-# Helper: cumulative per-year given a logical mask and key columns
-get_cumulative <- function(df, mask, year_col, group_cols) {
-  mask_quo <- enquo(mask)
-  df %>%
-    filter(!!mask_quo) %>%
-    dplyr::select(all_of(c(group_cols, year_col))) %>%
-    distinct() %>%
-    filter(.data[[year_col]] != 2025) %>%
-    group_by(across(all_of(group_cols))) %>%
-    summarise(first_year = min(.data[[year_col]]), .groups = "drop") %>%
-    count(first_year, name = "count") %>%
-    arrange(first_year) %>%
-    mutate(cumulative = cumsum(count)) %>%
-    rename(year = first_year)
-}
+# Stacked layers, bottom to top. Order here drives the stacking order in build_plot().
+layer_levels <- c("EUR common", "non-EUR common", "mixed common", "rare")
+layer_labels <- c(
+  "EUR common (MAF ≥ 0.01)",
+  "Non-EUR common (MAF ≥ 0.01)",
+  "Mixed common (MAF ≥ 0.01)",
+  "Rare variants (MAF < 0.01)"
+)
+layer_colors <- setNames(c(color_eur, color_non_eur, color_mixed, color_rare), layer_labels)
 
-# Read data
+# Panel c layer heights are pre-computed by figure_1_dataprep-r1.ipynb, which lifts them from
+# chapters/06-review-r1/ancestry-mixed-split/01_ancestry_reclassification.ipynb. Each row is one
+# stacked segment: `layer` is its height, `cumulative` is the running total of that tier and
+# everything below it. Computing them upstream keeps panel c, ED Fig 3 and the reviewer response
+# numerically identical, and removes the fragile step this script used to do — splitting a Python
+# list-repr string of diseaseIds on commas to recover gene-disease pairs.
 stopifnot(file.exists(input_csv))
-raw <- suppressMessages(readr::read_csv(input_csv, show_col_types = FALSE))
+layers_raw <- suppressMessages(readr::read_csv(input_csv, show_col_types = FALSE)) %>%
+  dplyr::rename(height = layer)
 
-# Expect columns: geneId, diseaseIds (list-like), year, nfe_common, non_nfe_common
-# If diseaseIds is a pipe/semicolon/comma separated string, split to rows
-if ("diseaseIds" %in% names(raw) && is.character(raw$diseaseIds)) {
-  sep_guess <- ifelse(any(str_detect(raw$diseaseIds, "\\|")), "|",
-    ifelse(any(str_detect(raw$diseaseIds, ";")), ";",
-      ifelse(any(str_detect(raw$diseaseIds, ",")), ",", NA)
+stopifnot(all(layer_levels %in% layers_raw$layer_label))
+
+plot_df <- layers_raw %>%
+  filter(.data$metric %in% c("disease genes", "gene-disease pairs")) %>%
+  transmute(
+    metric = if_else(.data$metric == "disease genes", "genes", "pairs"),
+    year   = as.integer(.data$year),
+    value  = replace_na(.data$height, 0),
+    layer  = factor(.data$layer_label, levels = layer_levels, labels = layer_labels)
+  ) %>%
+  mutate(
+    panel = if_else(.data$metric == "genes",
+      "Disease~associated~genes~(x~10^3)",
+      "Unique~gene-disease~pairs~(x~10^3)"
     )
-  )
-  if (!is.na(sep_guess)) {
-    raw_pairs <- raw %>%
-      mutate(diseaseIds = str_split(diseaseIds, fixed(sep_guess))) %>%
-      unnest(diseaseIds)
-  } else {
-    raw_pairs <- raw
-  }
-} else {
-  raw_pairs <- raw
-}
-
-# Ensure integer/numeric flags
-for (col in c("nfe_common", "non_nfe_common")) {
-  if (col %in% names(raw)) raw[[col]] <- as.integer(raw[[col]])
-  if (col %in% names(raw_pairs)) raw_pairs[[col]] <- as.integer(raw_pairs[[col]])
-}
-
-# Build cumulative series for Genes (unique genes over time)
-# 1) NFE common only
-genes_cum_nfe <- get_cumulative(
-  raw,
-  mask = nfe_common == 1,
-  year_col = "year",
-  group_cols = c("geneId")
-)
-# 2) All common (nfe_common OR non_nfe_common)
-genes_cum_common <- get_cumulative(
-  raw,
-  mask = (nfe_common == 1) | (non_nfe_common == 1),
-  year_col = "year",
-  group_cols = c("geneId")
-)
-# 3) All rows (any)
-genes_cum_all <- get_cumulative(
-  raw,
-  mask = !is.na(nfe_common),
-  year_col = "year",
-  group_cols = c("geneId")
-)
-
-# Build cumulative series for Gene-Disease pairs (unique gene-disease pairs over time)
-# 1) NFE common only
-pairs_cum_nfe <- get_cumulative(
-  raw_pairs,
-  mask = nfe_common == 1,
-  year_col = "year",
-  group_cols = c("geneId", "diseaseIds")
-)
-# 2) All common (nfe_common OR non_nfe_common)
-pairs_cum_common <- get_cumulative(
-  raw_pairs,
-  mask = (nfe_common == 1) | (non_nfe_common == 1),
-  year_col = "year",
-  group_cols = c("geneId", "diseaseIds")
-)
-# 3) All rows (any)
-pairs_cum_all <- get_cumulative(
-  raw_pairs,
-  mask = !is.na(nfe_common),
-  year_col = "year",
-  group_cols = c("geneId", "diseaseIds")
-)
-
-# Merge and compute stacked layers avoiding double counting
-# Genes
-years_genes <- sort(unique(c(genes_cum_nfe$year, genes_cum_common$year, genes_cum_all$year)))
-genes_df <- tibble(year = years_genes) %>%
-  left_join(dplyr::select(genes_cum_nfe, year, nfe = cumulative), by = "year") %>%
-  left_join(dplyr::select(genes_cum_common, year, common_all = cumulative), by = "year") %>%
-  left_join(dplyr::select(genes_cum_all, year, all = cumulative), by = "year") %>%
-  mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
-  mutate(
-    layer_nfe = nfe,
-    layer_common_other = pmax(common_all - nfe, 0),
-    layer_rare = pmax(all - common_all, 0)
-  ) %>%
-  dplyr::select(year, layer_nfe, layer_common_other, layer_rare) %>%
-  mutate(
-    panel = "Disease~associated~genes~(x~10^3)",
-    metric = "genes"
-  )
-
-# Pairs
-years_pairs <- sort(unique(c(pairs_cum_nfe$year, pairs_cum_common$year, pairs_cum_all$year)))
-pairs_df <- tibble(year = years_pairs) %>%
-  left_join(dplyr::select(pairs_cum_nfe, year, nfe = cumulative), by = "year") %>%
-  left_join(dplyr::select(pairs_cum_common, year, common_all = cumulative), by = "year") %>%
-  left_join(dplyr::select(pairs_cum_all, year, all = cumulative), by = "year") %>%
-  mutate(across(c(nfe, common_all, all), ~ replace_na(., 0))) %>%
-  mutate(
-    layer_nfe = nfe,
-    layer_common_other = pmax(common_all - nfe, 0),
-    layer_rare = pmax(all - common_all, 0)
-  ) %>%
-  dplyr::select(year, layer_nfe, layer_common_other, layer_rare) %>%
-  mutate(
-    panel = "Unique~gene-disease~pairs~(x~10^3)",
-    metric = "pairs"
-  )
-
-# Combine for facets
-plot_df <- bind_rows(genes_df, pairs_df) %>%
-  pivot_longer(
-    cols = c(layer_nfe, layer_common_other, layer_rare),
-    names_to = "layer", values_to = "value"
-  ) %>%
-  mutate(
-    layer = factor(layer,
-      levels = c("layer_nfe", "layer_common_other", "layer_rare"),
-      labels = c("EUR common (MAF \u2265 0.01)", "Non-EUR common (MAF \u2265 0.01)", "Rare variants (MAF < 0.01)")
-    ),
-    year = as.integer(year)
   )
 
 # Build stacked bars with shared x-axis; tick every 2 years
@@ -218,11 +114,7 @@ x_minor_breaks <- seq(2007, 2023, by = 2)
 build_plot <- function(df, ylab_expr) {
   ggplot(df, aes(x = year, y = value, fill = layer)) +
     geom_col(width = 0.8, position = position_stack(reverse = TRUE)) +
-    scale_fill_manual(values = c(
-      "EUR common (MAF \u2265 0.01)" = color_nfe,
-      "Non-EUR common (MAF \u2265 0.01)" = color_common,
-      "Rare variants (MAF < 0.01)" = color_all
-    )) +
+    scale_fill_manual(values = layer_colors) +
     scale_x_continuous(breaks = x_breaks, minor_breaks = x_minor_breaks, expand = c(0, 0), guide = guide_axis(minor.ticks = TRUE)) +
     scale_y_continuous(labels = function(x) ifelse(x == 0, "", scales::number(x / 1000, accuracy = 1)), expand = expansion(mult = c(0, 0.05))) +
     labs(x = "Year", y = NULL) +

@@ -1,34 +1,51 @@
 suppressPackageStartupMessages({
   library(ggplot2)
   library(dplyr)
+  library(readr)
 })
 
-# Input counts (match notebook values)
-n_eur <- 65222L
-n_afr <- 7421L
-n_eas <- 11785L
-n_other <- 16098L
+# Resolve script directory (works when sourced from Figure_1_combined.R and standalone via Rscript)
+if (!exists("fig1_dir")) {
+  .argv     <- commandArgs(trailingOnly = FALSE)
+  .file_arg <- .argv[startsWith(.argv, "--file=")]
+  fig1_dir  <- if (length(.file_arg) > 0) {
+    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
+  } else {
+    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
+  }
+}
+
+# Slice counts come from figure_1_dataprep-r1.ipynb rather than being hardcoded here. Five slices:
+# EUR and mixed are the reclassified ancestry groups, AFR and EAS/CSA are the non-EUR studies whose
+# predominant ancestry is afr and eas, and Other is what remains (predominantly amr, plus Finnish).
+# The published donut had four slices and buried all 11,725 pan-ancestry studies inside Other.
+donut_csv <- file.path(fig1_dir, "data", "ancestry_donut_counts-r1.csv")
+stopifnot(file.exists(donut_csv))
+counts <- suppressMessages(readr::read_csv(donut_csv, show_col_types = FALSE))
+
+slice_levels <- c("EUR", "AFR", "EAS/CSA", "mixed", "Other")
+stopifnot(setequal(counts$ancestry, slice_levels))
 
 # Data frame
-df <- tibble::tibble(
-  ancestry = factor(c("EUR", "AFR", "EAS/CSA", "Other"),
-                    levels = c("EUR", "AFR", "EAS/CSA", "Other")),
-  value = c(n_eur, n_afr, n_eas, n_other)
-) %>%
+df <- counts %>%
+  mutate(ancestry = factor(.data$ancestry, levels = slice_levels)) %>%
+  arrange(.data$ancestry) %>%
   mutate(
-    total = sum(value),
-    fraction = value / total,
-    percent = fraction * 100,
-    label = paste0(ancestry, "\n", round(percent), "%"),
-    label_color = ifelse(ancestry == "Other", "black", "white"),
-    y_mid = cumsum(fraction) - fraction / 2
+    total = sum(.data$value),
+    fraction = .data$value / .data$total,
+    percent = .data$fraction * 100,
+    label = paste0(.data$ancestry, "\n", round(.data$percent), "%"),
+    y_mid = cumsum(.data$fraction) - .data$fraction / 2
   )
 
 # Color map
+# `mixed` gets the mid-blue used for the non-EUR layer of panel c rather than another step on the
+# green ramp: it is not a single ancestry, and it must not read as one.
 fill_colors <- c(
   "EUR" = "#2E5943",
   "AFR" = "#528B78",
   "EAS/CSA" = "#9EBAA8",
+  "mixed" = "#8ABADE",
   "Other" = "lightgrey"
 )
 
@@ -36,12 +53,13 @@ text_colors <- c(
   "EUR" = "#ffffff",
   "AFR" = "#ffffff",
   "EAS/CSA" = "#ffffff",
+  "mixed" = "#434343",
   "Other" = "#434343"
 )
 
 # Donut chart
 p <- ggplot(df, aes(x = 2, y = fraction, fill = ancestry)) +
-  geom_col(width = 1, color = "white", size = 2) +
+  geom_col(width = 1, color = "white", linewidth = 2) +
   coord_polar(theta = "y", start = (pi / 2) - (90 * pi / 180)) +
   scale_fill_manual(values = fill_colors) +
   theme_void(base_family = "Helvetica") +
@@ -59,17 +77,10 @@ p <- ggplot(df, aes(x = 2, y = fraction, fill = ancestry)) +
   scale_color_manual(values = text_colors, guide = "none")
 
 
-# Output directory (kept tidy within this experiment folder)
-out_dir <- file.path("scr", "paper_figs", "pychart_R", "out")
-if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
-
-# Save outputs (4.5 x 4.5 inches, white background)
-ggsave(filename = file.path(out_dir, "ancestry_donut.png"), plot = p,
+# Standalone output. Figure_1_combined.R truncates this script at the first ggsave() line and keeps
+# only the ggplot object `p`, so nothing below runs in the combined pipeline.
+ggsave(filename = file.path(fig1_dir, "ancestry_donut-r1.png"), plot = p,
        width = 4.5, height = 4.5, dpi = 300, bg = "#ffffff00")
-# ggsave(filename = file.path(out_dir, "ancestry_donut.pdf"), plot = p,
-#        width = 4.5, height = 4.5, bg = "white", device = "pdf")
 
 # Print to viewer if interactive
 # if (interactive()) print(p)
-
-

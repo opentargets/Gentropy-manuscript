@@ -1,0 +1,1274 @@
+[
+  {
+    "hp_id": "HP_0000016",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Urinary retention is a symptom/sign, not a disease entity; no disease equivalent in candidates."
+  },
+  {
+    "hp_id": "HP_0000020",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Urinary incontinence is a clinical symptom, not a disease; no specific disease match in candidates."
+  },
+  {
+    "hp_id": "HP_0000023",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Inguinal hernia has no specific disease term in candidates; available terms are syndromes or different hernia types."
+  },
+  {
+    "hp_id": "HP_0000031",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No candidates provided for epididymitis mapping."
+  },
+  {
+    "hp_id": "HP_0000078",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Phenotype is congenital malformation of genital organs; too vague and no specific malformation disease term available."
+  },
+  {
+    "hp_id": "HP_0000079",
+    "suggested_term": "Orphanet_183539",
+    "confidence": 2,
+    "reason": "GWAS trait describes congenital anomalies; Genetic renal or urinary tract malformation fits but term remains broad."
+  },
+  {
+    "hp_id": "HP_0000093",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Proteinuria is a laboratory finding/symptom, not a disease; candidates do not match the phenotype."
+  },
+  {
+    "hp_id": "HP_0000099",
+    "suggested_term": "MONDO_0002462",
+    "confidence": 1,
+    "reason": "Exact match: glomerulonephritis HP maps directly to glomerulonephritis MONDO term with identical meaning."
+  },
+  {
+    "hp_id": "HP_0000112",
+    "suggested_term": "EFO_0003086",
+    "confidence": 2,
+    "reason": "Nephropathy is a general kidney disease; kidney disease is appropriate but broad."
+  },
+  {
+    "hp_id": "HP_0000118",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Phenotypic abnormality with example 'abnormal posture' is too vague and non-specific for disease mapping."
+  },
+  {
+    "hp_id": "HP_0000131",
+    "suggested_term": "EFO_0000731",
+    "confidence": 1,
+    "reason": "Uterine fibroid is the common clinical name for uterine leiomyoma; near-identical meaning."
+  },
+  {
+    "hp_id": "HP_0000132",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Menorrhagia (heavy menstruation) has no disease equivalent; candidates are bleeding disorders, not menorrhagia."
+  },
+  {
+    "hp_id": "HP_0000138",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Ovarian cyst is a structural finding; no specific ovarian cyst disease in candidates, only general ovarian disease or specific syndromes."
+  },
+  {
+    "hp_id": "HP_0000155",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Oral ulcer is a symptom; no disease specifically for mouth ulcers; candidates are broader disorders."
+  },
+  {
+    "hp_id": "HP_0000164",
+    "suggested_term": "EFO_1001216",
+    "confidence": 2,
+    "reason": "Dentition abnormality is broad; tooth disease is appropriate general category but imprecise."
+  },
+  {
+    "hp_id": "HP_0000175",
+    "suggested_term": "MONDO_0016064",
+    "confidence": 1,
+    "reason": "Exact match: cleft palate HP directly corresponds to cleft palate MONDO disease entity."
+  },
+  {
+    "hp_id": "HP_0000202",
+    "suggested_term": "MONDO_0000358",
+    "confidence": 1,
+    "reason": "Exact match: orofacial cleft HP corresponds directly to orofacial cleft MONDO disease."
+  },
+  {
+    "hp_id": "HP_0000225",
+    "suggested_term": "EFO_0009670",
+    "confidence": 2,
+    "reason": "Gingival bleeding is consistent with gingival disease but is a symptom rather than disease diagnosis."
+  },
+  {
+    "hp_id": "HP_0000238",
+    "suggested_term": "MONDO_0016349",
+    "confidence": 2,
+    "reason": "Hydrocephalus candidate exists; congenital hydrocephalus is plausible but assumes congenital origin."
+  },
+  {
+    "hp_id": "HP_0000264",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal mastoid morphology is anatomic; no specific mastoid disease in candidates."
+  },
+  {
+    "hp_id": "HP_0000347",
+    "suggested_term": "EFO_0009468",
+    "confidence": 2,
+    "reason": "Micrognathia (mandibular hypoplasia) maps to jaw disease but that term is broad."
+  },
+  {
+    "hp_id": "HP_0000360",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Tinnitus is a symptom; candidates list syndromes featuring tinnitus, not tinnitus as a disease."
+  },
+  {
+    "hp_id": "HP_0000405",
+    "suggested_term": "MONDO_0020679",
+    "confidence": 1,
+    "reason": "Near-exact match: conductive hearing impairment maps to conductive hearing loss disorder."
+  },
+  {
+    "hp_id": "HP_0000407",
+    "suggested_term": "EFO_1001176",
+    "confidence": 1,
+    "reason": "Exact match: sensorineural hearing impairment corresponds to sensorineural hearing loss."
+  },
+  {
+    "hp_id": "HP_0000473",
+    "suggested_term": "MONDO_0000481",
+    "confidence": 1,
+    "reason": "Torticollis is synonymous with cervical dystonia as stated in HP synonyms."
+  },
+  {
+    "hp_id": "HP_0000481",
+    "suggested_term": "EFO_0009464",
+    "confidence": 2,
+    "reason": "Abnormal cornea morphology maps to corneal disease, appropriate but broad category."
+  },
+  {
+    "hp_id": "HP_0000483",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Astigmatism is a refractive error, not a disease entity; no disease equivalent in candidates."
+  },
+  {
+    "hp_id": "HP_0000486",
+    "suggested_term": "MONDO_0020252",
+    "confidence": 1,
+    "reason": "Essential strabismus is the direct disease equivalent of strabismus."
+  },
+  {
+    "hp_id": "HP_0000505",
+    "suggested_term": "MONDO_0021084",
+    "confidence": 1,
+    "reason": "Vision disorder is the generic disease equivalent for visual impairment."
+  },
+  {
+    "hp_id": "HP_0000539",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Only candidate is a rare genetic anomaly; no generic refraction abnormality disease term available."
+  },
+  {
+    "hp_id": "HP_0000540",
+    "suggested_term": "MONDO_0004891",
+    "confidence": 1,
+    "reason": "Hyperopia is the direct disease equivalent of hypermetropia."
+  },
+  {
+    "hp_id": "HP_0000545",
+    "suggested_term": "MONDO_0001384",
+    "confidence": 1,
+    "reason": "Myopia is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0000565",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "All candidates are syndromes with esotropia as a feature; no standalone esotropia disease term available."
+  },
+  {
+    "hp_id": "HP_0000573",
+    "suggested_term": "EFO_0008627",
+    "confidence": 2,
+    "reason": "Eye hemorrhage is a broader category that includes retinal hemorrhage."
+  },
+  {
+    "hp_id": "HP_0000614",
+    "suggested_term": "EFO_0009455",
+    "confidence": 2,
+    "reason": "Lacrimal apparatus disease is relevant but broader than nasolacrimal system morphology."
+  },
+  {
+    "hp_id": "HP_0000618",
+    "suggested_term": "MONDO_0001941",
+    "confidence": 1,
+    "reason": "Blindness disorder is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0000678",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific dental crowding disease term; candidates are generic tooth diseases or unrelated conditions."
+  },
+  {
+    "hp_id": "HP_0000689",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific dental malocclusion disease term in candidates."
+  },
+  {
+    "hp_id": "HP_0000712",
+    "suggested_term": "EFO_0004247",
+    "confidence": 2,
+    "reason": "Mood disorder is plausible but emotional lability is a symptom rather than a named disease."
+  },
+  {
+    "hp_id": "HP_0000726",
+    "suggested_term": "MONDO_0001627",
+    "confidence": 1,
+    "reason": "Dementia is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0000737",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Irritability is a symptom; no primary behavioral disorder equivalent in candidates matches."
+  },
+  {
+    "hp_id": "HP_0000769",
+    "suggested_term": "EFO_0009483",
+    "confidence": 1,
+    "reason": "Breast disease is the generic disease equivalent for abnormality of the breast."
+  },
+  {
+    "hp_id": "HP_0000790",
+    "suggested_term": "MONDO_0957317",
+    "confidence": 1,
+    "reason": "Hematuria benign familial is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0000876",
+    "suggested_term": null,
+    "confidence": 0,
+    "reason": "GWAS trait 'excessive, frequent and irregular menstruation' contradicts HP term 'oligomenorrhea' (infrequent); mapping is wrong."
+  },
+  {
+    "hp_id": "HP_0000934",
+    "suggested_term": "MONDO_0001314",
+    "confidence": 1,
+    "reason": "Chondrocalcinosis is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0000952",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Only neonatal jaundice available; no adult jaundice disease term in candidates."
+  },
+  {
+    "hp_id": "HP_0000958",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific dry skin disease term; candidates are unrelated skin conditions."
+  },
+  {
+    "hp_id": "HP_0000964",
+    "suggested_term": "EFO_0000274",
+    "confidence": 1,
+    "reason": "Atopic eczema is the direct disease equivalent of eczematoid dermatitis."
+  },
+  {
+    "hp_id": "HP_0000975",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No general hyperhidrosis disease term; candidates are syndromes with hyperhidrosis as a feature."
+  },
+  {
+    "hp_id": "HP_0000989",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Pruritus is a symptom; no specific pruritus disease term in candidates."
+  },
+  {
+    "hp_id": "HP_0001000",
+    "suggested_term": "MONDO_0019288",
+    "confidence": 1,
+    "reason": "Skin pigmentation disorder is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0001007",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No general hirsutism disease term; candidates are specific syndromes."
+  },
+  {
+    "hp_id": "HP_0001082",
+    "suggested_term": "EFO_1001289",
+    "confidence": 1,
+    "reason": "Cholecystitis Acute is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0001094",
+    "suggested_term": "MONDO_0004773",
+    "confidence": 1,
+    "reason": "Iridocyclitis is the direct disease equivalent."
+  },
+  {
+    "hp_id": "HP_0001128",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Trichiasis has no suitable disease equivalent; candidates address other eyelid conditions."
+  },
+  {
+    "hp_id": "HP_0001132",
+    "suggested_term": "MONDO_0015998",
+    "confidence": 1,
+    "reason": "Isolated ectopia lentis is specifically lens dislocation, matching lens subluxation exactly."
+  },
+  {
+    "hp_id": "HP_0001197",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Broad abnormality of prenatal development has no matching disease category in candidates."
+  },
+  {
+    "hp_id": "HP_0001249",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic intellectual disability has no non-syndromic match; all candidates are syndromic forms."
+  },
+  {
+    "hp_id": "HP_0001279",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No candidates provided for syncope."
+  },
+  {
+    "hp_id": "HP_0001288",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic gait disturbance has no match; all candidates are syndrome-specific."
+  },
+  {
+    "hp_id": "HP_0001298",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic encephalopathy has no match; only specific subtypes (hypertensive, diabetic, toxic) in candidates."
+  },
+  {
+    "hp_id": "HP_0001324",
+    "suggested_term": "MONDO_0003939",
+    "confidence": 2,
+    "reason": "Muscle tissue disorder is a plausible match but broad for specific muscle weakness trait."
+  },
+  {
+    "hp_id": "HP_0001392",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic liver abnormality has no match; candidates are specific liver diseases."
+  },
+  {
+    "hp_id": "HP_0001438",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal abdomen morphology has no suitable match; GWAS traits are obstetric, candidates are specific pathologies."
+  },
+  {
+    "hp_id": "HP_0001518",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Small for gestational age has no disease equivalent; only syndromic variants in candidates."
+  },
+  {
+    "hp_id": "HP_0001537",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Umbilical hernia has no specific match; ventral hernia is a broader parent category."
+  },
+  {
+    "hp_id": "HP_0001541",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Ascites is a symptom not a disease; no disease term found in candidates."
+  },
+  {
+    "hp_id": "HP_0001574",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No candidates provided for abnormality of the integument."
+  },
+  {
+    "hp_id": "HP_0001634",
+    "suggested_term": "MONDO_0004910",
+    "confidence": 1,
+    "reason": "Mitral valve prolapse matches phenotype exactly; clear, unambiguous match."
+  },
+  {
+    "hp_id": "HP_0001636",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Tetralogy of Fallot has no specific match; candidates are syndromic variants with additional features."
+  },
+  {
+    "hp_id": "HP_0001649",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic tachycardia NOS has no match; all candidates are specific tachycardia subtypes."
+  },
+  {
+    "hp_id": "HP_0001671",
+    "suggested_term": "MONDO_0002078",
+    "confidence": 1,
+    "reason": "Heart septal defect matches cardiac septum abnormality phenotype exactly."
+  },
+  {
+    "hp_id": "HP_0001744",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Splenomegaly is a symptom not a disease; no disease equivalent found."
+  },
+  {
+    "hp_id": "HP_0001787",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal delivery has no suitable disease equivalent; pregnancy disorder is too broad."
+  },
+  {
+    "hp_id": "HP_0001822",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hallux valgus has no specific disease term; only syndromic versions with HV as a feature."
+  },
+  {
+    "hp_id": "HP_0001871",
+    "suggested_term": "EFO_0005803",
+    "confidence": 2,
+    "reason": "Hematologic disease matches blood disorder category but is broad for vague GWAS trait."
+  },
+  {
+    "hp_id": "HP_0001873",
+    "suggested_term": "MONDO_0001198",
+    "confidence": 2,
+    "reason": "Acquired thrombocytopenia is plausible for gestational form but more specific term needed."
+  },
+  {
+    "hp_id": "HP_0001876",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Pancytopenia has no disease equivalent; candidates cover individual cell line disorders only."
+  },
+  {
+    "hp_id": "HP_0001877",
+    "suggested_term": "MONDO_0044347",
+    "confidence": 2,
+    "reason": "Erythrocyte disorder matches RBC morphology abnormality but is a broad category."
+  },
+  {
+    "hp_id": "HP_0001891",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Iron deficiency anemia has no specific match; deficiency anemia alone is too broad a parent."
+  },
+  {
+    "hp_id": "HP_0001892",
+    "suggested_term": "MONDO_0002243",
+    "confidence": 1,
+    "reason": "Hemorrhagic disease matches bleeding diathesis phenotype directly and clearly."
+  },
+  {
+    "hp_id": "HP_0001907",
+    "suggested_term": "EFO_0004286",
+    "confidence": 1,
+    "reason": "Venous thromboembolism exactly describes formation of blood clot with downstream migration causing vascular occlusion."
+  },
+  {
+    "hp_id": "HP_0001919",
+    "suggested_term": "MONDO_0002492",
+    "confidence": 1,
+    "reason": "Acute kidney failure is an exact match for sudden loss of renal function with decreased GFR and elevated creatinine."
+  },
+  {
+    "hp_id": "HP_0001939",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic metabolic abnormality; candidates are all specific disorders (glucose, mineral, iron metabolism) not covering generic homeostasis dysfunction."
+  },
+  {
+    "hp_id": "HP_0001943",
+    "suggested_term": null,
+    "confidence": 0,
+    "reason": "GWAS mapping error: candidates are blood/vision/tumor diseases, none relate to hypoglycemia (low blood glucose)."
+  },
+  {
+    "hp_id": "HP_0001948",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic alkalosis has no match; Bartter syndrome is a specific rare genetic disease, not a general alkalosis disease."
+  },
+  {
+    "hp_id": "HP_0001962",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Palpitations is a symptom, not a disease; all candidates are specific heart diseases that may cause palpitations."
+  },
+  {
+    "hp_id": "HP_0001977",
+    "suggested_term": "MONDO_0000831",
+    "confidence": 1,
+    "reason": "Thrombotic disease directly matches formation of blood clot in vessel/heart chamber of spontaneous origin."
+  },
+  {
+    "hp_id": "HP_0002014",
+    "suggested_term": "MONDO_0001673",
+    "confidence": 1,
+    "reason": "Diarrheal disease exactly matches condition of three or more loose/watery bowel movements daily."
+  },
+  {
+    "hp_id": "HP_0002015",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Dysphagia is a symptom; all candidates are complex syndromes featuring dysphagia as one of many features, not the primary condition."
+  },
+  {
+    "hp_id": "HP_0002019",
+    "suggested_term": "MONDO_0002203",
+    "confidence": 1,
+    "reason": "Constipation disorder exactly matches infrequent or difficult bowel evacuation."
+  },
+  {
+    "hp_id": "HP_0002027",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abdominal pain is a symptom; candidates are specific abdominal diseases that cause pain, not pain itself."
+  },
+  {
+    "hp_id": "HP_0002036",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hiatus hernia (stomach protrusion through diaphragm) has no match; congenital diaphragmatic hernia is a different structural defect."
+  },
+  {
+    "hp_id": "HP_0002039",
+    "suggested_term": "MONDO_0005351",
+    "confidence": 2,
+    "reason": "Anorexia nervosa is plausible if GWAS maps to psychiatric disorder; HP term is ambiguous between symptom (loss of appetite) and disorder."
+  },
+  {
+    "hp_id": "HP_0002088",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal lung morphology (structural anomaly) has no match; candidates are functional diseases, infections, or tumors, not structural abnormalities."
+  },
+  {
+    "hp_id": "HP_0002093",
+    "suggested_term": "EFO_0009686",
+    "confidence": 1,
+    "reason": "Respiratory failure matches impairment of gas exchange causing hypoxia, matching COPD/ILD-related respiratory insufficiency."
+  },
+  {
+    "hp_id": "HP_0002094",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Dyspnea is a symptom (difficult breathing); candidates are diseases that may cause dyspnea, not dyspnea itself."
+  },
+  {
+    "hp_id": "HP_0002105",
+    "suggested_term": null,
+    "confidence": 0,
+    "reason": "GWAS mapping error: candidates are blood disorders, none relate to hemoptysis (coughing up blood from respiratory tract)."
+  },
+  {
+    "hp_id": "HP_0002107",
+    "suggested_term": "MONDO_0002076",
+    "confidence": 1,
+    "reason": "Pneumothorax exactly matches accumulation of air in pleural cavity leading to collapsed lung."
+  },
+  {
+    "hp_id": "HP_0002110",
+    "suggested_term": "MONDO_0004822",
+    "confidence": 1,
+    "reason": "Bronchiectasis exactly matches persistent abnormal dilatation of bronchi with irreversible destruction."
+  },
+  {
+    "hp_id": "HP_0002140",
+    "suggested_term": "MONDO_0005098",
+    "confidence": 1,
+    "reason": "Stroke disorder is the appropriate general term for ischemic stroke caused by thrombosis or embolism."
+  },
+  {
+    "hp_id": "HP_0002196",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Myelopathy (spinal cord neurologic deficit) has no direct match; spondylosis is the underlying cause, not myelopathy itself."
+  },
+  {
+    "hp_id": "HP_0002239",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Gastrointestinal hemorrhage has no specific match; candidates are GI diseases, polyps, infections, or toxicities, not hemorrhage."
+  },
+  {
+    "hp_id": "HP_0002240",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hepatomegaly is a sign/finding of liver enlargement, not a disease; candidates are specific liver diseases that may cause it."
+  },
+  {
+    "hp_id": "HP_0002315",
+    "suggested_term": "EFO_0009550",
+    "confidence": 2,
+    "reason": "Headache disorder is plausible but headache is typically a symptom; disorder classification requires context about GWAS phenotype."
+  },
+  {
+    "hp_id": "HP_0002321",
+    "suggested_term": "MONDO_0004900",
+    "confidence": 1,
+    "reason": "Peripheral vertigo directly matches abnormal sensation of spinning of peripheral (vestibular) origin."
+  },
+  {
+    "hp_id": "HP_0002373",
+    "suggested_term": "MONDO_0000032",
+    "confidence": 1,
+    "reason": "Febrile seizures, familial exactly matches seizure occurrence with fever in early childhood."
+  },
+  {
+    "hp_id": "HP_0002590",
+    "suggested_term": "MONDO_0004567",
+    "confidence": 1,
+    "reason": "Ileus exactly matches decrease in peristalsis without mechanical obstruction causing bowel dysmotility."
+  },
+  {
+    "hp_id": "HP_0002619",
+    "suggested_term": "MONDO_0008638",
+    "confidence": 1,
+    "reason": "Varicose disease matches the phenotype exactly."
+  },
+  {
+    "hp_id": "HP_0002637",
+    "suggested_term": "MONDO_0005299",
+    "confidence": 1,
+    "reason": "Brain ischemia is a direct synonym of cerebral ischemia."
+  },
+  {
+    "hp_id": "HP_0002647",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific aortic dissection term; candidates are either dissections of other arteries or broader aortic diseases."
+  },
+  {
+    "hp_id": "HP_0002745",
+    "suggested_term": "MONDO_0004844",
+    "confidence": 1,
+    "reason": "Oral mucosa leukoplakia is an exact match to oral leukoplakia."
+  },
+  {
+    "hp_id": "HP_0002756",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Candidates list only site-specific fracture types; no pathologic fracture as a disease entity."
+  },
+  {
+    "hp_id": "HP_0002829",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Arthralgia is a symptom (joint pain), not a disease; candidates are specific pain syndromes not equivalent to joint pain."
+  },
+  {
+    "hp_id": "HP_0002840",
+    "suggested_term": "MONDO_0002052",
+    "confidence": 1,
+    "reason": "Lymphadenitis in candidates matches the HP term exactly."
+  },
+  {
+    "hp_id": "HP_0002857",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Genu valgum is a skeletal deformity, not a disease; candidates are syndromes featuring genu valgum as one sign."
+  },
+  {
+    "hp_id": "HP_0002901",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hypocalcemia is a metabolic finding; no disease entity in candidates lists specifically addresses low blood calcium."
+  },
+  {
+    "hp_id": "HP_0002902",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hyponatremia is an electrolyte finding, not a disease; candidates are broad blood disorders."
+  },
+  {
+    "hp_id": "HP_0002907",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Microscopic hematuria is a urinary finding; benign familial hematuria is one disease cause, not equivalent."
+  },
+  {
+    "hp_id": "HP_0002919",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Ketonuria is a urinary finding; candidates list metabolic disorders that may cause it but none are ketonuria itself."
+  },
+  {
+    "hp_id": "HP_0002970",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Genu varum is a skeletal deformity, not a disease; candidates are syndromes with genu varum as a feature."
+  },
+  {
+    "hp_id": "HP_0002999",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Patellar dislocation varies in etiology (congenital/acquired); no single disease at the right specificity level in candidates."
+  },
+  {
+    "hp_id": "HP_0003040",
+    "suggested_term": "EFO_1000999",
+    "confidence": 1,
+    "reason": "Joint disease is the disease equivalent of arthropathy."
+  },
+  {
+    "hp_id": "HP_0003072",
+    "suggested_term": "MONDO_0001566",
+    "confidence": 1,
+    "reason": "Hypercalcemia disease in candidates matches the phenotype directly."
+  },
+  {
+    "hp_id": "HP_0003076",
+    "suggested_term": "EFO_1001151",
+    "confidence": 2,
+    "reason": "Renal glycosuria is a specific disease causing glycosuria, though glycosuria itself is a finding not a disease."
+  },
+  {
+    "hp_id": "HP_0003077",
+    "suggested_term": "MONDO_0021187",
+    "confidence": 1,
+    "reason": "Hyperlipidemia in candidates is an exact match."
+  },
+  {
+    "hp_id": "HP_0003111",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal blood ion concentration is a homeostatic abnormality; no specific disease entity in candidates."
+  },
+  {
+    "hp_id": "HP_0003124",
+    "suggested_term": "MONDO_0016203",
+    "confidence": 2,
+    "reason": "Only cholesterol-related candidate is a specific genetic form of hypercholesterolemia, not the broader disease."
+  },
+  {
+    "hp_id": "HP_0003418",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Back pain is a symptom; candidates are pain syndromes not equivalent to the nonspecific symptom."
+  },
+  {
+    "hp_id": "HP_0003419",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Low back pain is a symptom, not a disease; candidates are pain syndromes or unrelated conditions."
+  },
+  {
+    "hp_id": "HP_0004299",
+    "suggested_term": "EFO_1001866",
+    "confidence": 1,
+    "reason": "Ventral hernia matches abdominal wall hernia at the correct specificity."
+  },
+  {
+    "hp_id": "HP_0004308",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Ventricular arrhythmia is broader than ventricular tachycardia; cardiac arrhythmia is broader (includes atrial)."
+  },
+  {
+    "hp_id": "HP_0004398",
+    "suggested_term": "MONDO_0004247",
+    "confidence": 1,
+    "reason": "Peptic ulcer disease is an exact match to peptic ulcer."
+  },
+  {
+    "hp_id": "HP_0004418",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Only one candidate provided (CNS venous angioma) is unrelated; no thrombophlebitis equivalent in list."
+  },
+  {
+    "hp_id": "HP_0004420",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Candidates are site-specific arterial thromboses or too-broad thrombotic disease; no arterial thrombosis at correct level."
+  },
+  {
+    "hp_id": "HP_0004751",
+    "suggested_term": "EFO_0009493",
+    "confidence": 2,
+    "reason": "Paroxysmal tachycardia captures the episodic onset/offset but is broader than paroxysmal ventricular tachycardia."
+  },
+  {
+    "hp_id": "HP_0004763",
+    "suggested_term": "EFO_0009493",
+    "confidence": 2,
+    "reason": "Paroxysmal tachycardia encompasses PSVT but is not specific to supraventricular origin."
+  },
+  {
+    "hp_id": "HP_0004872",
+    "suggested_term": "EFO_1001866",
+    "confidence": 1,
+    "reason": "Ventral hernia description explicitly mentions 'previous incisions' and includes incisional hernias as subtype."
+  },
+  {
+    "hp_id": "HP_0004936",
+    "suggested_term": "EFO_0004286",
+    "confidence": 2,
+    "reason": "Venous thromboembolism is most specific disease term for venous thrombosis in candidates."
+  },
+  {
+    "hp_id": "HP_0005224",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific rectal abscess disease term in candidates; generic abscess is too broad."
+  },
+  {
+    "hp_id": "HP_0006699",
+    "suggested_term": "EFO_0009277",
+    "confidence": 1,
+    "reason": "Supraventricular ectopy description matches HP definition exactly."
+  },
+  {
+    "hp_id": "HP_0007313",
+    "suggested_term": "MONDO_0002283",
+    "confidence": 2,
+    "reason": "Neuroaxonal dystrophy matches HP synonym 'neuroaxonal degeneration' but uses dystrophy terminology."
+  },
+  {
+    "hp_id": "HP_0007367",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No suitable CNS atrophy/degeneration term; candidates are either too broad or tumor-specific."
+  },
+  {
+    "hp_id": "HP_0008419",
+    "suggested_term": "EFO_0004994",
+    "confidence": 2,
+    "reason": "Lumbar disc degeneration description covers general IVD degeneration but is region-specific in name."
+  },
+  {
+    "hp_id": "HP_0008443",
+    "suggested_term": "EFO_1001378",
+    "confidence": 1,
+    "reason": "Neurogenic arthropathy is the disease term for neuropathic/Charcot joint arthropathy."
+  },
+  {
+    "hp_id": "HP_0009588",
+    "suggested_term": "MONDO_0001569",
+    "confidence": 1,
+    "reason": "Acoustic neuroma is the standard alternative name for vestibular schwannoma; exact clinical match."
+  },
+  {
+    "hp_id": "HP_0009763",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic pain symptom with no focal etiology does not map to disease term; candidates are too specific."
+  },
+  {
+    "hp_id": "HP_0009907",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No candidates provided for earlobe morphology."
+  },
+  {
+    "hp_id": "HP_0009926",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No tear duct or lacrimation disease in candidates; list appears mismatched to phenotype."
+  },
+  {
+    "hp_id": "HP_0010313",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No breast hypertrophy/macromastia disease term; candidates are tumors or cellular hyperplasia, not tissue enlargement."
+  },
+  {
+    "hp_id": "HP_0010566",
+    "suggested_term": "EFO_1000634",
+    "confidence": 1,
+    "reason": "Hamartoma disease term matches HP description of disordered proliferation of mature tissues."
+  },
+  {
+    "hp_id": "HP_0010750",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No dermatochalasis disease term in candidates; eyelid disease is too generic."
+  },
+  {
+    "hp_id": "HP_0010771",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No specific pilonidal abscess/sacrococcygeal cyst disease term in candidates."
+  },
+  {
+    "hp_id": "HP_0010992",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No stress urinary incontinence disease term; candidates are unrelated (stress disorder, fecal incontinence, etc)."
+  },
+  {
+    "hp_id": "HP_0011014",
+    "suggested_term": "EFO_0009406",
+    "confidence": 1,
+    "reason": "Glucose metabolism disease is the disease term for abnormal glucose homeostasis."
+  },
+  {
+    "hp_id": "HP_0011024",
+    "suggested_term": "EFO_0010282",
+    "confidence": 1,
+    "reason": "Gastrointestinal disease is the disease equivalent of abnormality of GI tract."
+  },
+  {
+    "hp_id": "HP_0011141",
+    "suggested_term": "MONDO_0004847",
+    "confidence": 1,
+    "reason": "Senile cataract is the standard disease term for age-related cataract."
+  },
+  {
+    "hp_id": "HP_0011368",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "No epidermal thickening disease term; candidates are too generic or mismatched."
+  },
+  {
+    "hp_id": "HP_0011411",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Forceps delivery is an obstetric procedure, not a disease condition."
+  },
+  {
+    "hp_id": "HP_0011412",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Ventouse delivery is an obstetric procedure, not a disease condition."
+  },
+  {
+    "hp_id": "HP_0011705",
+    "suggested_term": "MONDO_0000465",
+    "confidence": 2,
+    "reason": "Atrioventricular block is the disease term but encompasses all degrees; HP is first-degree specific."
+  },
+  {
+    "hp_id": "HP_0011706",
+    "suggested_term": "MONDO_0000465",
+    "confidence": 2,
+    "reason": "Atrioventricular block is the disease term but encompasses all degrees; HP is second-degree specific."
+  },
+  {
+    "hp_id": "HP_0011712",
+    "suggested_term": "EFO_0004138",
+    "confidence": 1,
+    "reason": "Bundle branch block is the direct parent term; right-specific variant matches the HP phenotype."
+  },
+  {
+    "hp_id": "HP_0011713",
+    "suggested_term": "EFO_0004138",
+    "confidence": 1,
+    "reason": "Bundle branch block is the direct parent term; left-specific variant matches the HP phenotype."
+  },
+  {
+    "hp_id": "HP_0011868",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Sciatica is a pain symptom; no disease equivalent in candidates list (empty)."
+  },
+  {
+    "hp_id": "HP_0011950",
+    "suggested_term": "MONDO_0020680",
+    "confidence": 1,
+    "reason": "Acute bronchiolitis matches precisely; same disease at same specificity level."
+  },
+  {
+    "hp_id": "HP_0012199",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Cluster headache is specific primary headache; candidates list only has broad headache disorder, hypnic headache, and unrelated conditions."
+  },
+  {
+    "hp_id": "HP_0012219",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Erythema nodosum is distinct from erythema multiforme and infectiosum; no matching candidate."
+  },
+  {
+    "hp_id": "HP_0012227",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Urethral stricture not in candidates; only urethral syndrome, disease, tumors, and atresia listed."
+  },
+  {
+    "hp_id": "HP_0012276",
+    "suggested_term": "EFO_0010822",
+    "confidence": 1,
+    "reason": "Stenosing tenosynovitis is the medical term for trigger finger; matches the HP phenotype precisely."
+  },
+  {
+    "hp_id": "HP_0012317",
+    "suggested_term": "MONDO_0007156",
+    "confidence": 1,
+    "reason": "Arthritis, sacroiliac is identical to sacroiliac arthritis; exact disease match."
+  },
+  {
+    "hp_id": "HP_0012388",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Acute bronchitis not in candidates; chronic bronchitis and other conditions listed but no acute bronchitis."
+  },
+  {
+    "hp_id": "HP_0012393",
+    "suggested_term": "MONDO_0005271",
+    "confidence": 1,
+    "reason": "Allergic disease is the parent term encompassing allergy; same disease at appropriate level of generality."
+  },
+  {
+    "hp_id": "HP_0012444",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Brain atrophy is a feature, not a disease itself; candidates are too broad (brain disease) or specific syndromes."
+  },
+  {
+    "hp_id": "HP_0012514",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Leg pain is a symptom, not a disease entity; candidates are structural conditions, not pain conditions."
+  },
+  {
+    "hp_id": "HP_0012532",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Chronic pain is a symptom, not a disease; candidates are specific chronic diseases, not pain syndromes."
+  },
+  {
+    "hp_id": "HP_0012587",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Gross hematuria not well-matched; candidates only have benign familial hematuria (too specific) and metabolic diseases."
+  },
+  {
+    "hp_id": "HP_0012590",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal urine output is a symptom, not a disease; candidates are heart failure and metabolic disorders."
+  },
+  {
+    "hp_id": "HP_0012594",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Albuminuria in diabetes nephropathy not matched; candidates are unrelated (hyperopia, pregnancy, cancer, etc.)."
+  },
+  {
+    "hp_id": "HP_0012735",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Cough is a symptom, not a disease; whooping cough is specific disease with cough, not cough itself."
+  },
+  {
+    "hp_id": "HP_0020083",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Furuncle not in candidates; hordeolum (stye) and bursitis are unrelated conditions."
+  },
+  {
+    "hp_id": "HP_0025004",
+    "suggested_term": "EFO_1000788",
+    "confidence": 1,
+    "reason": "Osteoarthritis of toe matches hallux rigidus precisely; same disease at same specificity."
+  },
+  {
+    "hp_id": "HP_0025116",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Fetal distress is an intrauterine state; candidates are specific congenital syndromes and disorders, not acute distress."
+  },
+  {
+    "hp_id": "HP_0025246",
+    "suggested_term": "MONDO_0012328",
+    "confidence": 1,
+    "reason": "Trichilemmal cyst is identical match; exact disease nomenclature."
+  },
+  {
+    "hp_id": "HP_0025268",
+    "suggested_term": "MONDO_0000723",
+    "confidence": 1,
+    "reason": "Stutter disorder matches stuttering precisely; same disease at same level."
+  },
+  {
+    "hp_id": "HP_0025328",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Antepartum hemorrhage not matched; postpartum hemorrhage is different timing; no antepartum-specific candidate."
+  },
+  {
+    "hp_id": "HP_0030158",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Cervical ectropion not in candidates; erosion, metaplasia, and congenital ectropion (eyelid) are not equivalent."
+  },
+  {
+    "hp_id": "HP_0030160",
+    "suggested_term": "MONDO_0002345",
+    "confidence": 1,
+    "reason": "Cervicitis matches directly; identical disease nomenclature."
+  },
+  {
+    "hp_id": "HP_0030833",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Neck pain is a symptom, not a disease entity; candidates are injury and specific pain syndromes."
+  },
+  {
+    "hp_id": "HP_0030834",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Shoulder pain is a symptom; candidates list specific shoulder diseases (impingement, fracture, dislocation) not equivalent to generic pain."
+  },
+  {
+    "hp_id": "HP_0030838",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Hip pain is a symptom; candidates are hip dysplasia, dislocation, or generic pain syndromes, not hip-pain-as-disease equivalents."
+  },
+  {
+    "hp_id": "HP_0030839",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Knee pain is a symptom; EFO_0004616 (osteoarthritis, knee) is a specific condition, not an equivalent for generic knee pain."
+  },
+  {
+    "hp_id": "HP_0030955",
+    "suggested_term": "MONDO_0007079",
+    "confidence": 1,
+    "reason": "Addictive alcohol use exactly matches alcohol dependence: physical and psychological dependence with withdrawal."
+  },
+  {
+    "hp_id": "HP_0031047",
+    "suggested_term": "EFO_0000203",
+    "confidence": 1,
+    "reason": "Paraproteinemia (abnormal serum immunoglobulin) is clinically identical to monoclonal gammopathy."
+  },
+  {
+    "hp_id": "HP_0031760",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Non-accommodative esotropia (eye condition) has no matching candidate in list; candidates are unrelated diseases (pancreatitis, leukemia, neoplasms)."
+  },
+  {
+    "hp_id": "HP_0032072",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Popliteal synovial cyst (Baker's cyst) has no equivalent in candidates; list contains various other cyst types but not popliteal/Baker's."
+  },
+  {
+    "hp_id": "HP_0032190",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Abnormal meniscus morphology has no matching candidate; list contains abscess, adamantinoma, leukemia\u2014all unrelated to knee meniscus."
+  },
+  {
+    "hp_id": "HP_0040064",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic abnormality of limbs is a broad symptom category; candidates are specific limb conditions, not equivalent disease terms."
+  },
+  {
+    "hp_id": "HP_0040269",
+    "suggested_term": "EFO_0009667",
+    "confidence": 2,
+    "reason": "Blocked Eustachian tube plausibly matches eustachian tube disease, which encompasses obstruction, though specificity varies."
+  },
+  {
+    "hp_id": "HP_0100014",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Epiretinal membrane (fibrous retinal tissue) does not match macular dystrophies or generic fibrosis; candidates are distinct pathologies."
+  },
+  {
+    "hp_id": "HP_0100022",
+    "suggested_term": "EFO_0004280",
+    "confidence": 1,
+    "reason": "Abnormality of movement exactly matches movement disorder: both describe neurological abnormalities of voluntary movement coordination."
+  },
+  {
+    "hp_id": "HP_0100523",
+    "suggested_term": "MONDO_0700051",
+    "confidence": 1,
+    "reason": "Liver abscess (pus/necrotic debris in liver) exactly matches liver abscess (disease) in MONDO."
+  },
+  {
+    "hp_id": "HP_0100537",
+    "suggested_term": "MONDO_0004830",
+    "confidence": 1,
+    "reason": "Fasciitis (inflammation of fascia) exactly matches MONDO term: inflammation process in fascia."
+  },
+  {
+    "hp_id": "HP_0100543",
+    "suggested_term": "MONDO_0002039",
+    "confidence": 1,
+    "reason": "Cognitive impairment (deficits in thinking/reasoning) exactly matches cognitive disorder: a disease affecting cognitive processes."
+  },
+  {
+    "hp_id": "HP_0100550",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Tendon rupture has no exact equivalent; closest is ligament rupture (different tissue), and other candidates are unrelated."
+  },
+  {
+    "hp_id": "HP_0100582",
+    "suggested_term": "EFO_1000391",
+    "confidence": 1,
+    "reason": "Nasal polyposis (polypoidal masses from nasal mucosa) exactly matches nasal cavity polyp in EFO."
+  },
+  {
+    "hp_id": "HP_0100607",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Dysmenorrhea (menstrual pain) has no matching candidate; list contains amenorrhea, pain syndromes in other tissues, unrelated to menstrual pain."
+  },
+  {
+    "hp_id": "HP_0100716",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Self-injurious behavior (psychiatric/behavioral disorder) does not match candidates, which are all external injuries to body parts."
+  },
+  {
+    "hp_id": "HP_0100749",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Chest pain is a symptom; candidates are specific thoracic diseases or pain syndromes in other regions, not chest-pain-as-disease equivalents."
+  },
+  {
+    "hp_id": "HP_0100790",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Generic hernia phenotype encompasses multiple types; all candidates are specific hernia types or syndromic hernias, no umbrella disease term."
+  },
+  {
+    "hp_id": "HP_0100806",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Sepsis (systemic inflammatory response to infection) is not exactly matched; MONDO_1040015 is broader (infectious disease with sepsis complication)."
+  },
+  {
+    "hp_id": "HP_0400007",
+    "suggested_term": null,
+    "confidence": "NA",
+    "reason": "Polymenorrhea (frequent menses <21 days) has no candidates in the list (empty candidates array)."
+  }
+]
