@@ -25,6 +25,7 @@ for notebook in "$chapter"/*.ipynb; do
         echo "=== $name"
         uv run jupyter nbconvert --to notebook --execute --inplace \
             --ExecutePreprocessor.timeout=28800 "$notebook"
+        uv run python tools/strip_progress.py "$notebook"
     fi
 done
 echo "=== chapter complete"
