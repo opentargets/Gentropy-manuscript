@@ -67,3 +67,13 @@ because the manuscript text does not report them:
   `06-T-I-speceficity`, `09-best_category_description`
 - everything in `playground/` except the two files whose logic moved into
   `01-data-preparation/06_gene_level_table` and `08_variant_consequences`
+
+## 5. Text numbers that disagree with the repository's own data
+
+Found while verifying. These are not refactor errors: the pre-refactor tables
+committed in `data/intermediate_files/` give the same answer as the rebuilt
+ones, and both differ from the manuscript.
+
+| Manuscript                                                                                 | Text says | Repository data gives | Note                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------ | --------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Results 2 — "120,809 non-redundant replicated CSs with PIP >= 0.5 across four study types" | 120,809   | 121,490               | One row per variant and trait over the replicated, PIP >= 0.5 set. Identical from the refactored `variant_consequences` and from the pre-refactor `lead_variant_consequence_exploded` (both 261,334 rows). A 0.56 % difference, so most likely a text value carried over from an earlier data vintage. |
