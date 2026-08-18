@@ -34,19 +34,20 @@ Manuscript (read-only, never modified by this repo):
 Canonical dataset names, each written by exactly one notebook in
 `01-data-preparation`:
 
-| Dataset                                                                            | Producer                       |
-| ---------------------------------------------------------------------------------- | ------------------------------ |
-| `lead_variant_effect`                                                              | `01_lead_variant_effect`       |
-| `replicated_gwas_cs`, `replicated_molqtl_cs`                                       | `02_replicated_credible_sets`  |
-| `efo_therapeutic_area`, `study_therapeutic_areas`                                  | `03_therapeutic_areas`         |
-| `qualifying_{gwas,measurement}_studies`, `qualifying_{,measurement_}credible_sets` | `04_qualifying_studies_and_cs` |
-| `prioritised_genes_per_cs`, `prioritised_genes_annotated`                          | `05_l2g_prioritised_genes`     |
-| `gene_table`                                                                       | `06_gene_level_table`          |
-| `variant_clusters`, `cluster_disease_membership`                                   | `07_variant_clusters`          |
-| `variant_consequences_exploded`                                                    | `08_variant_consequences`      |
-| `gene_sets`                                                                        | `09_gene_sets`                 |
-| `ti_pairs_chembl`, `ti_pairs_pharmaprojects`                                       | `10_drug_pair_tables`          |
-| `rg_matrix`                                                                        | `11_genetic_correlation`       |
+| Dataset                                                                                                                    | Producer                       |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `lead_variant_effect`                                                                                                      | `01_lead_variant_effect`       |
+| `replicated_gwas_cs`, `replicated_molqtl_cs`                                                                               | `02_replicated_credible_sets`  |
+| `efo_therapeutic_area`, `study_therapeutic_areas`                                                                          | `03_therapeutic_areas`         |
+| `qualifying_{gwas,measurement}_studies`, `qualifying_{,measurement_}credible_sets`                                         | `04_qualifying_studies_and_cs` |
+| `prioritised_genes_per_cs`, `study_annotation`, `prioritised_genes_annotated`, `prioritised_genes_{diseases,measurements}` | `05_l2g_prioritised_genes`     |
+| `gene_table`                                                                                                               | `06_gene_level_table`          |
+| `variant_clusters`, `cluster_membership`                                                                                   | `07_variant_clusters`          |
+| `replicated_lead_variants`, `replicated_lead_variants_common`                                                              | `08_replicated_lead_variants`  |
+| `variant_consequences`                                                                                                     | `09_variant_consequences`      |
+| `gene_sets`                                                                                                                | `10_gene_sets`                 |
+| `ti_pairs_chembl`, `ti_pairs_pharmaprojects`, `l2g_indirect_assoc_{all,pav}`                                               | `11_drug_pair_tables`          |
+| `rg_matrix`                                                                                                                | `12_genetic_correlation`       |
 
 `gene_table` replaces `genes_therapeutic_areas` and `genes_pleiotropy`, which in
 the pre-refactor repo were only produced in `playground/` from another machine's
