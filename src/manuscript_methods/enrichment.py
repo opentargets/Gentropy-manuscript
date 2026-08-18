@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2, fisher_exact
+from scipy.stats import chi2, fisher_exact, norm
 
 Z = 1.96
 
@@ -88,6 +88,7 @@ def support_mask(
     ta_max: int | None = None,
     gps_min: int | None = None,
     gps_max: int | None = None,
+    score_column: str | None = None,
 ) -> pd.Series:
     """Genetic-support mask for one (PAV, pleiotropy window) definition.
 
@@ -105,7 +106,9 @@ def support_mask(
     Returns:
         boolean Series aligned to df
     """
-    mask = df["score_pav"].notna() if pav else df["score_all"].notna()
+    if score_column is None:
+        score_column = "score_pav" if pav else "score_all"
+    mask = df[score_column].notna()
     bounds = [
         ("uniqueTherapeuticAreas", ta_min, ta_max),
         ("uniqueDiseases", gps_min, gps_max),
@@ -131,3 +134,47 @@ def window_label(ta_min: int | None, ta_max: int | None) -> str:
     if ta_min == ta_max:
         return f"{ta_min}"
     return f"{ta_min}-{ta_max}"
+
+
+def contrast(x_low: int, n_low: int, x_high: int, n_high: int) -> dict:
+    """Wald test of two supported strata against each other on the log-odds scale.
+
+    This is the significance bracket in Figure 5b. A single logistic model with "no genetic
+    support" as the reference gives both strata the same reference coefficient, so it cancels
+    from their difference and the contrast reduces to the log odds ratio of the two 2x2 rows.
+
+    Args:
+        x_low: approved pairs in the low stratum
+        n_low: non-approved pairs in the low stratum
+        x_high: approved pairs in the high stratum
+        n_high: non-approved pairs in the high stratum
+
+    Returns:
+        dict with the log odds ratio, its standard error, z and the two-sided P
+    """
+    odds_low = x_low / n_low
+    odds_high = x_high / n_high
+    log_or = np.log(odds_low / odds_high)
+    se = np.sqrt(1 / x_low + 1 / n_low + 1 / x_high + 1 / n_high)
+    z = log_or / se
+    return {
+        "log_or": float(log_or),
+        "se": float(se),
+        "z": float(z),
+        "p_value": float(2 * norm.sf(abs(z))),
+        "odds_low": float(odds_low),
+        "odds_high": float(odds_high),
+    }
+
+
+def bh_plain(pvalues) -> np.ndarray:
+    """Step-up Benjamini-Hochberg multiplier p * m / rank, without monotone enforcement.
+
+    This is the convention the published Figure 5b FDRs follow, which is why the rare-variant
+    FDR slightly exceeds the gPS FDR although their raw P values are almost identical.
+    """
+    p = np.asarray(pvalues, dtype=float)
+    order = np.argsort(p, kind="stable")
+    rank = np.empty_like(order)
+    rank[order] = np.arange(1, len(p) + 1)
+    return np.minimum(p * len(p) / rank, 1.0)
