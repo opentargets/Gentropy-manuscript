@@ -22,8 +22,13 @@ if (file.exists("data/figure_5")) {
 } else if (file.exists("../../../data/figure_5")) {
   setwd("../../..")
   data_dir <- "data/figure_5"
+} else if (file.exists("data/intermediate_files")) {
+  data_dir <- "data/intermediate_files"
+} else if (file.exists("../../../data/intermediate_files")) {
+  setwd("../../..")
+  data_dir <- "data/intermediate_files"
 } else {
-  stop("Cannot find data/figure_5. Run from repo root or figure_5 directory.")
+  stop("Cannot find data/figure_5 or data/intermediate_files. Run from repo root or figure_5 directory.")
 }
 
 # ---- Common style constants (from figure_4.R) ----
@@ -152,8 +157,13 @@ p_a <- p_a_top / p_a_bot +
 # =============================================================================
 # PLOT B: Forest plot - gene categories with faceted category panels
 # =============================================================================
-all_enrich <- read_csv(file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g.csv"),
-                       show_col_types = FALSE)
+# Review round 1 (R2-MJ-1) added the number-of-TAs pleiotropy strata; prefer the augmented table
+# written by chapters/06-review-r1/fig5b-ta-stratum/fig5b_ta_contrast.py when it is present.
+enrich_file <- file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g-r1.csv")
+if (!file.exists(enrich_file)) {
+  enrich_file <- file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g.csv")
+}
+all_enrich <- read_csv(enrich_file, show_col_types = FALSE)
 
 datasource_map <- c(
   "PAV_base"              = "Without PAV",
@@ -168,7 +178,9 @@ datasource_map <- c(
   "BigEffect_base"        = "Small effect",
   "BigEffect_subEvid"     = "Large effect",
   "low-gPS-5_subEvid"     = "gPS<=5",
-  "low-gPS-5_base"        = "gPS>5"
+  "low-gPS-5_base"        = "gPS>5",
+  "TA-1_subEvid"          = "TAs=1",
+  "TA-6plus_subEvid"      = "TAs>=6"
 )
 
 enrich_4 <- all_enrich %>%
@@ -186,6 +198,7 @@ enrich_4 <- all_enrich %>%
     category = case_when(
       datasource == "All GWAS"                                              ~ "All GWAS",
       datasource %in% c("gPS>=10", "gPS<=5")                               ~ "gPS",
+      datasource %in% c("TAs>=6", "TAs=1")                                 ~ "TAs",
       datasource %in% c("Rare Variants", "Common Variants")                 ~ "Rare vs Common",
       datasource %in% c("Large effect", "Small effect")                      ~ "Large vs Small Effect",
       datasource %in% c("With PAV", "Without PAV")                         ~ "With vs Without PAV",
@@ -193,8 +206,11 @@ enrich_4 <- all_enrich %>%
     )
   )
 
-category_order <- c("All GWAS", "gPS", "Rare vs Common",
-                    "Large vs Small Effect", "With vs Without PAV", "Other")
+# Top-to-bottom facet order. This reproduces the published panel, where the facet variable was
+# supplied as a factor in one layer and a character in another so ggplot fell back to collation
+# order; the TAs group is inserted next to gPS so the two pleiotropy metrics read together.
+category_order <- c("All GWAS", "gPS", "TAs", "Large vs Small Effect", "Other",
+                    "Rare vs Common", "With vs Without PAV")
 enrich_4$category <- factor(enrich_4$category, levels = category_order)
 
 unique_drugsources <- unique(enrich_4$drugsource)
@@ -204,6 +220,7 @@ colors_drug <- setNames(c(col_gene, col_variant)[seq_along(unique_drugsources)],
 ds_order <- c(
   "All GWAS",
   "gPS>=10", "gPS<=5",
+  "TAs>=6", "TAs=1",
   "Rare Variants", "Common Variants",
   "Large effect", "Small effect",
   "With PAV", "Without PAV",
@@ -215,8 +232,10 @@ ds_order <- c(
 #   gPS:              min(high-gPS 0.0163, low-gPS-5 0.0149) = 0.0149  → *
 #   Rare vs Common:   0.00772                                            → **
 #   With vs Without PAV: 0.000244                                        → ***
+#   TAs:              0.178 (FDR 0.222)                                  → unmarked, as for the
+#                     effect-size group (P = 0.19); the value is given in the Results text
 panel_sig_df <- tibble(
-  category = c("gPS", "Rare vs Common", "With vs Without PAV"),
+  category = factor(c("gPS", "Rare vs Common", "With vs Without PAV"), levels = category_order),
   sig      = c("*",   "*",              "*"),
   y_mid    = 1.5   # all three panels have 2 rows; midpoint between positions 1 and 2
 )
@@ -416,6 +435,6 @@ out_dir <- if (dir.exists("chapters/03-manuscript-figures/figure_5")) {
 } else {
   "."
 }
-ggsave(file.path(out_dir, "figure_5_final.pdf"), final, width = 10, height = 4.5, dpi = 300, bg = "white")
-# ggsave(file.path(out_dir, "figure_5_final.png"), final, width = 11, height = 4, dpi = 300, bg = "white")
-message("Saved: ", file.path(out_dir, "figure_5_final.pdf"))
+out_pdf <- file.path(out_dir, "figure_5_final-r1.pdf")
+ggsave(out_pdf, final, width = 10, height = 4.5, dpi = 300, bg = "white")
+message("Saved: ", out_pdf)
