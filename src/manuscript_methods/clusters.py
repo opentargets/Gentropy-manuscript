@@ -100,10 +100,15 @@ def cluster(study_loci: list, edges: list) -> list:
     return clusters
 
 
-def therapeutic_area_lookup() -> dict:
-    """Disease id to therapeutic area, restricted to terms used by the release study index."""
+def therapeutic_area_lookup(column: str = "primaryTherapeuticAreaLegacy") -> dict:
+    """Disease id to therapeutic area, restricted to terms used by the release study index.
+
+    Defaults to the legacy hierarchy order, which is the one the published cluster-level
+    therapeutic-area counts were computed under. Pass `primaryTherapeuticArea` for the order
+    published as Supplementary Table 9. See `01-data-preparation/03_therapeutic_areas`.
+    """
     efo_ta = ds.dataset(paper.derived("efo_therapeutic_area"), format="parquet").to_table().to_pydict()
-    return dict(zip(efo_ta["id"], efo_ta["primaryTherapeuticArea"]))
+    return dict(zip(efo_ta["id"], efo_ta[column]))
 
 
 def disease_names() -> dict:

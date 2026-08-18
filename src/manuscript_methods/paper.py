@@ -46,6 +46,36 @@ THERAPEUTIC_AREAS = {
 
 MEASUREMENT = "EFO_0001444"
 
+# The pre-refactor pipeline used a second ordering, in which `genetic, familial or congenital
+# disease` comes last but one. The variant and cluster analyses were built on it, and the
+# gene-level analysis on the published order above. Both are kept so the manuscript's numbers
+# reproduce exactly; unify on the published order once reproduction is established (GAPS.md).
+THERAPEUTIC_AREAS_LEGACY = {
+    "EFO_0001444": "measurement",
+    "MONDO_0045024": "cancer or benign tumor",
+    "EFO_0005741": "infectious disease",
+    "OTAR_0000009": "injury, poisoning or other complication",
+    "OTAR_0000014": "pregnancy or perinatal disease",
+    "MONDO_0024458": "disorder of visual system",
+    "EFO_0000319": "cardiovascular disease",
+    "EFO_0009605": "pancreas disease",
+    "EFO_0000540": "immune system disease",
+    "EFO_0010282": "gastrointestinal disease",
+    "OTAR_0000017": "reproductive system or breast disease",
+    "EFO_0010285": "integumentary system disease",
+    "EFO_0001379": "endocrine system disease",
+    "OTAR_0000010": "respiratory or thoracic disease",
+    "EFO_0009690": "urinary system disease",
+    "OTAR_0000006": "musculoskeletal or connective tissue disease",
+    "MONDO_0021205": "disorder of ear",
+    "EFO_0005803": "hematologic disease",
+    "EFO_0000618": "nervous system disease",
+    "MONDO_0002025": "psychiatric disorder",
+    "OTAR_0000020": "nutritional or metabolic disease",
+    "OTAR_0000018": "genetic, familial or congenital disease",
+    "EFO_0003765": "sign or symptom",
+}
+
 # One-hot column name per therapeutic area in the study and gene tables. Measurement is
 # deliberately absent: it is carried as its own boolean flag, not as a therapeutic area.
 TA_COLUMNS = {
