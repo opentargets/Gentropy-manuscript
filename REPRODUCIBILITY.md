@@ -1,6 +1,6 @@
 # Reproducibility
 
-PASS 111 | MISMATCH 23 | BLOCKED 15 | PENDING 4
+PASS 117 | MISMATCH 17 | BLOCKED 15 | PENDING 4
 
 |          | id    | section   | claim                                                     | manuscript | computed             | source                   |
 | -------- | ----- | --------- | --------------------------------------------------------- | ---------- | -------------------- | ------------------------ |
@@ -17,16 +17,10 @@ PASS 111 | MISMATCH 23 | BLOCKED 15 | PENDING 4
 | MISMATCH | R4.19 | Results 4 | genes carrying those 31 variants                          | 34         | 38                   | variant_pleiotropy.json  |
 | MISMATCH | R5.16 | Results 5 | gPS univariate beta LoF constraint                        | 0.64       | 0.616682987515627    | gene_pleiotropy.json     |
 | MISMATCH | R5.17 | Results 5 | gPS univariate beta missense constraint                   | 0.59       | 0.8590247266577721   | gene_pleiotropy.json     |
-| MISMATCH | R6.05 | Results 6 | OR rare-variant associations                              | 7.0        | 6.8                  | therapeutic_success.json |
 | MISMATCH | R6.08 | Results 6 | OR Orphanet                                               | 5.1        | 5.0                  | therapeutic_success.json |
 | MISMATCH | R6.09 | Results 6 | OR OMIM                                                   | 4.7        | 5.3                  | therapeutic_success.json |
-| MISMATCH | R6.13 | Results 6 | OR PAV-supported associations                             | 6.0        | 5.9                  | therapeutic_success.json |
-| MISMATCH | R6.17 | Results 6 | OR large effect                                           | 4.6        | 4.5                  | therapeutic_success.json |
-| MISMATCH | R6.18 | Results 6 | OR small effect                                           | 3.5        | 3.4                  | therapeutic_success.json |
-| MISMATCH | R6.19 | Results 6 | OR gPS <= 5                                               | 4.8        | 4.7                  | therapeutic_success.json |
-| MISMATCH | R6.20 | Results 6 | OR gPS >= 10                                              | 3.0        | 2.9                  | therapeutic_success.json |
 | MISMATCH | R6.25 | Results 6 | OR high pleiotropy vs no GWAS support                     | 0.74       | 2.97                 | therapeutic_success.json |
-| MISMATCH | R6.26 | Results 6 | OR previously approved target                             | 4.13       | 1.0                  | therapeutic_success.json |
+| MISMATCH | R6.26 | Results 6 | OR previously approved target                             | 4.13       | 8.71                 | therapeutic_success.json |
 | BLOCKED  | R3.01 | Results 3 | L2G average precision on held-out test set                | 0.81       |                      |                          |
 | BLOCKED  | R3.02 | Results 3 | L2G area under the curve                                  | 0.95       |                      |                          |
 | BLOCKED  | R3.03 | Results 3 | L2G recall at score >= 0.5                                | 0.65       |                      |                          |
@@ -140,17 +134,23 @@ PASS 111 | MISMATCH 23 | BLOCKED 15 | PENDING 4
 | PASS     | R6.01 | Results 6 | approved target-indication pairs with GWAS support        | 242        | 242                  | therapeutic_success.json |
 | PASS     | R6.02 | Results 6 | overall genetic support OR                                | 3.62       | 3.62                 | therapeutic_success.json |
 | PASS     | R6.03 | Results 6 | overall relative success                                  | 2.76       | 2.76                 | therapeutic_success.json |
-| PASS     | R6.06 | Results 6 | OR common-variant associations                            | 3.4        | 3.4                  | therapeutic_success.json |
+| PASS     | R6.05 | Results 6 | OR rare-variant associations                              | 7.0        | 6.994051439745637    | therapeutic_success.json |
+| PASS     | R6.06 | Results 6 | OR common-variant associations                            | 3.4        | 3.3954651611381843   | therapeutic_success.json |
 | PASS     | R6.07 | Results 6 | P rare vs common                                          | 0.0077     | 0.0077               | therapeutic_success.json |
 | PASS     | R6.10 | Results 6 | OR ClinVar/ClinGen                                        | 5.1        | 5.1                  | therapeutic_success.json |
 | PASS     | R6.11 | Results 6 | OR UniProt                                                | 5.0        | 5.0                  | therapeutic_success.json |
 | PASS     | R6.12 | Results 6 | OR Genomics England PanelApp                              | 4.5        | 4.5                  | therapeutic_success.json |
-| PASS     | R6.14 | Results 6 | OR non-PAV associations                                   | 3.1        | 3.1                  | therapeutic_success.json |
+| PASS     | R6.13 | Results 6 | OR PAV-supported associations                             | 6.0        | 6.048323445762209    | therapeutic_success.json |
+| PASS     | R6.14 | Results 6 | OR non-PAV associations                                   | 3.1        | 3.092428147282449    | therapeutic_success.json |
 | PASS     | R6.15 | Results 6 | P PAV vs non-PAV                                          | 0.0002     | 0.0002               | therapeutic_success.json |
 | PASS     | R6.16 | Results 6 | OR gene-based analyses                                    | 7.2        | 7.2                  | therapeutic_success.json |
+| PASS     | R6.17 | Results 6 | OR large effect                                           | 4.6        | 4.6282475044622196   | therapeutic_success.json |
+| PASS     | R6.18 | Results 6 | OR small effect                                           | 3.5        | 3.4730186783176276   | therapeutic_success.json |
+| PASS     | R6.19 | Results 6 | OR gPS <= 5                                               | 4.8        | 4.798286448368984    | therapeutic_success.json |
+| PASS     | R6.20 | Results 6 | OR gPS >= 10                                              | 3.0        | 2.9677312242353167   | therapeutic_success.json |
 | PASS     | R6.21 | Results 6 | P gPS low vs high                                         | 0.008      | 0.008                | therapeutic_success.json |
-| PASS     | R6.22 | Results 6 | OR single therapeutic area                                | 4.3        | 4.3                  | therapeutic_success.json |
-| PASS     | R6.23 | Results 6 | OR six or more therapeutic areas                          | 2.9        | 2.9                  | therapeutic_success.json |
+| PASS     | R6.22 | Results 6 | OR single therapeutic area                                | 4.3        | 4.2907160793554455   | therapeutic_success.json |
+| PASS     | R6.23 | Results 6 | OR six or more therapeutic areas                          | 2.9        | 2.8881755914500533   | therapeutic_success.json |
 | PASS     | R6.24 | Results 6 | P TA count low vs high                                    | 0.18       | 0.18                 | therapeutic_success.json |
 | PASS     | R6.27 | Results 6 | gene-disease associations meeting PAV + 2-5 TA definition | 2734       | 2734                 | therapeutic_success.json |
 | PASS     | R6.28 | Results 6 | OR PAV + 2-5 therapeutic areas                            | 10.3       | 10.3                 | therapeutic_success.json |

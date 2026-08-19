@@ -18,4 +18,6 @@ if [ -z "$lib" ]; then
 fi
 
 cd "$root"
-R_LIBS_SITE="$lib" Rscript "$@"
+# The repository .Rprofile activates a different renv project and would override the library
+# path, so it is skipped.
+R_PROFILE_USER=/dev/null R_LIBS_SITE="$lib" Rscript --no-init-file "$@"

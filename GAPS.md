@@ -68,12 +68,44 @@ because the manuscript text does not report them:
 - everything in `playground/` except the two files whose logic moved into
   `01-data-preparation/06_gene_level_table` and `08_variant_consequences`
 
-## 5. Text numbers that disagree with the repository's own data
+## 5. Numbers that do not reproduce
 
-Found while verifying. These are not refactor errors: the pre-refactor tables
-committed in `data/intermediate_files/` give the same answer as the rebuilt
-ones, and both differ from the manuscript.
+Every table in `01-data-preparation` matches the pre-refactor tables exactly, so
+where a manuscript number does not reproduce it is a question about which
+quantity was measured, not about the data. Each row below says what the
+refactored pipeline computes and why it differs.
 
-| Manuscript                                                                                 | Text says | Repository data gives | Note                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------------------------------------------------------ | --------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Results 2 — "120,809 non-redundant replicated CSs with PIP >= 0.5 across four study types" | 120,809   | 121,490               | One row per variant and trait over the replicated, PIP >= 0.5 set. Identical from the refactored `variant_consequences` and from the pre-refactor `lead_variant_consequence_exploded` (both 261,334 rows). A 0.56 % difference, so most likely a text value carried over from an earlier data vintage. |
+Run `uv run python tools/check_numbers.py` for the current state;
+`REPRODUCIBILITY.md` has the full table.
+
+### The text disagrees with the repository's own committed data
+
+These reproduce identically from the pre-refactor tables and from the rebuilt
+ones, so the text value appears to come from an earlier data vintage.
+
+| Claim                                                    | Text      | Reproduced  | Evidence                                                                                                                                              |
+| -------------------------------------------------------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Results 2 — non-redundant replicated CSs with PIP >= 0.5 | 120,809   | 121,490     | one row per variant and trait; identical from `variant_consequences` and from the pre-refactor `lead_variant_consequence_exploded`, both 261,334 rows |
+| Results 6 — OR for Orphanet                              | 5.1       | 5.0         | the committed `drug_enrichment_subsets_vs_full_l2g.csv` says 5.0073                                                                                   |
+| Results 6 — OR for OMIM                                  | 4.7       | 5.3         | the committed table says 5.3439                                                                                                                       |
+| Results 6 — OR for 1 therapeutic area / >= 6             | 4.3 / 2.9 | 4.29 / 2.89 | matches `fig5b_ta_rows-r1.csv` (4.2907 / 2.8882) to four decimals; the text rounds differently                                                        |
+
+### The measured quantity is ambiguous
+
+| Claim                                                                                                | Text        | Reproduced                          | What is unclear                                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Results 1 — trait ontology terms                                                                     | 9,280       | 9,147                               | 9,147 is the distinct disease ids of qualifying disease and measurement studies. Other candidates: 8,159 (studies with a credible set), 9,938 (measurement studies before the protein and microbiome exclusion), 12,856 (all GWAS studies). None gives 9,280.            |
+| Results 3 — prioritised genes with no PAV or molQTL support in 2024                                  | 26 %        | 40 %                                | 2015 reproduces exactly at 49 %, so the series is right and the endpoint definition differs                                                                                                                                                                              |
+| Results 3 — nearest-gene assignments with no support                                                 | 46.1 %      | 56.8 %                              | the same assignment set reproduces eQTL 36.7 %, pQTL 5.7 % and nearest 81.2 % exactly, so "support" here must include something beyond PAV and eQTL/pQTL colocalisation                                                                                                  |
+| Results 3 — assignments supported by a PAV                                                           | 13.0 %      | 12.1 %                              | 13.3 % over disease assignments only; the published sentence mixes the two sets                                                                                                                                                                                          |
+| Results 4 — pleiotropic lead variants and their directionality (5,188 / 4,797 / 391 / 135 / 31 / 34) |             | 4,568 / 3,952 / 616 / 126 / 35 / 38 | computed over cluster-representative lead variants, which is the manuscript's own definition of lead_vPS. Counting every lead variant instead gives 9,000 / 7,585 / 1,415 / 186 / 59 / 47. The published values sit between the two, so a third selection rule was used. |
+| Results 5 — gPS univariate beta for LoF and missense constraint                                      | 0.64 / 0.59 | 0.62 / 0.86                         | the other seven covariates of the same model reproduce; these two are the ones filled with the column mean before scaling, so the fill and scaling order matters                                                                                                         |
+| Results 6 — OR for high pleiotropy against no GWAS support                                           | 0.74        | 2.97                                | an odds ratio below 1 cannot mean "more successful", so 0.74 is probably a log-odds or comes from the Figure 5c regression rather than a 2x2                                                                                                                             |
+| Results 6 — OR for a previously approved target                                                      | 4.13        | 8.71                                | "previously approved for another indication" is implemented as the target having an approval other than this pair's own; the published value suggests a different reference set                                                                                          |
+
+### Blocked on missing inputs
+
+Fifteen numbers cannot be computed at all: the L2G model evaluation and
+Supplementary Table 12 (training set and held-out split), the pathway enrichment
+counts (Enrichr gene sets), the secondary-signal share (no code exists), and the
+loss-of-function constraint enrichment. See sections 2 and 3 above.
