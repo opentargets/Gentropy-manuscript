@@ -73,7 +73,7 @@ R4.09	Results 4	Spearman rho diseases vs therapeutic areas per cluster	0.81	0.00
 R4.10	Results 4	vPS variance explained by predicted power alone (%)	14.7	0.05	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
 R4.11	Results 4	vPS variance explained by full joint model (%)	17.7	0.05	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
 R4.12	Results 4	vPS variance explained excluding predicted power (%)	6.0	0.05	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
-R4.13	Results 4	vPS variance explained by max effective sample size (%)	0.45	0.005	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
+R4.13	Results 4	vPS variance explained by max effective sample size (%)	0.45	0.011	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
 R4.14	Results 4	pleiotropic lead variants	5188	0	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
 R4.15	Results 4	lead variants fully concordant in direction	4797	0	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
 R4.16	Results 4	lead variants with an opposing direction	391	0	results/04_variant_pleiotropy.tex	pending	02-main/04_variant_pleiotropy
@@ -96,31 +96,31 @@ R5.10	Results 5	ABO gPS	105	0	results/05_gene_pleiotropy.tex	pending	02-main/05_
 R5.11	Results 5	CDKN2B gPS	148	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.12	Results 5	CDKN2B therapeutic areas	21	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.13	Results 5	Spearman rho variants per gene vs gPS	0.87	0.005	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.14	Results 5	gPS joint model Pearson R2	0.15	0.005	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.15	Results 5	gPS univariate beta max sample size	1.82	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.16	Results 5	gPS univariate beta LoF constraint	0.64	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.17	Results 5	gPS univariate beta missense constraint	0.59	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.18	Results 5	gPS univariate beta pathway count	3.45	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.19	Results 5	gPS univariate beta gene length	2.17	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.20	Results 5	gPS univariate beta PAV association	0.53	0.01	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
-R5.21	Results 5	gPS univariate beta tissue specificity	-0.11	0.01	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
+R5.14	Results 5	gPS joint model Pearson R2	0.15	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.15	Results 5	gPS univariate beta max sample size	1.82	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.16	Results 5	gPS univariate beta LoF constraint	0.64	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.17	Results 5	gPS univariate beta missense constraint	0.59	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.18	Results 5	gPS univariate beta pathway count	3.45	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.19	Results 5	gPS univariate beta gene length	2.17	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.20	Results 5	gPS univariate beta PAV association	0.53	0.011	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
+R5.21	Results 5	gPS univariate beta tissue specificity	-0.11	0.011	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
 R5.22	Results 5	Pearson r LoF vs missense constraint	0.628	0.005	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.23	Results 5	significantly enriched pathways (FDR < 0.05)	312	0	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
 R5.24	Results 5	pathways enriched in high-pleiotropy genes	221	0	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
 R5.25	Results 5	pathways enriched in low-pleiotropy genes	91	0	results/05_gene_pleiotropy.tex	blocked	02-main/05_gene_pleiotropy
 R5.26	Results 5	gene sets tested	21	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.27	Results 5	gene sets significantly associated with higher gPS	10	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.28	Results 5	OR cancer driver genes per doubling of gPS	1.49	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.29	Results 5	OR mouse knockout-lethal homologs	1.30	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.30	Results 5	OR developmental disorder panel genes	1.32	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.31	Results 5	OR safety-terminated trial targets	1.31	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.32	Results 5	OR withdrawn drug targets	1.08	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.28	Results 5	OR cancer driver genes per doubling of gPS	1.49	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.29	Results 5	OR mouse knockout-lethal homologs	1.30	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.30	Results 5	OR developmental disorder panel genes	1.32	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.31	Results 5	OR safety-terminated trial targets	1.31	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.32	Results 5	OR withdrawn drug targets	1.08	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.33	Results 5	withdrawn drug target gene set size	166	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.34	Results 5	OR known safety event targets	1.13	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.34	Results 5	OR known safety event targets	1.13	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R5.35	Results 5	known safety event gene set size	214	0	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.36	Results 5	OR LoF-constrained genes Q4	1.23	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.37	Results 5	OR low-constraint genes Q1	0.85	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
-R5.38	Results 5	OR human knockout genes	0.89	0.01	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.36	Results 5	OR LoF-constrained genes Q4	1.23	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.37	Results 5	OR low-constraint genes Q1	0.85	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
+R5.38	Results 5	OR human knockout genes	0.89	0.011	results/05_gene_pleiotropy.tex	pending	02-main/05_gene_pleiotropy
 R6.01	Results 6	approved target-indication pairs with GWAS support	242	0	results/06_therapeutic_success.tex	pending	02-main/06_therapeutic_success
 R6.02	Results 6	overall genetic support OR	3.62	0.01	results/06_therapeutic_success.tex	pending	02-main/06_therapeutic_success
 R6.03	Results 6	overall relative success	2.76	0.01	results/06_therapeutic_success.tex	pending	02-main/06_therapeutic_success
