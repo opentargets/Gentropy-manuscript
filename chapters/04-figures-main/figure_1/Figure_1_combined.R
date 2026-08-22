@@ -18,19 +18,15 @@ suppressPackageStartupMessages({
   library(circlize); library(arrow); library(RColorBrewer); library(png)
 })
 
-# Detect this script's directory so all paths stay relative
-.argv     <- commandArgs(trailingOnly = FALSE)
-.file_arg <- .argv[startsWith(.argv, "--file=")]
-fig1_dir  <- if (length(.file_arg) > 0) {
-  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
-} else {
-  tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
-}
+# Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_1/Figure_1_combined.R
+data_dir <- "data/intermediate_files_refactor"
+fig1_dir <- "chapters/04-figures-main/figure_1"
 
 facet_script_path   <- file.path(fig1_dir, "Figure_1_b_c.R")
 manh_script_path    <- file.path(fig1_dir, "Figure_1_d.R")
 pychart_script_path <- file.path(fig1_dir, "Figure_1_d_pychart.R")
-output_path         <- file.path(fig1_dir, "Figure_1_combined-r1.pdf")
+output_path         <- file.path(fig1_dir, "figure_1.pdf")
+# Panel a is an illustration, not generated from data; it ships in assets/.
 top_panel_pdf       <- file.path(fig1_dir, "assets", "Fig1 a (cropped).pdf")
 
 # ── 1. Build facet grob from Figure_1_b_c.R ─────────────────────────────────
@@ -50,10 +46,9 @@ eval(parse(text = paste(manh_lines, collapse = "\n")), envir = environment())
 # create_circular_manhattan(), read_parquet_data(), etc. are now available
 
 # Load the data (path from Figure_1_d.R's main())
-parquet_file <- file.path(fig1_dir, "data", "disease_ta_measur_index.snappy.parquet")
-stopifnot(file.exists(parquet_file))
+stopifnot(file.exists(gene_index_path))
 cat("Loading parquet data...\n")
-circo_data <- read_parquet_data(parquet_file)
+circo_data <- read_parquet_data(gene_index_path)
 
 # ── 2b. Build donut chart grob from Figure_1_d_pychart.R ─────────────────────
 # Skip the ggsave() so `p` (the ggplot object) stays in memory
@@ -80,7 +75,9 @@ panels_h     <- right_sq + circ_pad   # A+B area height (B determines it)
 left_h       <- panels_h - 0.75           # Plot A matches exactly → no bottom gap
 
 # Top panel: derive height from PDF aspect ratio so nothing distorts
-if (!requireNamespace("pdftools", quietly = TRUE)) install.packages("pdftools", repos = "https://cloud.r-project.org")
+if (!requireNamespace("pdftools", quietly = TRUE)) {
+  stop("pdftools is missing from chapters/r-env; restore it with renv::restore(project = 'chapters/r-env')")
+}
 pdf_sz      <- pdftools::pdf_pagesize(top_panel_pdf)[1, ]   # width/height in pts
 top_panel_h <- total_w * (pdf_sz$height / pdf_sz$width)     # fills full width exactly
 
@@ -112,7 +109,12 @@ combined_grob <- gtable::gtable_add_grob(
   clip = "off", name = "c-label"
 )
 
-quartz(type = "pdf", file = output_path, width = total_w, height = total_h, bg = "white")
+# quartz() is the macOS device the figure was drawn on; cairo_pdf is the portable equivalent.
+if (capabilities("aqua")) {
+  quartz(type = "pdf", file = output_path, width = total_w, height = total_h, bg = "white")
+} else {
+  cairo_pdf(filename = output_path, width = total_w, height = total_h, bg = "white")
+}
 
 # — Right panel: circlize ————————————————————————————————————————————————
 par(
@@ -134,11 +136,17 @@ pushViewport(viewport(
 grid.draw(combined_grob)
 popViewport()
 
-# — Top panel: rasterise via sips (macOS built-in) ————————————————————————
+# — Top panel: rasterise via sips (macOS built-in), or pdftools elsewhere ——————
 top_tmp <- tempfile(fileext = ".png")
-system2("sips", args = c("-s", "format", "png", "-Z", "3000",
-                          shQuote(top_panel_pdf), "--out", shQuote(top_tmp)),
-        stdout = FALSE, stderr = FALSE)
+if (nzchar(Sys.which("sips"))) {
+  system2("sips", args = c("-s", "format", "png", "-Z", "3000",
+                            shQuote(top_panel_pdf), "--out", shQuote(top_tmp)),
+          stdout = FALSE, stderr = FALSE)
+} else {
+  pdftools::pdf_convert(top_panel_pdf, format = "png",
+                        dpi = round(3000 / (pdf_sz$width / 72)),
+                        filenames = top_tmp, verbose = FALSE)
+}
 top_raw <- png::readPNG(top_tmp)
 file.remove(top_tmp)
 # Explicit RGB→hex conversion so as.raster() works correctly

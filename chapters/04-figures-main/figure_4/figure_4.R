@@ -5,7 +5,6 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(dplyr)
   library(tidyr)
-  library(MASS)
   library(patchwork)
 })
 
@@ -53,7 +52,7 @@ base_theme <- theme_minimal() +
   )
 
 # ---- Data directory ----
-# Data is at project root/data/figure_4. Ensure wd is project root.
+# Inputs come from data/intermediate_files_refactor. Run with the repository root as the wd.
 # Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_4/figure_4.R
 data_dir <- "data/intermediate_files_refactor"
 
@@ -132,8 +131,11 @@ p_bot <- ggplot(cover_df, aes(x = year, y = mean, color = group, fill = group)) 
 # ===========================================================================
 # PLOT B: NB regression forest plot (ggplot2)
 # ===========================================================================
-df_b <- read.csv(file.path(data_dir, "gene_pleiotropy_full_model.csv"),
-                 stringsAsFactors = FALSE)
+# The negative-binomial fits live in chapters/02-analysis-main/05_gene_pleiotropy.ipynb, which
+# writes this table. They used to be re-fitted here from gene_pleiotropy_full_model.csv, so the
+# published coefficients had two independent implementations; this script now only plots them.
+coef_b <- read.csv(file.path(data_dir, "gene_pleiotropy_coefficients.csv"),
+                   stringsAsFactors = FALSE)
 
 covariates <- c(
   "maxEQTLColocNormalised", "maxPQTLColocNormalised", "maxVEPNormalised",
@@ -147,28 +149,24 @@ covariate_labels <- c(
   "Pathway count", "Tissue specificity"
 )
 
-uni_coef <- uni_ci_lower <- uni_ci_upper <- numeric(length(covariates))
-for (i in seq_along(covariates)) {
-  fml <- as.formula(paste0("uniqueDiseases ~ ", covariates[i]))
-  fit <- glm.nb(fml, data = df_b, maxit = 1000)
-  uni_coef[i]     <- coef(fit)[covariates[i]]
-  ci              <- confint.default(fit)[covariates[i], ]
-  uni_ci_lower[i] <- ci[1]
-  uni_ci_upper[i] <- ci[2]
+# One row per covariate, in the order of `covariates`, for a given model type.
+model_rows <- function(model_type) {
+  rows <- coef_b[coef_b$model_type == model_type, ]
+  rows <- rows[match(covariates, rows$covariate), ]
+  stopifnot(!any(is.na(rows$coefficient)))
+  rows
 }
 
-fml_multi <- as.formula(
-  paste("uniqueDiseases ~", paste(covariates, collapse = " + "))
-)
-fit_multi <- glm.nb(fml_multi, data = df_b, maxit = 1000)
+uni   <- model_rows("Univariate")
+multi <- model_rows("Multi")
 
-multi_coef <- multi_ci_lower <- multi_ci_upper <- numeric(length(covariates))
-for (i in seq_along(covariates)) {
-  multi_coef[i]     <- coef(fit_multi)[covariates[i]]
-  ci                <- confint.default(fit_multi)[covariates[i], ]
-  multi_ci_lower[i] <- ci[1]
-  multi_ci_upper[i] <- ci[2]
-}
+uni_coef     <- uni$coefficient
+uni_ci_lower <- uni$ci_lower
+uni_ci_upper <- uni$ci_upper
+
+multi_coef     <- multi$coefficient
+multi_ci_lower <- multi$ci_lower
+multi_ci_upper <- multi$ci_upper
 
 mean_effect_b  <- (uni_coef + multi_coef) / 2
 sorted_labels_b <- covariate_labels[order(mean_effect_b)]   # ascending: lowest at bottom, highest at top

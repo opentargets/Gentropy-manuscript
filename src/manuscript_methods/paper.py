@@ -133,8 +133,13 @@ def first_therapeutic_area(ancestors) -> str:
 
 
 def save_results(name: str, values: dict) -> str:
-    """Write the numbers a notebook computed to results/<name>.json."""
+    """Write the numbers a notebook computed to results/<name>.json.
+
+    numpy scalars arrive whenever a value is read out of a DataFrame, and `json` cannot
+    serialise them, so they are unwrapped here rather than at every call site.
+    """
     RESULTS.mkdir(parents=True, exist_ok=True)
+    plain = {key: value.item() if hasattr(value, "item") else value for key, value in values.items()}
     path = RESULTS / f"{name}.json"
-    path.write_text(json.dumps(values, indent=2, sort_keys=True) + "\n")
+    path.write_text(json.dumps(plain, indent=2, sort_keys=True) + "\n")
     return str(path)

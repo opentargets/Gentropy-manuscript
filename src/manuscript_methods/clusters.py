@@ -24,7 +24,21 @@ ECAVIAR_CLPP = 0.01
 def load_credible_sets(path: str = None) -> pd.DataFrame:
     """Qualifying disease credible sets, sorted by p-value then lead-variant PIP.
 
-    The sort only decides which locus seeds each cluster, and hence the cluster numbering.
+    The sort decides which locus seeds each cluster, and hence both the cluster numbering and
+    which lead variant represents the cluster downstream.
+
+    Ranking on `variantStatistics.chi2Stat` descending was tried on 2026-08-22 and reverted the
+    same day. Chi-square is monotone in the p-value at one degree of freedom, and here it is
+    computed *from* the stored mantissa and exponent, so it carries the same information and cannot
+    break a tie the stored p-value does not break: cluster 26's three most significant credible
+    sets all store `1.0e-323` and all map to `chi2Stat = 1479.141`, so the representative stayed
+    `19_44888997_C_T` either way. The only effect was to permute 22 of the 20,041 `cluster_id`
+    values, which moved the ST15 sheet for no analytical gain. See
+    `chapters/02-analysis-main/README.md`.
+
+    `chi2Stat` is kept on the frame — it is non-null and strictly positive for every qualifying
+    credible set, in every project and both `hasSumstats` strata — so the alternative ordering
+    stays computable.
     """
     path = path or paper.derived("qualifying_credible_sets")
     table = ds.dataset(path, format="parquet").to_table(
@@ -34,6 +48,7 @@ def load_credible_sets(path: str = None) -> pd.DataFrame:
             "variantId": ds.field("variantId"),
             "diseaseIds": ds.field("diseaseIds"),
             "traitFromSourceMappedIds": ds.field("traitFromSourceMappedIds"),
+            "chi2Stat": pc.struct_field(ds.field("variantStatistics"), "chi2Stat"),
             "pValueMantissa": pc.struct_field(ds.field("variantStatistics"), "pValueMantissa"),
             "pValueExponent": pc.struct_field(ds.field("variantStatistics"), "pValueExponent"),
             "leadVariantPIP": pc.struct_field(ds.field("locusStatistics"), "leadVariantPIP"),
@@ -41,6 +56,8 @@ def load_credible_sets(path: str = None) -> pd.DataFrame:
     )
     cs = table.to_pandas()
     cs["pValue"] = cs["pValueMantissa"].astype(float) * np.power(10.0, cs["pValueExponent"].astype(float))
+    if cs["chi2Stat"].isna().any():
+        raise ValueError(f"chi2Stat is null for {int(cs['chi2Stat'].isna().sum())} credible sets")
     cs = cs.sort_values(["pValue", "leadVariantPIP"], ascending=[True, False], kind="mergesort")
     return cs.reset_index(drop=True)
 
@@ -100,12 +117,13 @@ def cluster(study_loci: list, edges: list) -> list:
     return clusters
 
 
-def therapeutic_area_lookup(column: str = "primaryTherapeuticAreaLegacy") -> dict:
+def therapeutic_area_lookup(column: str = "primaryTherapeuticArea") -> dict:
     """Disease id to therapeutic area, restricted to terms used by the release study index.
 
-    Defaults to the legacy hierarchy order, which is the one the published cluster-level
-    therapeutic-area counts were computed under. Pass `primaryTherapeuticArea` for the order
-    published as Supplementary Table 9. See `01-data-preparation/03_therapeutic_areas`.
+    Defaults to the hierarchy order published as Supplementary Table 9, the same order the
+    gene-level analysis uses. The published cluster-level therapeutic-area counts were computed
+    under the legacy order instead; pass `primaryTherapeuticAreaLegacy` to recover them. See
+    `01-data-preparation/03_therapeutic_areas`.
     """
     efo_ta = ds.dataset(paper.derived("efo_therapeutic_area"), format="parquet").to_table().to_pydict()
     return dict(zip(efo_ta["id"], efo_ta[column]))

@@ -294,6 +294,13 @@ df_combined <- bind_rows(
     df_pleio_1 %>% mutate(variant = "APOE-Cys130"),
     df_pleio_2 %>% mutate(variant = "APOE-Arg176")
 ) %>%
+    # The contributing credible sets: those of studies mapped to exactly one disease term, which are
+    # the ones lead_vPS and the directional concordance are computed over.
+    filter(contributing) %>%
+    # The harmonised effect-allele beta, not the minor-allele conversion: the minor-allele flip is
+    # keyed on the alternate-allele frequency in each study's own major LD population, so it
+    # reverses between studies of different ancestry.
+    mutate(estimatedBeta = harmonisedEstimatedBeta) %>%
     mutate(
         diseaseNames = trimws(as.character(diseaseNames)),
         diseaseNames = gsub("^\\['|'\\]$", "", diseaseNames),

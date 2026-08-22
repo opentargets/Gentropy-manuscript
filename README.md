@@ -15,7 +15,11 @@ gcloud auth application-default login     # to download the release
 ```
 
 R packages live in `chapters/r-env`; run R through `tools/run_r.sh`, which
-points at them.
+points at them. Restore the library with
+`R_LIBS_SITE= Rscript -e 'renv::restore(project="chapters/r-env")'` — the figure
+scripts need it, and so does
+`03-analysis-supplementary/08_enrichment_bias.ipynb`, which fits its
+mixed-effects models with `lme4::glmer` through the same wrapper.
 
 ## Running it
 
@@ -35,7 +39,7 @@ uv run python tools/check_numbers.py
 | `02-analysis-main`          | Six notebooks, one per Results subsection. Each writes its numbers to `results/`.                                          |
 | `03-analysis-supplementary` | One notebook per Supplementary Results section.                                                                            |
 | `04-figures-main`           | Figures 1–5.                                                                                                               |
-| `05-figures-supplementary`  | Extended Data Figures 2–10 and the Supplementary Results figures.                                                          |
+| `05-figures-supplementary`  | Extended Data Figures 2–10. `supplementary/` is empty: none of Supplementary Figures SR 1–6 is built.                      |
 | `06-supplementary-tables`   | The supplementary table sheets.                                                                                            |
 | `r-env`                     | Shared R library.                                                                                                          |
 | `_legacy`                   | The pre-refactor chapters, kept for reference, not part of the pipeline.                                                   |

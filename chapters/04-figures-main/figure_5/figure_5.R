@@ -4,8 +4,10 @@
 ##   Middle column: Plot B (top), Plot D (bottom)
 ##   Right column:  Plot C (top: Therapeutic Areas, bottom: gPS)
 ##
-## Data: data/figure_5/ (temporal_drug_enrichment, drug_enrichment_subsets, df_for_regression)
-## Run from repo root or figure_5 directory.
+## Data: data/intermediate_files_refactor/ (temporal_drug_enrichment_full_chembl,
+##       drug_enrichment_subsets_vs_full_l2g, drug_enrichment_other_resources,
+##       figure_5b_contrasts, figure_5c_curves)
+## Run from the repository root.
 
 suppressPackageStartupMessages({
   library(ggplot2)
@@ -70,6 +72,15 @@ base_theme <- theme_minimal() +
 # =============================================================================
 temporal <- read_csv(file.path(data_dir, "temporal_drug_enrichment_full_chembl.csv"),
                      show_col_types = FALSE)
+
+# The reference line is the all-GWAS enrichment from the panel b table, read rather than pasted
+# in, so it follows the data if the upstream definitions change.
+enrich_file <- file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g.csv")
+all_enrich <- read_csv(enrich_file, show_col_types = FALSE)
+overall_or <- all_enrich %>%
+  filter(clinicalPhase == "4+", datasource == "full_l2g", drugsource == "full_chembl") %>%
+  pull(odds_ratio)
+stopifnot(length(overall_or) == 1)
 temporal_4 <- temporal %>%
   filter(clinicalPhase == "4+") %>%
   mutate(
@@ -90,7 +101,7 @@ x_breaks_minor <- seq(2011, 2023, 2)
 p_a_top <- ggplot(temporal_4_crop, aes(x = datasource_num, y = odds_ratio)) +
   geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = col_gene, alpha = 0.12) +
   geom_line(color = col_gene, linewidth = line_lwd) +
-  geom_hline(data = data.frame(y = 3.619, label = "2025 enrichment"),
+  geom_hline(data = data.frame(y = overall_or, label = "2025 enrichment"),
              aes(yintercept = y, color = label), linetype = "dashed", linewidth = ci_lwd) +
   scale_color_manual(values = c("2025 enrichment" = col_vline), name = NULL) +
   scale_x_continuous(
@@ -148,8 +159,13 @@ p_a <- p_a_top / p_a_bot +
 # =============================================================================
 # Review round 1 (R2-MJ-1) added the number-of-TAs pleiotropy strata; prefer the augmented table
 # written by chapters/06-review-r1/fig5b-ta-stratum/fig5b_ta_contrast.py when it is present.
-enrich_file <- file.path(data_dir, "drug_enrichment_subsets_vs_full_l2g.csv")
-all_enrich <- read_csv(enrich_file, show_col_types = FALSE)
+# The comparison against the other genetic-evidence resources runs over a different universe, so
+# 02-analysis-main writes it to its own table. It is the "Other" facet block of panel b.
+other_file <- file.path(data_dir, "drug_enrichment_other_resources.csv")
+all_enrich <- bind_rows(
+  all_enrich,
+  read_csv(other_file, show_col_types = FALSE) %>% mutate(drugsource = "full_chembl")
+)
 
 datasource_map <- c(
   "PAV_base"              = "Without PAV",
@@ -214,17 +230,25 @@ ds_order <- c(
   "GEL PanelApp", "UniProt"
 )
 
-# Panel-level significance from diffence_pval (difference between subgroups):
-#   gPS:              min(high-gPS 0.0163, low-gPS-5 0.0149) = 0.0149  → *
-#   Rare vs Common:   0.00772                                            → **
-#   With vs Without PAV: 0.000244                                        → ***
-#   TAs:              0.178 (FDR 0.222)                                  → unmarked, as for the
-#                     effect-size group (P = 0.19); the value is given in the Results text
-panel_sig_df <- tibble(
-  category = factor(c("gPS", "Rare vs Common", "With vs Without PAV"), levels = category_order),
-  sig      = c("*",   "*",              "*"),
-  y_mid    = 1.5   # all three panels have 2 rows; midpoint between positions 1 and 2
+# Panel-level significance: one star where the low-vs-high contrast survives BH at 5%. The
+# contrasts and their FDRs are computed in chapters/02-analysis-main/06_therapeutic_success.ipynb;
+# they used to be a fixed vector here with the P values recorded only in a comment, which would
+# have gone stale silently if the upstream definitions changed.
+group_to_category <- c(
+  "gPS"               = "gPS",
+  "therapeutic areas" = "TAs",
+  "effect size"       = "Large vs Small Effect",
+  "variant frequency" = "Rare vs Common",
+  "PAV"               = "With vs Without PAV"
 )
+panel_sig_df <- read_csv(file.path(data_dir, "figure_5b_contrasts.csv"), show_col_types = FALSE) %>%
+  filter(.data$fdr < 0.05) %>%
+  transmute(
+    category = factor(unname(group_to_category[.data$group]), levels = category_order),
+    sig      = "*",
+    y_mid    = 1.5   # every one of these panels has 2 rows; midpoint between positions 1 and 2
+  ) %>%
+  filter(!is.na(.data$category))
 
 forest_rows <- list()
 for (ds in ds_order) {
@@ -285,73 +309,33 @@ p_b <- ggplot(forest_df_plot, aes(x = odds_ratio, y = label, color = drugsource)
 # =============================================================================
 # PLOT C: Pleiotropy regression (Right column - TA top, gPS bottom)
 # =============================================================================
-run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL, show_legend = FALSE,
+run_pleio_plot <- function(curves, x_var, x_label, x_breaks = NULL, show_legend = FALSE,
                            top_panel = FALSE) {
-  df_valid <- filter(df_full, .data[[x_var]] >= 1)
-  x_min <- max(1, min(df_valid[[x_var]]))
-  x_max <- max(df_valid[[x_var]])
-  x_grid <- exp(seq(log(1), log(x_max), length.out = 200))
-
-  formula_str <- paste0("outcome ~ geneticSupport + I(log(", x_var, "+1)) + I(log(", x_var, "+1)^2)")
-  fit_base <- glm(as.formula(formula_str), data = df_full, family = binomial)
-
-  pred_df_gs1 <- data.frame(geneticSupport = 1, x = x_grid)
-  pred_df_gs0 <- data.frame(geneticSupport = 0, x = x_grid)
-  names(pred_df_gs1)[2] <- x_var
-  names(pred_df_gs0)[2] <- x_var
-
-  set.seed(42)
-  B <- 200
-  logit_gs1 <- matrix(NA, B, length(x_grid))
-  logit_gs0 <- matrix(NA, B, length(x_grid))
-  lowess_gs1 <- matrix(NA, B, length(x_grid))
-
-  for (i in seq_len(B)) {
-    boot_idx <- sample(nrow(df_full), nrow(df_full), replace = TRUE)
-    df_boot <- df_full[boot_idx, ]
-    tryCatch({
-      m <- glm(as.formula(formula_str), data = df_boot, family = binomial)
-      logit_gs1[i, ] <- predict(m, newdata = pred_df_gs1, type = "response")
-      logit_gs0[i, ] <- predict(m, newdata = pred_df_gs0, type = "response")
-    }, error = function(e) NULL)
-
-    sub <- df_boot[df_boot$geneticSupport == 1 & df_boot[[x_var]] >= 1, ]
-    if (length(unique(sub[[x_var]])) > 3) {
-      tryCatch({
-        lw <- lowess(sub[[x_var]], sub$outcome, f = 0.3)
-        # Interpolate to x_grid
-        pred_lw <- approx(lw$x, lw$y, xout = x_grid, rule = 2)$y
-        if (!any(is.nan(pred_lw))) lowess_gs1[i, ] <- pred_lw
-      }, error = function(e) NULL)
-    }
-  }
-
-  logit_m1 <- colMeans(logit_gs1, na.rm = TRUE)
-  logit_m0 <- colMeans(logit_gs0, na.rm = TRUE)
-  logit_ci1 <- apply(logit_gs1, 2, function(x) quantile(x, c(0.025, 0.975), na.rm = TRUE))
-  logit_ci0 <- apply(logit_gs0, 2, function(x) quantile(x, c(0.025, 0.975), na.rm = TRUE))
-  lowess_m1 <- colMeans(lowess_gs1, na.rm = TRUE)
-  lowess_ci1 <- apply(lowess_gs1, 2, function(x) quantile(x, c(0.025, 0.975), na.rm = TRUE))
-
-  pred_base_gs1 <- predict(fit_base, newdata = pred_df_gs1, type = "response")
-  pred_base_gs0 <- predict(fit_base, newdata = pred_df_gs0, type = "response")
-
-  if (is.null(x_breaks)) x_breaks <- scales::breaks_log()(c(x_min, x_max))
+  # The logistic fit and its 200-resample bootstrap now live in
+  # chapters/02-analysis-main/06_therapeutic_success.ipynb, which writes figure_5c_curves.csv.
+  # This function only draws it.
+  cv <- dplyr::filter(curves, .data$pleiotropy == x_var) %>% dplyr::arrange(.data$x)
+  stopifnot(nrow(cv) > 0)
+  x_grid <- cv$x
+  x_min  <- min(x_grid)
+  x_max  <- max(x_grid)
 
   # Long-format for legend
   leg_df <- data.frame(
     x = rep(x_grid, 3),
-    y = c(pred_base_gs1, lowess_m1, pred_base_gs0),
+    y = c(cv$model_gs1, cv$observed_gs1, cv$model_gs0),
     series = rep(c("Model (with GWAS)", "Observed (with GWAS)", "Model (no GWAS)"),
                  each = length(x_grid))
   )
 
+  if (is.null(x_breaks)) x_breaks <- scales::breaks_log()(c(x_min, x_max))
+
   p <- ggplot() +
-    geom_ribbon(aes(x = x_grid, ymin = logit_ci1[1, ], ymax = logit_ci1[2, ]),
+    geom_ribbon(aes(x = x_grid, ymin = cv$model_gs1_lo, ymax = cv$model_gs1_hi),
                 fill = col_gene, alpha = 0.12) +
-    geom_ribbon(aes(x = x_grid, ymin = lowess_ci1[1, ], ymax = lowess_ci1[2, ]),
+    geom_ribbon(aes(x = x_grid, ymin = cv$observed_lo, ymax = cv$observed_hi),
                 fill = col_gene, alpha = 0.07) +
-    geom_ribbon(aes(x = x_grid, ymin = logit_ci0[1, ], ymax = logit_ci0[2, ]),
+    geom_ribbon(aes(x = x_grid, ymin = cv$model_gs0_lo, ymax = cv$model_gs0_hi),
                 fill = "gray", alpha = 0.12) +
     geom_line(data = leg_df, aes(x = x, y = y, color = series, linetype = series),
               linewidth = ifelse(leg_df$series == "Observed (with GWAS)", 0.5, line_lwd)) +
@@ -387,12 +371,11 @@ run_pleio_plot <- function(df_full, x_var, x_label, x_breaks = NULL, show_legend
   p
 }
 
-df_reg <- read_csv(file.path(data_dir, "df_for_enrichment_regression.csv"),
-                   show_col_types = FALSE)
+curves_c <- read_csv(file.path(data_dir, "figure_5c_curves.csv"), show_col_types = FALSE)
 
-p_c_top <- run_pleio_plot(df_reg, "uniqueTherapeuticAreas", "Pleiotropy (Therapeutic Areas)",
+p_c_top <- run_pleio_plot(curves_c, "uniqueTherapeuticAreas", "Pleiotropy (Therapeutic Areas)",
                          x_breaks = c(1, 2, 5, 10, 20), show_legend = TRUE, top_panel = TRUE)
-p_c_bot <- run_pleio_plot(df_reg, "uniqueDiseases", "Pleiotropy (gPS)",
+p_c_bot <- run_pleio_plot(curves_c, "uniqueDiseases", "Pleiotropy (gPS)",
                          x_breaks = c(1, 2, 5, 10, 20, 50))
 
 p_c <- p_c_top / p_c_bot +

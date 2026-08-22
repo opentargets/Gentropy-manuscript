@@ -11,24 +11,17 @@ suppressPackageStartupMessages({
 if (getRversion() >= "2.15.1") {
   utils::globalVariables(c(
     "metric", "year", "layer", "layer_label", "height", "value", "panel",
-    "mean", "ci", "group", "nSamples", "absEstimatedBeta", "biobank"
+    "mean", "ci", "group", "nSamples", "absBeta", "biobank"
   ))
 }
 
-# Resolve script directory (works both when sourced and run standalone via Rscript)
-if (!exists("fig1_dir")) {
-  .argv     <- commandArgs(trailingOnly = FALSE)
-  .file_arg <- .argv[startsWith(.argv, "--file=")]
-  fig1_dir  <- if (length(.file_arg) > 0) {
-    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
-  } else {
-    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
-  }
-}
+# Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_1/Figure_1_b_c.R
+data_dir <- "data/intermediate_files_refactor"
+fig1_dir <- "chapters/04-figures-main/figure_1"
 
 # Input and output paths
-input_csv  <- file.path(fig1_dir, "data", "fig1c_layers-r1.csv")
-output_png <- file.path(fig1_dir, "Figure_1_b_c-r1.png")
+input_csv  <- file.path(data_dir, "fig1c_cumulative_discovery.csv")
+output_png <- file.path(fig1_dir, "Figure_1_b_c.png")
 
 text_size <- 10
 ylab_shift <- 8        # shift ALL y-axis titles closer to axis (pt)
@@ -175,8 +168,8 @@ p_pairs <- build_plot(plot_df_pairs, bquote(Unique ~ gene-disease ~ pairs ~ (x10
   )
 
 # Read additional data for line panels (from b.ipynb)
-qd_csv <- file.path(fig1_dir, "data", "qd_sl_eff.csv")
-qm_csv <- file.path(fig1_dir, "data", "qm_sl_eff.csv")
+qd_csv <- file.path(data_dir, "qd_sl_eff.csv")
+qm_csv <- file.path(data_dir, "qm_sl_eff.csv")
 qd_df <- if (file.exists(qd_csv)) suppressMessages(readr::read_csv(qd_csv, show_col_types = FALSE)) else NULL
 qm_df <- if (file.exists(qm_csv)) suppressMessages(readr::read_csv(qm_csv, show_col_types = FALSE)) else NULL
 
@@ -250,8 +243,8 @@ if (!is.null(qd_df) && !is.null(qm_df)) {
 
 # Build beta panel (Average |beta|)
 if (!is.null(qd_df) && !is.null(qm_df)) {
-  stats_qd_beta <- get_cumulative_stats(qd_df, "absEstimatedBeta") %>% mutate(group = "Diseases")
-  stats_qm_beta <- get_cumulative_stats(qm_df, "absEstimatedBeta") %>% mutate(group = "Measurements")
+  stats_qd_beta <- get_cumulative_stats(qd_df, "absBeta") %>% mutate(group = "Diseases")
+  stats_qm_beta <- get_cumulative_stats(qm_df, "absBeta") %>% mutate(group = "Measurements")
   beta_df <- bind_rows(stats_qd_beta, stats_qm_beta) %>%
     filter(year >= 2006, year <= 2024)
 

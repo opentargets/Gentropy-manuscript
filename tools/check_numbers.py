@@ -4,6 +4,10 @@
 
 Reads `tools/expected_numbers.tsv` and every `results/*.json`, writes `REPRODUCIBILITY.md`.
 Each JSON maps an id from the TSV to the value the notebook computed.
+
+A row's `status` column may be `pending` (compare it), `blocked` (an input this repository does
+not have) or `precomputed` (a number produced upstream of this pipeline, before the validation it
+starts from, and not recoverable from the released data).
 """
 
 import csv
@@ -39,12 +43,14 @@ def main():
     values = computed()
 
     lines = ["# Reproducibility", ""]
-    counts = {"PASS": 0, "MISMATCH": 0, "BLOCKED": 0, "PENDING": 0}
+    counts = {"PASS": 0, "MISMATCH": 0, "BLOCKED": 0, "PRECOMPUTED": 0, "PENDING": 0}
     table = []
     for row in rows:
         got, source = values.get(row["id"], (None, ""))
         if row["status"] == "blocked":
             state = "BLOCKED"
+        elif row["status"] == "precomputed":
+            state = "PRECOMPUTED"
         elif got is None:
             state = "PENDING"
         else:
@@ -54,7 +60,7 @@ def main():
 
     lines.append(" | ".join(f"{k} {v}" for k, v in counts.items()))
     lines += ["", "| | id | section | claim | manuscript | computed | source |", "|---|---|---|---|---|---|---|"]
-    order = {"MISMATCH": 0, "BLOCKED": 1, "PENDING": 2, "PASS": 3}
+    order = {"MISMATCH": 0, "BLOCKED": 1, "PRECOMPUTED": 2, "PENDING": 3, "PASS": 4}
     for state, rid, section, desc, exp, got, source in sorted(table, key=lambda r: (order[r[0]], r[1])):
         lines.append(f"| {state} | {rid} | {section} | {desc} | {exp} | {'' if got is None else got} | {source} |")
 

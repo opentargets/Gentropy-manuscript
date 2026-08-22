@@ -1,16 +1,10 @@
 # Circular Manhattan Plot using circlize library
-# Dataset: unique_measurement_count_per_gene.parquet
+# Dataset: fig1d_gene_index.parquet, written by chapters/02-analysis-main/01_panoramic.ipynb
 
-# Resolve script directory (works both when sourced and run standalone via Rscript)
-if (!exists("fig1_dir")) {
-  .argv     <- commandArgs(trailingOnly = FALSE)
-  .file_arg <- .argv[startsWith(.argv, "--file=")]
-  fig1_dir  <- if (length(.file_arg) > 0) {
-    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
-  } else {
-    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
-  }
-}
+# Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_1/Figure_1_d.R
+data_dir <- "data/intermediate_files_refactor"
+fig1_dir <- "chapters/04-figures-main/figure_1"
+gene_index_path <- file.path(data_dir, "fig1d_gene_index.parquet")
 
 # Load required libraries
 library(circlize)
@@ -71,8 +65,10 @@ prepare_manhattan_data <- function(data) {
 add_gene_labels_outside <- function(manhattan_data, chr_regions) {
   # Initialize container for labeled points used for highlighting
   .labeled_points <<- data.frame(sector = character(), x = numeric(), label = character(), stringsAsFactors = FALSE)
-  # Load the full dataset to get approvedSymbol and uniqueDiseases
-  full_data <- read.csv(file.path(fig1_dir, "data", "disease_ta_index_pandas.csv"))
+  # Load the full dataset to get approvedSymbol and uniqueDiseases. This is the same table that
+  # is plotted; the pre-refactor script read a separate CSV of the disease-gene subset, which
+  # carried the same 54 labelled genes.
+  full_data <- as.data.frame(read_parquet(gene_index_path))
 
   # Filter genes with uniqueDiseases > n
   high_disease_genes <- full_data %>%
@@ -697,13 +693,10 @@ create_circular_manhattan <- function(data, output_file = NULL,
 
 # Main execution
 main <- function() {
-  # Path to the parquet file
-  parquet_file <- file.path(fig1_dir, "data", "disease_ta_measur_index.snappy.parquet")
-
-  cat("Loading data from:", parquet_file, "\n")
+  cat("Loading data from:", gene_index_path, "\n")
 
   # Read the data
-  data <- read_parquet_data(parquet_file)
+  data <- read_parquet_data(gene_index_path)
 
   cat("Data loaded successfully. Dimensions:", dim(data), "\n")
   cat("Column names:", colnames(data), "\n")
@@ -714,7 +707,7 @@ main <- function() {
 
   # Create the circular Manhattan plot
   cat("\nCreating circular Manhattan plot...\n")
-  create_circular_manhattan(data, "circular_manhattan_plot_no_logo.png")
+  create_circular_manhattan(data, file.path(fig1_dir, "circular_manhattan_no_logo.png"))
 
   cat("Circular Manhattan plot created successfully!\n")
 }

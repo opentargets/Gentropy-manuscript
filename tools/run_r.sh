@@ -9,7 +9,11 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-lib="$(ls -d "$root"/chapters/r-env/library/*/*/* 2>/dev/null | head -1)"
+# A bash glob, not `ls`: with CLICOLOR_FORCE set (Jupyter kernels do), `ls` wraps the path in ANSI
+# escapes and R silently falls back to its default library.
+shopt -s nullglob
+libraries=("$root"/chapters/r-env/library/*/*/*)
+lib="${libraries[0]-}"
 
 if [ -z "$lib" ]; then
     echo "No R library found under chapters/r-env/library." >&2

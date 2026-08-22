@@ -4,22 +4,16 @@ suppressPackageStartupMessages({
   library(readr)
 })
 
-# Resolve script directory (works when sourced from Figure_1_combined.R and standalone via Rscript)
-if (!exists("fig1_dir")) {
-  .argv     <- commandArgs(trailingOnly = FALSE)
-  .file_arg <- .argv[startsWith(.argv, "--file=")]
-  fig1_dir  <- if (length(.file_arg) > 0) {
-    dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
-  } else {
-    tryCatch(dirname(normalizePath(sys.frame(1)$ofile)), error = function(e) getwd())
-  }
-}
+# Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_1/Figure_1_d_pychart.R
+data_dir <- "data/intermediate_files_refactor"
+fig1_dir <- "chapters/04-figures-main/figure_1"
 
-# Slice counts come from figure_1_dataprep-r1.ipynb rather than being hardcoded here. Five slices:
-# EUR and mixed are the reclassified ancestry groups, AFR and EAS/CSA are the non-EUR studies whose
-# predominant ancestry is afr and eas, and Other is what remains (predominantly amr, plus Finnish).
-# The published donut had four slices and buried all 11,725 pan-ancestry studies inside Other.
-donut_csv <- file.path(fig1_dir, "data", "ancestry_donut_counts-r1.csv")
+# Slice counts come from chapters/02-analysis-main/01_panoramic.ipynb rather than being hardcoded
+# here. Five slices: EUR and mixed are the reclassified ancestry groups, AFR and EAS/CSA are the
+# non-EUR studies whose predominant ancestry is afr and eas, and Other is what remains
+# (predominantly amr, plus Finnish). The published donut had four slices and buried all 11,725
+# pan-ancestry studies inside Other.
+donut_csv <- file.path(data_dir, "fig1d_ancestry_donut.csv")
 stopifnot(file.exists(donut_csv))
 counts <- suppressMessages(readr::read_csv(donut_csv, show_col_types = FALSE))
 
@@ -79,7 +73,7 @@ p <- ggplot(df, aes(x = 2, y = fraction, fill = ancestry)) +
 
 # Standalone output. Figure_1_combined.R truncates this script at the first ggsave() line and keeps
 # only the ggplot object `p`, so nothing below runs in the combined pipeline.
-ggsave(filename = file.path(fig1_dir, "ancestry_donut-r1.png"), plot = p,
+ggsave(filename = file.path(fig1_dir, "ancestry_donut.png"), plot = p,
        width = 4.5, height = 4.5, dpi = 300, bg = "#ffffff00")
 
 # Print to viewer if interactive
