@@ -722,3 +722,263 @@ does not reconcile with either.
   every number; rewiring the figure to read `phase_transition_rates.csv` and
   `phase_transition_tests.csv` would remove the duplication, and the figure
   would need a pixel check afterwards.
+
+## Notebook 15 — R2-MJ-14, immunity against infection under the gated lead_vPS definition
+
+`15_immunity_infection_directionality.ipynb`, added 2026-08-23. **Not a
+Supplementary Results section** — it is a review-response analysis, kept in this
+chapter so it runs with `tools/run_chapter.sh` and reports through the same
+mechanism. It writes `results/rr14_immunity_infection.json` under `RR14.*` ids.
+
+### Why it exists
+
+The approved response to R2-MJ-14 states: 207 genes carry credible sets for both
+an immune and an infectious disease; 59 gene–lead-variant pairs carry both on
+the same lead variant; of the 50 with a clear direction, 16 (32%) are
+discordant, against 7.5% genome-wide. The genome-wide figure is now 14.9% under
+the sign gate (`chapters/02-analysis-main/README.md`, "Results 4 — lead_vPS and
+directional concordance redefined"), while the 32% was computed on 2026-08-18
+with no gate. The letter puts two different rules on either side of one
+comparison. This notebook puts both on the gated rule.
+
+### Provenance and what was held fixed
+
+The 2026-08-18 analysis is
+`chapters/_legacy/06-review-r1/directionality-checks/02_immunity_infection_pleiotropy.ipynb`,
+read for its class definition and its choice of direction column only. Its logic
+is reimplemented against `data/intermediate_files_refactor`; nothing in
+`chapters/_legacy/` is executed and none of its `-r1` CSVs is read.
+
+The control step is a genuine reproduction rather than a re-read of the same
+file: every column this analysis needs is byte-identical between
+`paper.derived("qualifying_credible_sets")` and the pre-refactor table
+(`studyLocusId`, `variantId`, `diseaseIds`, `originalBeta`, and
+`rescaledStatistics.{directionOfEffect, absEstimatedBeta, minorAlleleEstimatedBeta}`),
+and `prioritised_genes_per_cs` reproduces the legacy
+`list_of_prioritised_genes_per_CS.parquet` exactly on the qualifying credible
+sets — the same 70,400 (credible set, gene) pairs, no additions or losses.
+
+Held fixed: immune `EFO_0000540` and infectious `EFO_0005741` membership from
+the release's own **multi-valued** `disease.therapeuticAreas`, which is
+independent of `paper.THERAPEUTIC_AREAS` and its legacy ordering (confirmed
+2026-08-20); a term carrying both areas counts as infection; genes are the
+L2G-prioritised genes of a credible set, of which there can be up to three; the
+unit stays gene x lead variant, and the direction comparison stays on a shared
+lead variant, because only there do the two signs refer to the same effect
+allele.
+
+Changed, and only this: a credible set contributes when its study maps to
+exactly one disease term and `rescaledStatistics.directionOfEffect` is non-null;
+the most significant contributing study by P value gives each disease its
+direction, ties on `studyLocusId`; each side's sign is the majority over its
+gated **diseases** rather than over credible sets, which is the unit
+`signedLeadDirectionalConcordance` is computed over. The 2026-08-18 exclusion —
+dropping credible sets mapped to an immune _and_ an infection disease at once —
+becomes redundant, because such a study carries at least two disease terms; the
+gate is strictly stronger, since it also drops a study mapped to two immune
+terms, which the old rule kept.
+
+The gate is asserted against the pipeline rather than re-derived: the
+per-variant gated disease count and concordance agree with
+`variant_features.signedLeadVPS` and `signedLeadDirectionalConcordance` on all
+40,706 lead variants, 0 disagreements either way. The notebook fails if either
+diverges.
+
+### The direction column on 2026-08-18
+
+The 2026-08-18 notebook signed its effects with
+`rescaledStatistics.directionOfEffect x absEstimatedBeta`.
+`RescaledStatistics.compute_direction_of_effect` is the signum of the study's
+harmonised beta, and `originalBeta` is that beta — it agrees with
+`sign(originalBeta)` on 63,593 of 63,593 credible sets carrying a non-zero beta.
+**It did not use `rescaledStatistics.minorAlleleEstimatedBeta`**, so the axis
+figure was never exposed to that column's ancestry-keyed flip, and the exposure
+question the comparison raised does not apply to it.
+
+The counterfactual is reported anyway, because 18,889 credible sets corpus-wide
+would be flipped by that column. Of the 59 pairs, **39 are exposed** — 39 span
+more than one major LD population, 2 straddle an alternate-allele frequency of
+0.5 — and 22 contain at least one credible set the flip reverses. Had the
+minor-allele column been used, **2 verdicts would have moved**, GSDMB
+`17_39908216_T_C` and EOMES `3_27723132_A_G`, both concordant to discordant. Of
+the 16 discordant pairs, 10 are exposed and **none** would change. The 32% is
+not a minor-allele artefact in either direction.
+
+### Before and after
+
+| quantity                                | before | after     |
+| --------------------------------------- | ------ | --------- |
+| genes with credible sets in both areas  | 207    | **115**   |
+| gene x lead-variant pairs carrying both | 59     | **34**    |
+| — distinct genes                        | 44     | **28**    |
+| — distinct lead variants                | 58     | **34**    |
+| pairs with a direction on both sides    | 50     | **32**    |
+| — concordant                            | 34     | **21**    |
+| — discordant                            | 16     | **11**    |
+| — undetermined                          | 9      | **2**     |
+| discordant share of determined          | 32.0%  | **34.4%** |
+
+25 pairs drop and the gate adds none, so the 34 are a subset of the 59. 21 lose
+the infection side, 5 lose the immune side, and FTO `16_53787213_A_G` loses
+both. By cause — infection side: 17 because every credible set there comes from
+a multi-term study, 4 because the surviving single-disease credible sets carry
+no signed effect; immune side: 4 and 1.
+
+| before \ after | concordant | discordant | dropped | undetermined |
+| -------------- | ---------- | ---------- | ------- | ------------ |
+| concordant     | 21         | 0          | 12      | 1            |
+| discordant     | 0          | 10         | 6       | 0            |
+| undetermined   | 0          | 1          | 7       | 1            |
+
+Only two pairs survive with a different verdict — FUT2 `19_48700572_C_T`
+undetermined to discordant, `ENSG00000293584` `2_111429464_A_G` concordant to
+undetermined. **No concordant pair becomes discordant.** The undetermined group
+nearly vanishes because the gate leaves exactly one signed direction per
+disease, so "mixed" now needs a genuine tie in disease counts rather than a
+missing beta.
+
+### The like-for-like baseline, and what it costs the claim
+
+32% is per gene x lead-variant pair on one axis; 14.9% is per lead variant
+genome-wide, and it is reported over cluster **representatives** while this
+analysis is not restricted to them. Neither the old comparison nor "34.4%
+against 14.9%" is like for like. All of the following is the same gated
+machinery.
+
+| unit, all gated                                                       | count  | discordant        |
+| --------------------------------------------------------------------- | ------ | ----------------- |
+| lead variants with >= 2 gated diseases                                | 5,919  | 1,051 = **17.8%** |
+| — the letter's 14.9% is this over representatives only (322 of 2,166) |        |                   |
+| all disease pairs on one gated lead variant                           | 35,997 | 7,222 = 20.1%     |
+| disease pairs whose two terms share no therapeutic area               | 19,147 | 5,099 = **26.6%** |
+| **immune term against infection term — the axis**                     | **97** | **24 = 24.7%**    |
+| both terms immune-area                                                | 2,010  | 266 = 13.2%       |
+| both terms infection-area                                             | 42     | 5 = 11.9%         |
+
+**The axis is not elevated against a cross-area baseline on its own unit: 24.7%
+against 26.6%, OR 0.91, P = 0.73.** Per-pair discordance rises with the
+variant's gated lead_vPS — 23.1% at 2 diseases through to 29.9% at 20 or more —
+and the lead variants carrying an axis disease pair are much more pleiotropic
+than average, median gated lead_vPS 5.0 and mean 10.8 against 2.0 and 2.9 over
+all lead variants with at least two gated diseases. Reweighting the cross-area
+baseline to the axis pairs' lead_vPS bins gives **25.9%**, still above the
+axis's 24.7%.
+
+The per-variant figure for the 34 lead variants carrying a gated pair, 22 of 34
+= 64.7%, is that same pleiotropy artefact and **should not be quoted**: a
+variant with 20 diseases is nearly certain to carry one opposing pair whatever
+axis it sits on. The disease-pair unit is the one the two figures can share.
+
+What excess there is, is COVID-19:
+
+| infection-side terms removed | pairs | determined | discordant     | disease pairs | discordant     |
+| ---------------------------- | ----- | ---------- | -------------- | ------------- | -------------- |
+| none                         | 34    | 32         | 11 = **34.4%** | 97            | 24 = **24.7%** |
+| the two lymphoma terms       | 30    | 28         | 10 = 35.7%     | 90            | 22 = 24.4%     |
+| peritonsillar abscess        | 28    | 28         | 10 = 35.7%     | 82            | 19 = 23.2%     |
+| both of the above            | 24    | 24         | 9 = 37.5%      | 75            | 17 = 22.7%     |
+| COVID-19                     | 26    | 25         | 5 = **20.0%**  | 84            | 13 = **15.5%** |
+| all three                    | 15    | 15         | 2 = 13.3%      | 62            | 6 = 9.7%       |
+
+Removing the two ontology caveats moves nothing; removing COVID-19 halves the
+figure on both units; removing all three puts the axis **below** the genome-wide
+baseline.
+
+**Decision for the response letter.** Do not claim this axis carries more
+antagonism than the genome as a whole — the matched comparison does not support
+it, and it is a claim the referee can check. The defensible version is narrower
+and still answers the comment: allele-exact antagonism is present at this axis,
+11 discordant gene x lead-variant pairs with named loci among them, at about the
+rate any cross-therapeutic-area disease pair shows — roughly a quarter, not the
+7.5% the published sentence implied. State the COVID-19 dependence in the same
+breath, because it is the whole of the axis's apparent excess.
+
+### The named examples
+
+| example                             | gated lead_vPS | concordance            | immune side                                                                  | infection side   | verdict    |
+| ----------------------------------- | -------------- | ---------------------- | ---------------------------------------------------------------------------- | ---------------- | ---------- |
+| IL23R / `C1orf141` `1_67131436_G_A` | 2              | **0.5000** (was 0.50)  | Crohn's disease −0.2739                                                      | leprosy +0.6970  | discordant |
+| CCDC88B `11_64340263_G_A`           | 8              | **0.6250** (was 0.667) | psoriasis −0.0697, autoimmune disease −0.0395, immune system disease −0.1289 | leprosy +0.3774  | discordant |
+| TYK2 `19_10355447_C_T`              | 2              | **0.5000** — confirmed | psoriatic arthritis −0.1724                                                  | COVID-19 +0.1559 | discordant |
+| LACC1 `13_43883789_A_G`             | 2              | **1.0000**             | Crohn's disease +0.1384                                                      | leprosy +1.1099  | concordant |
+
+Every direction and every verdict is unchanged. Two flags:
+
+- **CCDC88B's concordance moves, 0.667 to 0.6250.** Its gated lead_vPS is 8, not
+  3: sclerosing cholangitis, sarcoidosis, basal cell carcinoma and keratinocyte
+  carcinoma carry neither area but do count toward the variant's concordance,
+  and 2 of its 14 credible sets are dropped as unsigned. The immune/infection
+  verdict is untouched.
+- **IL23R, TYK2 `19_10355447_C_T` and LACC1 each rest on one gated credible set
+  per side.** LACC1, cited as the concordant counterexample on the same
+  leprosy/Crohn's axis, is one Crohn's credible set against one leprosy credible
+  set. All three should be described as single-study on both halves.
+
+### TYK2 P1104A, and a correction the letter needs
+
+`19_10352442_G_C` has **no gated infection side**: its 3 COVID-19 credible sets
+are single-disease but carry no signed effect, so the pair disappears entirely.
+15 of its 54 credible sets are dropped as unsigned and 2 as multi-term, leaving
+gated lead_vPS 16 and concordance **0.9375**, still driven by one positive
+effect. That effect is **tonsillitis +0.1905** — and `MONDO_0001039` carries
+`EFO_0000540` (immune system disease) and **not** `EFO_0005741`, so under the
+class definition used both here and on 2026-08-18 tonsillitis sits on the
+**immune** side. The 2026-08-18 write-up presents it as the infection
+counter-signal on clinical grounds and says so explicitly; that is defensible
+prose but it is not a direction this machinery produces, and it must not be
+cited as one.
+
+### Caveats after gating
+
+- **COVID-19: 9 of 48 gated infection-side (lead variant, disease) rows, 18.8%,
+  on 9 lead variants**, down from 49 comparable credible sets on 16 lead
+  variants. The gate dilutes it, but it stays the largest single term and
+  carries the whole excess over baseline.
+- **The lymphoma terms still carry the infectious-disease area** through viral
+  aetiology: Hodgkins lymphoma on 3 lead variants, extranodal nasal NK/T cell
+  lymphoma on 1 — 4 of 48 rows. They are cancers.
+- **Peritonsillar abscess is a tie-break, and it is 7 of 48 rows.**
+  `EFO_0007429` is the only corpus term carrying both areas, assigned to
+  infection by the rule that infection wins. A seventh of the infection side
+  therefore rests on that rule, and tonsillitis and its own suppurative
+  complication end up on opposite sides of the axis.
+- **No trans-disease study supplies both sides of a pair any more** — 0, and
+  true by construction rather than by exclusion. The 81 credible sets reaching
+  both areas at once, and the 122-to-59 halving the 2026-08-18 write-up reports,
+  are artefacts of the old rule and no longer need reporting.
+
+### Registration — read this before quoting the tallies
+
+The notebook writes 54 numbers under `RR14.01`-`RR14.54` in the same `numbers` /
+`paper.save_results` form as the rest of the chapter, so registering them is one
+TSV row each. **`tools/expected_numbers.tsv` was left untouched as instructed,
+so `tools/check_numbers.py` does not see them yet** — it iterates the TSV, and
+ids absent from it are ignored rather than reported as PENDING. The registry is
+therefore unmoved at **602 PASS / 55 MISMATCH / 9 BLOCKED / 7 PRECOMPUTED**,
+exactly as before this notebook existed.
+
+Two things follow. First, `RR14.*` are not manuscript claims and have no
+`tex_source`, so they do not belong in a registry of published numbers on the
+same footing as `R*` and `S*`; if they are added, they need their own section
+label and `expected` values taken from this notebook's own run, not from the
+manuscript. Second, until they are added, the guarantee that these numbers do
+not drift comes from **inside the notebook**: it asserts all nine 2026-08-18
+control values, the two `variant_features` cross-checks,
+`sign(originalBeta) == directionOfEffect`, and tonsillitis's area membership. A
+rerun fails loudly if any of them moves.
+
+The paste-ready rows, if the decision is to register them, are in
+`tools/rr14_expected_numbers_candidate.tsv` — same column order as
+`expected_numbers.tsv`, section `R2-MJ-14`, `tex_source` blank, status
+`pending`.
+
+### Running it
+
+```sh
+tools/run_chapter.sh chapters/03-analysis-supplementary 15
+```
+
+pandas, pyarrow and scipy only, no Spark, about a minute. Reads
+`paper.derived("qualifying_credible_sets")`,
+`paper.derived("prioritised_genes_per_cs")`, `paper.derived("variant_features")`
+and `paper.release("disease")` / `paper.release("target")`.
