@@ -35,15 +35,17 @@ bootstraps, 200 held-out splits and 10,000 permutations.
 | `11_criterion_validation`         | SR 11.1-11.3, the combined criterion              | 54      | **54**                         |
 | `12_external_replication`         | SR 11.4-11.5, Pharmaprojects and the interaction  | 101     | 97                             |
 | `13_ancestry_and_sample_size`     | SR 12, ancestry and sample size                   | 50      | **50**                         |
-| `14_genetic_correlation`          | SR 14.1-14.2, the genetic correlation matrix      | 30      | **30**                         |
+| `14_genetic_correlation`          | SR 14.1-14.2, the genetic correlation matrix      | 30      | 17                             |
 
-**487 of the 520 numbers registered from these sections reproduce**, 7 more are
+**474 of the 520 numbers registered from these sections reproduce**, 7 more are
 precomputed upstream of this pipeline, 2 are blocked on an artefact that was
-never saved, and 24 mismatch. All 24 are accounted for: 22 are mismatches **by
+never saved, and 37 mismatch. All 37 are accounted for: 35 are mismatches **by
 design** — the value computed here is the one to publish, and the registry is
 held at the published number until the manuscript text is corrected, section by
 section under "Manuscript text that needs updating" — and the remaining 2 are SR
-6's concordance pair, deferred until that calculation is reworked.
+6's concordance pair, deferred until that calculation is reworked. 13 of the 35
+are SR 14.2, which moved off the legacy therapeutic-area hierarchy on
+2026-08-24.
 
 `08_enrichment_bias.ipynb` calls R: `08_enrichment_bias.R` fits its mixed models
 with `lme4::glmer` through `tools/run_r.sh`, so `chapters/r-env` has to be
@@ -231,10 +233,14 @@ of all protein-coding genes"
 > of 20,083 genes on valid chromosomes, 93.7%. If the wider union is what was
 > meant, the sentence should list those sources.
 
-### Supplementary Results 14 — reproduces in full; two upstream definitions recovered
+### Supplementary Results 14 — reproduced in full, then moved off the legacy hierarchy
 
-All 30 numbers are exact. Both discrepancies were definitions carried in
-upstream artefacts rather than anything to correct in the text.
+All 30 numbers reproduced exactly on the legacy therapeutic-area ordering. **On
+2026-08-24 the section was switched to the Supplementary Table 9 ordering**, on
+the user's instruction that no part of the pipeline should stay on the legacy
+one; 13 of the 30 now mismatch by design and 17 still pass. The two upstream
+definitions recovered along the way were definitions carried in upstream
+artefacts rather than anything to correct in the text.
 
 - **The disease/measurement split of the 1,114 traits comes from the upstream
   `therapeutic_area` column of `canonical_pairwise_table.parquet`**, not from
@@ -247,14 +253,65 @@ upstream artefacts rather than anything to correct in the text.
   root and a disease root. The matrix itself is built from that same file, so
   its labels travel with it. Source:
   `_legacy/06-review-r1/ta-independence/01_within_vs_between_ta.ipynb` cell 3.
-- **The single-area assignment uses the legacy ordering of the 23 roots**, not
-  the Supplementary Table 9 ordering — `paper.THERAPEUTIC_AREAS_LEGACY`, which
-  puts `genetic, familial or congenital disease` second to last rather than
-  third. Under the ST9 ordering the same 400 diseases spread over 22 areas
-  instead of 21 and 55 pairs move from within-area to between-area, shifting
-  every statistic in the third decimal. This is the same two-orderings split the
-  rest of the work carries: the gene-level analyses use the published order, the
-  variant, cluster and genetic-correlation analyses the legacy one.
+- **The single-area assignment now uses the Supplementary Table 9 ordering of
+  the 23 roots** — `paper.THERAPEUTIC_AREAS`, the ordering
+  `primaryTherapeuticArea` carries and, since 2026-08-24, the only ordering the
+  pipeline defines. The published section used the second ordering that used to
+  sit beside it in `paper.py` as `THERAPEUTIC_AREAS_LEGACY`, since deleted. The
+  two orderings differed at **two** positions, not one:
+  `genetic, familial or congenital disease` moves 21st to 3rd, and
+  `immune system disease` moves 8th to 17th. **41 of the 400 diseases are
+  reassigned** — 31 into genetic/familial/congenital, 10 out of immune system
+  disease into areas that now outrank it. The trait set cannot move (`other`
+  means no root holds the term at all, and the root set is the same), so it is
+  still 551 disease traits, 400 with an area, 151 without, and still 79,800
+  pairs of which 1,007 are nested. 669 pairs cross from within-area to
+  between-area and 614 the other way, a net 55.
+
+  What that does to `tab:sr_rg_ta` and the 14.2 text, at printed precision:
+
+  | number                        | published | ST9 (now)  |
+  | ----------------------------- | --------- | ---------- |
+  | therapeutic areas represented | 21        | **22**     |
+  | within-area pairs             | 5,844     | **5,789**  |
+  | between-area pairs            | 73,956    | **74,011** |
+  | within mean                   | 0.401     | **0.400**  |
+  | between mean                  | 0.317     | 0.317      |
+  | difference                    | 0.084     | **0.083**  |
+  | >=0.5 fold                    | 1.48      | **1.47**   |
+  | superiority                   | 0.574     | **0.571**  |
+  | permutation P                 | <1e-4     | <1e-4      |
+  | nested pairs removed          | 1,007     | 1,007      |
+  | within mean, nested excluded  | 0.390     | **0.387**  |
+  | between mean, nested excluded | 0.316     | **0.317**  |
+  | >=0.5 fold, nested excluded   | 1.42      | **1.41**   |
+  | superiority, nested excluded  | 0.563     | **0.559**  |
+  | within-area pairs, excluded   | 5,103     | **5,095**  |
+  | between-area pairs, excluded  | 73,690    | **73,698** |
+  | between-area pairs above 0.5  | 22%       | 22%        |
+
+  Nothing changes direction or significance; the permutation P is the
+  10,000-draw floor in all four runs. **The text edits this needs**: "21
+  therapeutic areas" to 22, "5,844 within-area pairs and 73,956 between-area
+  pairs" to 5,789 and 74,011, "0.401 within an area against 0.317" to 0.400
+  against 0.317, "difference of 0.084" to 0.083, "1.48 times as likely" to 1.47,
+  "almost unchanged at 0.390 against 0.316" to 0.387 against 0.317, and the six
+  table cells above. "57% of the time" and "22% of them exceed 0.5" survive
+  rounding and need no edit. In `tools/expected_numbers.tsv` those 13 ids
+  (S14.15-S14.18, S14.20-S14.22, S14.24-S14.29) now carry the recomputed value
+  in `expected` and the submitted value in `published`, so they read PASS and
+  are flagged EDIT until the text is corrected.
+
+- **`single_area` counts a root as its own area**, which is the one thing the
+  derived `primaryTherapeuticArea` column cannot do, because a term is not its
+  own ancestor. 10 of the 400 analysis traits are therapeutic-area root terms
+  (cardiovascular disease, immune system disease, nervous system disease, sign
+  or symptom, infectious disease, pancreas disease, urinary system disease,
+  gastrointestinal disease, psychiatric disorder, disorder of ear); the column
+  calls 9 of them `other` and puts `pancreas disease` under
+  `endocrine system disease`. Reading the column verbatim would therefore change
+  the trait set, not just the ordering, so the descent rule stays and the
+  notebook asserts that the two rules disagree on root terms only.
 
 - **The coverage table's gene-measurement row** is over the genes of
   `gene_table`, the protein-coding set every gene-level analysis here uses:
@@ -262,6 +319,31 @@ upstream artefacts rather than anything to correct in the text.
   prioritisation table holds 150,360. The disease row is unaffected because all
   of its genes are already in that table, and the _term_ counts stay
   unrestricted, which is what the published table's own definition says.
+
+**Supplementary Table 17 is now built by this notebook**, at
+`chapters/06-supplementary-tables/sheets/ST17_ta_correlation_matrix.csv`. It was
+previously produced by a one-off script that lived outside the repository. It
+aggregates the same 79,800 absolute correlations by unordered area pair, so the
+pair-count weighted mean of its diagonal is the within-area mean and of its
+off-diagonal the between-area mean; the notebook asserts both, to within the
+sheet's four-decimal rounding. On the ST9 ordering it holds **253 cells (22
+diagonal, 231 off-diagonal)**, up from 231 (21 + 210), with no empty cell.
+`nPairs` runs 1-2,478 (was 1-2,655) and **9 cells sit below 10 pairs** (was 6):
+the four smallest are `pregnancy or perinatal x pregnancy or perinatal` (1),
+`disorder of ear x disorder of ear` (1),
+`disorder of ear x pregnancy or perinatal` (4) and `hematologic x hematologic`
+(6). The highest diagonal cells are disorder of ear 0.7619 (n=1), pancreas
+disease 0.6538 (n=10) and injury/poisoning 0.5648 (n=136); the lowest are
+pregnancy or perinatal 0.1051 (n=1), genetic/familial/congenital 0.2591 (n=465,
+the new row) and psychiatric disorder 0.2696 (n=3). The highest off-diagonal
+cells are `disorder of ear x hematologic` 0.7257 (n=8),
+`nutritional or metabolic x pregnancy or perinatal` 0.7236 (n=26) and
+`hematologic x pregnancy or perinatal` 0.6949 (n=8) — under the legacy ordering
+the top three were all disorder-of-ear rows.
+`cardiovascular disease x respiratory or thoracic disease` moves from 0.2823 to
+**0.2708** on the same 630 pairs. **Every cell below roughly 30 pairs rests on a
+handful of diseases and should not be read as an estimate**; the table is there
+to show where the within/between contrast comes from, not to rank areas.
 
 ### Supplementary Results 12 — reproduces; two numbers pass only on tolerance
 
@@ -424,6 +506,61 @@ concordance~$<$~1"
 > concordance calculation itself is to be reworked later**, and the choice of
 > denominator should be made then rather than patched now. The four readings
 > above stay in the notebook so the rework starts from them.
+
+#### R2-MJ-13 — the therapeutic-area count model degenerates under the negative binomial
+
+The reviewer asks whether the covariate model of the variant pleiotropy score
+also holds when the outcome is the number of distinct therapeutic areas a
+cluster spans rather than the number of distinct diseases. Fitted on the same
+frame, the same six min-max-scaled covariates and the same helper as Figure 3b,
+**the negative binomial does not converge**: the dispersion parameter runs to
+its lower boundary (joint fit alpha = 1.5e-07, standard error undefined,
+`converged = False`), the observed information is singular there, and every
+standard error, P value and confidence interval comes back `NaN`. The reason is
+in the outcome itself — `uniqueTherapeuticAreas` has mean 1.4477 and variance
+1.3380, so it is mildly _under_-dispersed, and the negative binomial has no
+admissible interior solution. Its log-likelihood at the boundary, -26188.35607,
+is the Poisson log-likelihood -26188.35563 to five decimals. The disease-count
+outcome is the opposite case (mean 2.1415, variance 14.7067, alpha = 0.2641 +/-
+0.0054, converged), which is why the published fit is sound and this one is not.
+
+Reported as a Poisson fit with HC1 robust standard errors instead, labelled as
+such; both estimators are written to `plot_b_ta.csv` in an `estimator` column so
+the degenerate negative binomial stays visible rather than being silently
+substituted. The joint Poisson model explains 18.68% of the variance in the
+therapeutic-area count under the notebook's own `r2()` (squared Pearson
+correlation between observed and predicted), against 16.95% for the published
+disease-count model (R4.11).
+
+One substantive difference, which the answer to the reviewer has to state:
+**GERP is not the only covariate that drops out of the joint fit.** All twelve
+coefficients keep the direction they have in the disease-count model, and eleven
+of the twelve agree on significance at 0.05, but absolute beta loses
+significance on the therapeutic-area outcome (Poisson-HC1 joint, coefficient
+0.1309 +/- 0.0868, P = 0.131) while it survives on the disease-count outcome
+(negative binomial P = 4.3e-07, Poisson-HC1 P = 2.0e-04). GERP behaves the same
+way on both (P = 0.380 and P = 0.290). So the joint therapeutic-area model
+retains four of six covariates — MAF, sample size, PAV and predicted power — not
+five.
+
+Nothing published moved: R4.01-R4.13, `plot_a.csv`, `plot_b.csv`,
+`st2_discordant_variants.csv` and the two APOE exports are byte-identical after
+a full unchanged rerun of `02-analysis-main/04_variant_pleiotropy`. The new
+outcome column is computed beside the existing ones and the new coefficients go
+to a new file.
+
+**Where S6.18-S6.22 live (2026-08-25).** The registry had all five against
+`03-supp/06_variant_pleiotropy_modelling`, which emits none of them, so they sat
+at PENDING; the notebook that produced them was never committed and only
+`plot_b_ta.csv` survived. They are now computed in
+`02-analysis-main/04_variant_pleiotropy` and the registry's `notebook` column
+says so. That is where the numbers are: S6.18 and S6.20 are the exact
+complements of R4.06 and R4.03 over `variant_clusters`, asserted against them in
+the notebook so they cannot drift, and S6.21 and S6.22 need the min-max scaled
+design matrix and the `fit`/`r2` helpers of Figure 3b, which exist nowhere else.
+The rewritten cell reproduces `plot_b_ta.csv` exactly — all twenty-four rows,
+both estimators, including the boundary alphas of the degenerate negative
+binomial — and prints the two log-likelihoods above. All five now pass.
 
 ### Supplementary Results 5
 

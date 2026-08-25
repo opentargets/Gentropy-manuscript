@@ -117,16 +117,14 @@ def cluster(study_loci: list, edges: list) -> list:
     return clusters
 
 
-def therapeutic_area_lookup(column: str = "primaryTherapeuticArea") -> dict:
+def therapeutic_area_lookup() -> dict:
     """Disease id to therapeutic area, restricted to terms used by the release study index.
 
-    Defaults to the hierarchy order published as Supplementary Table 9, the same order the
-    gene-level analysis uses. The published cluster-level therapeutic-area counts were computed
-    under the legacy order instead; pass `primaryTherapeuticAreaLegacy` to recover them. See
-    `01-data-preparation/03_therapeutic_areas`.
+    The hierarchy order published as Supplementary Table 9, which is the only order the pipeline
+    carries. See `01-data-preparation/03_therapeutic_areas`.
     """
     efo_ta = ds.dataset(paper.derived("efo_therapeutic_area"), format="parquet").to_table().to_pydict()
-    return dict(zip(efo_ta["id"], efo_ta[column]))
+    return dict(zip(efo_ta["id"], efo_ta["primaryTherapeuticArea"]))
 
 
 def disease_names() -> dict:

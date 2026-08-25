@@ -74,6 +74,39 @@ Supplementary Methods Fig. 1 (`figure_sm1.png`, the pipeline schematic) is the
 same kind of thing and has not been copied in; it lives only in the manuscript
 tree.
 
+### Controls whose reference table was deleted with `chapters/_legacy/`
+
+`01-data-preparation/07_variant_features` cell 16 compares the rebuilt variant
+features against the table the published Figure 3 was built from,
+`chapters/_legacy/03-manuscript-figures/figure_3/python_scripts/variant_pleiotropy`.
+Commit `dcdc3ce` deleted `chapters/_legacy/` in full, so that path exists in no
+working tree of this branch and the cell now takes its
+`if not reference.exists()` branch: it prints the last recorded result — 40,706
+of 40,706 lead variants matched, `maxAbsBeta` differing by at most 4.441e-16 and
+`maxMAF`, `maxEffectiveSampleSize`, `maxVarG`, `gerpNormalised` and `vepScore`
+by 0 — and asserts nothing.
+
+**The variant-features table therefore has no live control.** Those numbers
+describe a run that can no longer be repeated; they are a record, not a check.
+Nothing else in the pipeline compares this table against the published one, so a
+change to `maxAbsBeta`, `maxMAF`, `maxEffectiveSampleSize`, `maxVarG`,
+`gerpNormalised` or `vepScore` would now pass unnoticed. The reference table is
+24 Spark part-files and is still in git history; restoring the control means
+checking them out of `dcdc3ce^` into a path outside `chapters/_legacy/` and
+pointing the cell at it.
+
+The same deletion took four files that section 1's table above still lists as
+present on disk, all of them recoverable from `dcdc3ce^`:
+`04_making_the_list_of_gene_categories/MGIBatchReport_20251120_112357.txt` and
+`SourceDataFile1_FUSIL_bins.txt` (the MGI and FUSIL gene sets behind Figure 4c)
+and `05-other-drug-indication-data/combined_ti_TA.tsv` and
+`drug_phase_summary.tsv` (the licensed Pharmaprojects tables behind
+Supplementary Results 11). Figure 4c and Supplementary Results 11 both still
+run, because they read the processed derivatives
+`data/intermediate_files/list_of_genes_32_categories` and
+`data/intermediate_files/minikel_etal_processed_data_v2.csv` rather than these
+originals, but the originals are no longer in the repository.
+
 ## 2. Data missing entirely
 
 **Closed 2026-08-19:** `data/25.06/output/target_prioritisation` has been
@@ -90,17 +123,17 @@ but the rsync had never landed. `tissueSpecificity`, `tissueDistribution` and
 
 ## 3. Manuscript content with no code in this repository
 
-| Manuscript item                                                                                                                                                               | Situation                                                                                                                                                                                                                                                                                                                                         | Needs                                                                                                                                                                                                                                                                   |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Supplementary Results 5 — importance of secondary fine-mapping signals (24,558 regions; 6,354 with primary+secondary; 2,862; **81.5 %**; 48.5/42.4 %, 9.8/7.2 %, 17.5/14.6 %) | **Closed 2026-08-20.** The code was never in this repository: it is `12_importnace_of_secondary_signals.ipynb` in `~/Projects/EGL_and_training_set/archive/gentropy_paper/`. Ported to `chapters/03-analysis-supplementary/05_secondary_signals.ipynb`, where all twelve numbers reproduce exactly, and Results 3's 81.5 % with them.             | nothing                                                                                                                                                                                                                                                                 |
-| Figure 1a (circular Manhattan assembly), Extended Data Fig. 1 (flowchart), Supplementary Methods Fig. 1 (pipeline schematic)                                                  | external illustration files                                                                                                                                                                                                                                                                                                                       | nothing — will be documented as external assets                                                                                                                                                                                                                         |
-| All of Supplementary Methods: Gentropy ETL, clumping, PICS/SuSiE fine-mapping, CARMA, COLOC/eCAVIAR, feature-matrix generation, L2G training run                              | upstream Open Targets pipeline; this repo consumes its released output                                                                                                                                                                                                                                                                            | nothing — documented as upstream                                                                                                                                                                                                                                        |
-| Supplementary Results 14, "Estimation of the genetic correlation matrix"                                                                                                      | the LDSC run itself is external; only its output table (`canonical_pairwise_table`) is available, and it _is_ downloaded                                                                                                                                                                                                                          | nothing — the downstream analysis is reproducible                                                                                                                                                                                                                       |
-| Supplementary Results 13, "Integration to Open Targets Platform"                                                                                                              | descriptive, no analysis                                                                                                                                                                                                                                                                                                                          | nothing                                                                                                                                                                                                                                                                 |
-| Supplementary Table 10, fine-mapping statistics by data source                                                                                                                | **Compiled by hand** from numbers spread across several notebooks in the analysis chapters and `playground/`. Confirmed by the author 2026-08-19. There is no single script that emits this sheet                                                                                                                                                 | nothing — out of scope                                                                                                                                                                                                                                                  |
-| Supplementary Table 3 (GSEA)                                                                                                                                                  | **Written by hand by Polina, not by any pipeline.** Confirmed by the author 2026-08-19; do not attempt to reproduce it. `blitzgsea` is stochastic in any case                                                                                                                                                                                     | nothing — out of scope                                                                                                                                                                                                                                                  |
-| Supplementary Table 16 / therapeutic-area hierarchy                                                                                                                           | **Resolved for the gene level.** Supplementary Table 9 lists `genetic, familial or congenital disease` third, and only that order reproduces the published gene-level counts (4,743 genes in more than one area, mean 2.5308, max 21; the legacy notebook order gives 4,662 / 2.4258 / 20). The pipeline now uses the published order everywhere. | **needs a decision** — the colocalisation-cluster therapeutic-area numbers in Results 4 (4,539 clusters in more than one area, mean 1.40, max 20) were produced under the legacy order, so they will shift. The size of the shift is reported once notebook 08 has run. |
-| Results §1, biobank reference lines in Fig 1c (FinnGen / MVP / UKBB gene–disease pair counts)                                                                                 | reproducible; FinnGen R12 has no publication date in the release and is assigned 2024-11-04 in code                                                                                                                                                                                                                                               | nothing — documented                                                                                                                                                                                                                                                    |
+| Manuscript item                                                                                                                                                               | Situation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Needs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Supplementary Results 5 — importance of secondary fine-mapping signals (24,558 regions; 6,354 with primary+secondary; 2,862; **81.5 %**; 48.5/42.4 %, 9.8/7.2 %, 17.5/14.6 %) | **Closed 2026-08-20.** The code was never in this repository: it is `12_importnace_of_secondary_signals.ipynb` in `~/Projects/EGL_and_training_set/archive/gentropy_paper/`. Ported to `chapters/03-analysis-supplementary/05_secondary_signals.ipynb`, where all twelve numbers reproduce exactly, and Results 3's 81.5 % with them.                                                                                                                                                           | nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Figure 1a (circular Manhattan assembly), Extended Data Fig. 1 (flowchart), Supplementary Methods Fig. 1 (pipeline schematic)                                                  | external illustration files                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | nothing — will be documented as external assets                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| All of Supplementary Methods: Gentropy ETL, clumping, PICS/SuSiE fine-mapping, CARMA, COLOC/eCAVIAR, feature-matrix generation, L2G training run                              | upstream Open Targets pipeline; this repo consumes its released output                                                                                                                                                                                                                                                                                                                                                                                                                          | nothing — documented as upstream                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Supplementary Results 14, "Estimation of the genetic correlation matrix"                                                                                                      | the LDSC run itself is external; only its output table (`canonical_pairwise_table`) is available, and it _is_ downloaded                                                                                                                                                                                                                                                                                                                                                                        | nothing — the downstream analysis is reproducible                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Supplementary Results 13, "Integration to Open Targets Platform"                                                                                                              | descriptive, no analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Supplementary Table 10, fine-mapping statistics by data source                                                                                                                | **Compiled by hand** from numbers spread across several notebooks in the analysis chapters and `playground/`. Confirmed by the author 2026-08-19. There is no single script that emits this sheet                                                                                                                                                                                                                                                                                               | nothing — out of scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Supplementary Table 3 (GSEA)                                                                                                                                                  | **Written by hand by Polina, not by any pipeline.** Confirmed by the author 2026-08-19; do not attempt to reproduce it. `blitzgsea` is stochastic in any case                                                                                                                                                                                                                                                                                                                                   | nothing — out of scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Supplementary Table 16 / therapeutic-area hierarchy                                                                                                                           | **Resolved, and the second hierarchy is deleted (2026-08-24).** Supplementary Table 9 lists `genetic, familial or congenital disease` third, and only that order reproduces the published gene-level counts (4,743 genes in more than one area, mean 2.5308, max 21; the second order gave 4,662 / 2.4258 / 20). `THERAPEUTIC_AREAS_LEGACY`, `primaryTherapeuticAreaLegacy` and `mappedTherapeuticAreasLegacy` no longer exist, and `paper.THERAPEUTIC_AREAS` is the pipeline's only hierarchy. | **resolved** — the Results 4 cluster numbers shifted to 4,766 clusters in more than one area, mean 1.45, max 19 (R4.06-R4.09) and S6.16 to 226, and those are recorded in `tools/expected_numbers.tsv` as `expected` against the submitted `published` values. Deleting the second order moved no further registered number: R4.22 stays at 15. ST2's `Number of associated therapeutic areas` moved on 19 of 37 rows, and the study-level one-hot columns moved so that the gene-level control reaches 0 of 8,285 genes. Manuscript edits owed: see `chapters/02-analysis-main/README.md`. |
+| Results §1, biobank reference lines in Fig 1c (FinnGen / MVP / UKBB gene–disease pair counts)                                                                                 | reproducible; FinnGen R12 has no publication date in the release and is assigned 2024-11-04 in code                                                                                                                                                                                                                                                                                                                                                                                             | nothing — documented                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ## 3b. Figures that do not reproduce the published PDF exactly
 
@@ -109,11 +142,11 @@ Every main figure and Extended Data figure now builds from
 the published PDFs, Figures 1 and 2 and Extended Data 2-10 are pixel-identical.
 Three differences remain, none of them structural.
 
-| Figure     | Difference | Cause                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 5, panel c | 3.3 %      | The observed dashed line is the mean of 200 bootstrap lowess smooths, so it depends on which rows the resampling draws. The published run never fixed the row order of `df_for_enrichment_regression.csv`, and its order was arbitrary Spark shuffle order that cannot be recovered. The table is now sorted by `(targetId, diseaseId)`, which makes the curve reproducible from scratch but not equal to the published draw. Monte Carlo error at 200 resamples is roughly ±0.02 in probability. The solid model curves are order-independent and match exactly. |
-| 4, panel b | 0.4 %      | The forest plot now reads `gene_pleiotropy_coefficients.csv` instead of re-fitting the negative-binomial models in R. The two agree to four decimals (largest relative difference 0.11 %, on missense constraint), which moves points by a pixel.                                                                                                                                                                                                                                                                                                                 |
-| 3, panel c | 0.03 %     | A handful of points in the APOE scatter. Pre-existing; not investigated further.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Figure     | Difference | Cause                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5, panel c | 2.8 %      | The observed dashed line and all three bands are bootstrap quantities, so they depend on which rows the resampling draws. The published run never fixed the row order of `df_for_enrichment_regression.csv`, and its order was arbitrary Spark shuffle order that cannot be recovered. The table is now sorted by `(targetId, diseaseId)`, which makes the curve reproducible from scratch but not equal to the published draw. Measured against the published PDF, the displacement is up to 0.007 in probability on the model bands and 0.029 on the LOWESS band. The solid model curves are order-independent and match exactly. Panels a and b are pixel-identical to the published figure; the whole difference is panel c. |
+| 4, panel b | 0.4 %      | The forest plot now reads `gene_pleiotropy_coefficients.csv` instead of re-fitting the negative-binomial models in R. The two agree to four decimals (largest relative difference 0.11 %, on missense constraint), which moves points by a pixel.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 3, panel c | 0.03 %     | A handful of points in the APOE scatter. Pre-existing; not investigated further.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 Extended Data Fig. 1 and Supplementary Methods Fig. 1 are external illustrations
 with no source in this repository.
@@ -141,8 +174,37 @@ wide and counting differing pixels at 2% fuzz:
 | 4                            | 1,516 of 517,200  | 0.293% |
 | 5                            | 22,362 of 648,000 | 3.451% |
 
-Figure 5's share moves between runs because panel c is a fresh 200-draw
-bootstrap; the rest are stable.
+Every one of these is stable across runs. Panel c's bootstrap is seeded
+(`seed = 42`, 200 draws, `np.random.default_rng`) and its input is sorted, so
+`figure_5.R` regenerates `figure_5.pdf` pixel-identically; an earlier note here
+that Figure 5's share moved between runs is superseded.
+
+**Figure 5c and Supplementary Figure 5 panels 1-2 are the same two curves and
+now agree.** `enrichment.pleiotropy_success_curves`, which writes
+`figure_5c_curves.csv`, and `compute_curve` in
+`chapters/05-figures-supplementary/supplementary/sr06_success_vs_pleiotropy_counts.ipynb`
+share the draw count, seed, RNG, input row order and LOWESS fraction. They
+differed only in how the LOWESS smooth was carried onto the x grid — the
+notebook extrapolated past the last supported count, the function clamps — which
+left the gPS band up to 0.0063 apart at the single last grid point. The notebook
+now clamps too (2026-08-24), since clamping is the weaker assumption and is what
+the drawn main figure does. All nine artists on both counts now agree to within
+5e-14, the residual being `smf.logit` (Newton) against `sm.GLM` (IRLS); the two
+LOWESS artists agree to 1e-15.
+
+That change also moved five other panels of Supplementary Figure 5, which share
+`compute_curve`: panel 4 by 0.00008, panel 6 by 0.028, panel 7 by 0.0079, panel
+8 by 0.00036 and panel 10 by 0.010 in probability. Panels 1, 3, 5 and 9 are
+unchanged. Supplementary Results 14's ten Peak values, its twenty
+likelihood-ratio P values, the 90.3 % measurement-trait cut and the per-count
+fitted n (35,935 / 37,196 / 36,818 / 25,103, the other seven 37,377) are all
+unaffected, since they come from the base model rather than the bootstrap.
+
+Against the published `figures/figure_sr5.pdf` — the asset that prints as
+Supplementary Figure 6 — the rebuilt `figure_sr6.pdf` differs by 0.70 % of
+pixels, for the same unrecoverable reason as Figure 5c: the published draw used
+R's RNG over Spark shuffle order. 43 of its 60 vector paths are identical; the
+17 that differ are bootstrap bands and LOWESS means.
 
 ## 4. Analyses dropped as not present in the manuscript
 
@@ -251,3 +313,79 @@ both with working legacy implementations to port:
 
 `chapters/03-analysis-supplementary/README.md` lists every number that does not
 reproduce, with the reason.
+
+`tools/expected_numbers.tsv` now registers response-letter numbers alongside
+manuscript numbers; the two are told apart by the `section` column, where a
+response-letter row carries its reviewer-comment tag (for example `R2-MJ-14`)
+rather than a Results or Supplementary Results section name, and leaves
+`tex_source` empty.
+
+## 7. What the Data availability statement has to cover
+
+`sections/backmatter.tex` says:
+
+> All data required to reproduce the results reported in this paper are
+> deposited in Zenodo (DOI: \zenodotodo).
+
+That is deliberately broad, so every gap above is either inside the deposit or
+outside the sentence. This section says which side each one falls on. It records
+the requirement only; nothing here has been deposited, and the sentence is the
+author's to keep or narrow.
+
+**Inputs the deposit has to contain.** None of these can be fetched from
+`https://platform.opentargets.org/downloads`, which is what the preceding
+sentence of the statement covers.
+
+| Input                                                                  | Size   | Why the deposit is the only route                                                                                                                                             |
+| ---------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data/l2g_training_set/20250625_gentropy_paper_v1/`                    | 844 KB | the L2G positive training set; behind Supplementary Table 12, Supplementary Table 13 and the Results 3 model metrics. `extended_data.tex` already states that it is deposited |
+| `data/l2g_training_set/test_v3.parquet`                                | 688 KB | the saved held-out split. The split seed was never recorded, so this file is the only way to reproduce the published split                                                    |
+| the effector gene list                                                 | —      | the former `tab:st13`, removed 2026-08-24 on the understanding that it is deposited instead. It is not in this repository at all: GCS-only, 42,288 pairs                      |
+| `data/intermediate_files/eit_gene_metrics-r1.csv`                      | 972 KB | the effective-independent-trait metrics behind Supplementary Figure SR 6. Produced by the un-ported Supplementary Results 14.3/14.4 analysis and not rebuildable here         |
+| `data/intermediate_files/combined_evidence_with_measurements`          | 1.3 MB | the OMIM, Orphanet and gene-burden evidence rows behind the Results 6 other-resources enrichment. Assembled upstream of this pipeline                                         |
+| `data/intermediate_files/regulatoryToGene`                             | 7.4 GB | read as an input by `01-data-preparation/10_variant_consequences` cell 2. Large enough that it may have to be cited to its upstream release instead                           |
+| `data/intermediate_files/canonical_pairwise_table`                     | 75 MB  | the LDSC output behind Supplementary Results 14. The LDSC run itself is external, so this table is the reproducible starting point                                            |
+| `data/41586_2024_7556_MOESM8_ESM.csv`                                  | 275 KB | Minikel et al. 2024 supplementary table, used by Results 6 and Supplementary Results 11. Public at its own DOI, so a citation may serve instead of redistribution             |
+| `MGIBatchReport_20251120_112357.txt`, `SourceDataFile1_FUSIL_bins.txt` | —      | the MGI batch query and the published FUSIL source data behind the Figure 4c gene sets. Both were committed and were deleted in `dcdc3ce`; see section 1                      |
+
+**Entries the sentence cannot be made true for.**
+
+- `chapters/_legacy/05-other-drug-indication-data/combined_ti_TA.tsv` and
+  `drug_phase_summary.tsv`, and the
+  `data/intermediate_files/minikel_etal_processed_data_v2.csv` derived from
+  them: **Citeline Pharmaprojects is licensed and not redistributable.**
+  Supplementary Results 11's independent replication cannot be reproduced from
+  any deposit. This is the one entry that needs the sentence qualified rather
+  than the deposit extended.
+- **The trained L2G model artefact was never saved**, and
+  `data/25.06/irene_1208_l2g_predictions` is floored at 0.05. S3.15, S3.16,
+  R3.01 and R3.02 are ranking metrics over the low-scoring pairs the flooring
+  removed, so no deposit of what exists can reproduce them.
+- Section 2's remaining rows are not on disk at all and so cannot be deposited:
+  `drug_molecule`, the per-source study indices, and the pre-release
+  `l2g_feature_matrix` with the 24.09 / 24.12 `ot_genetics_portal` evidence.
+  They block R3.05, R3.19 and the previous-model comparison.
+
+**Outside the deposit by the statement's own structure.**
+
+- `data/25.06/output/*` — the Open Targets 25.06 release, covered by the first
+  sentence of the statement. The platform is refreshed quarterly and 25.06 will
+  stop being the current release, so a pinned snapshot or an explicit release
+  version in the statement is what makes that sentence stay true.
+- The static assets of section 1 — `Fig1 a (cropped).pdf`,
+  `OT_helix_colour_RGB.png`, `extended_figure_1.pdf`, `ST3_-_GSEA_results.xlsx`,
+  `ST11_-_coloc_overlap.xlsx` — are committed to this repository and so fall
+  under Code availability. `figure_sm1.png` is the exception: it is in neither
+  repository.
+- `data/list_of_genes_32_categories.csv` is a CSV duplicate of a parquet the
+  download notebook fetches, and `data/gtex_v8_ts_DEG.txt` is read by nothing.
+  Neither belongs in a deposit.
+
+**Not recorded above until now.** Sections 1 and 2 list files by where they came
+from, so `data/intermediate_files/` — the pre-refactor tables — appears in
+neither. Most of that directory is cross-check controls that a reader does not
+need: `gwas_w_therapeutic_areas`, `genes_therapeutic_areas`,
+`lead_variant_effect`, `qualified_lead_variant_effect`,
+`lead_variant_consequence_exploded`, `l2g_full_for_enrichment`,
+`list_of_prioritised_genes_per_CS.parquet`. The five that live notebooks read as
+genuine inputs are in the table above.

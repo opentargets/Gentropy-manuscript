@@ -81,24 +81,30 @@ fits all eight covariates and emits both: 0.5293 against a published 0.53, and
 
 ## Manuscript text that needs updating
 
-`tools/expected_numbers.tsv` keeps the published values, so the numbers below
-report as MISMATCH by design until the text changes; update the expected values
-then.
+`tools/expected_numbers.tsv` carries two manuscript columns: `published`, the
+originally submitted value, which never changes, and `expected`, the value the
+current `.tex` should carry, which is what the verdict compares against. A row
+where the two differ is a manuscript edit that is owed, not a reproduction
+failure; `check_numbers.py` marks those rows EDIT and counts them at the top of
+`REPRODUCIBILITY.md`. The numbers below are that list.
 
 ### Results 4 — the cluster therapeutic-area count moved to the Supplementary Table 9 order
 
 Two hierarchy orders coexisted in `src/manuscript_methods/paper.py`:
-`THERAPEUTIC_AREAS`, the order published as Supplementary Table 9, and
-`THERAPEUTIC_AREAS_LEGACY`, which places
+`THERAPEUTIC_AREAS`, the order published as Supplementary Table 9, and a second
+one, `THERAPEUTIC_AREAS_LEGACY`, which placed
 `genetic, familial or congenital disease` second to last and
 `immune system disease` ninth rather than eighteenth. Both orders assign each
 disease term to the first area whose ontology subtree contains it, so the order
-is the assignment. The gene-level analysis (gPS, ED Fig. 7, ST 8) used the
-published order; the cluster-level therapeutic-area count used the legacy one,
-which is how the published numbers were computed.
-`clusters.therapeutic_area_lookup()` now defaults to `primaryTherapeuticArea`,
-unifying the two — the one code change, feeding both `cluster_table()` and
-`membership_table()`.
+is the assignment, and carrying two of them made the same disease carry
+different areas in different sections of one paper. The gene-level analysis
+(gPS, ED Fig. 7, ST 8) used the published order; the cluster-level
+therapeutic-area count used the second one, which is how the published numbers
+were computed. `clusters.therapeutic_area_lookup()` was made to default to
+`primaryTherapeuticArea` first, feeding both `cluster_table()` and
+`membership_table()`; **`THERAPEUTIC_AREAS_LEGACY` was then deleted outright on
+2026-08-24 and the pipeline now carries one order** — see "The hierarchy is
+unified" below.
 
 The order touches areas only, never diseases. Verified unchanged against the
 pre-change run: the 20,041 clusters and their membership, the 5,595 clusters
@@ -156,9 +162,8 @@ $P < 1 \times 10^{-16}$)"
   on 2026-08-20, under the legacy assignment, so that verification no longer
   holds — even though the published sheet's own column description says the
   assignment follows the Supplementary Table 9 hierarchy, which it did not and
-  this one now does. **One open decision**, recorded in
-  `chapters/06-supplementary-tables/README.md`: pin that cell back to the legacy
-  column, or reissue the sheet.
+  this one now does. Resolved on 2026-08-24 in favour of reissuing the sheet;
+  see `chapters/06-supplementary-tables/README.md`.
 - **ST14, gene-disease associations with gPS** — 5,470 of 36,858 rows (14.8%,
   164 diseases) change their `therapeuticArea` label. `gPS` and
   `numberOfTherapeuticAreas` are unchanged; no published counterpart exists.
@@ -170,13 +175,73 @@ $P < 1 \times 10^{-16}$)"
   the extra row is a duplicate marker at coordinates that already carry a point.
   `figure_3.pdf` was rebuilt later, with the lead_vPS redefinition below.
 
-Supplementary Results 14.1-14.2 stays on the legacy order deliberately, because
-it reproduces the published within-area against between-area comparison. Re-run
-under the published order it barely moves: within-area mean $|r_g|$ 0.401 ->
-0.400, between-area 0.317 -> 0.317, permutation $P = 10^{-4}$ either way (55 of
-the 79,800 disease pairs cross from within to between). The gene-level one-hot
-TA columns behind ED Fig. 7 and ST 8 were already on the published order and are
-untouched.
+Supplementary Results 14.1-14.2 is also on the published order now; it barely
+moves: within-area mean $|r_g|$ 0.401 -> 0.400, between-area 0.317 -> 0.317,
+permutation $P = 10^{-4}$ either way (55 of the 79,800 disease pairs cross from
+within to between). See `chapters/03-analysis-supplementary/README.md` for the
+full S14 table. The gene-level one-hot TA columns behind ED Fig. 7 and ST 8 were
+already on the published order and are untouched.
+
+### The hierarchy is unified — 2026-08-24
+
+`THERAPEUTIC_AREAS_LEGACY` is deleted, along with the
+`primaryTherapeuticAreaLegacy` and `mappedTherapeuticAreasLegacy` columns of
+`efo_therapeutic_area` and `study_therapeutic_areas`, and the `column` argument
+of `clusters.therapeutic_area_lookup()`. Five sites read the second order and
+were repointed:
+
+| site                                                      | what it did                                                                                                                       |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `01-data-preparation/03_therapeutic_areas`                | wrote both columns and built the `paper.TA_COLUMNS` one-hots from the legacy array                                                |
+| `01-data-preparation/07_variant_features` cell 2          | aliased `mappedTherapeuticAreasLegacy` to `mappedTherapeuticAreas`, so the whole variant table was legacy under a non-legacy name |
+| `02-analysis-main/04_variant_pleiotropy` cell 19          | explicit `therapeutic_area_lookup("primaryTherapeuticAreaLegacy")` for the APOE signed-direction table                            |
+| `06-supplementary-tables/01_supplementary_tables` cell 26 | ran the gene-level control under both orders                                                                                      |
+| `src/manuscript_methods/clusters.py`                      | documented the legacy option                                                                                                      |
+
+**No registered number moved.** R4.06-R4.09 and S6.16 were already on the
+published order and are unchanged; R4.22 (APOE therapeutic areas) stays at 15,
+because the count coincides across the two orders even though the area set does
+not. Verified unchanged: 20,041 clusters and their partition, 5,595 with more
+than one lead variant, 6,617 with more than one disease (range 1-120, mean
+2.1415), the 42,918 ST 15 rows and their disease ids, R4.10-R4.13, R4.14-R4.21,
+every gPS number, Results 5 and 6, ST16's 2,320 / 1,394 / 7,010 totals, ST5
+(37,377 rows), ST9 (24 rows), ST7 `uniqueTherapeuticAreas`, and `plot_a.csv` /
+`plot_b.csv` / `variant_pleiotropy_data_exploded*.csv`, so no figure needed
+rebuilding.
+
+What moved:
+
+- **ST 2, `Number of associated therapeutic areas`** — 19 of the 37 rows go up
+  by one (one by three, `6_90267049_G_A` 4 -> 7); the row set and every other
+  column are unchanged. Column total 231 -> 252.
+- **The APOE therapeutic-area direction split**, printed in Results 4 as nine
+  negative against six positive areas: now **eight negative, six positive and
+  one tied** over the same 15 areas. `immune system disease` (1 disease, down)
+  leaves, `genetic, familial or congenital disease` (10 diseases, 5 up / 5 down,
+  tied) enters, and `nervous system disease` 13 -> 11,
+  `disorder of visual system` 7 -> 4, `nutritional or metabolic disease` 6 -> 3,
+  `gastrointestinal disease` 4 -> 3. This number is not in
+  `expected_numbers.tsv`.
+- **The study-level one-hot columns** of `study_therapeutic_areas`, and with
+  them the per-area count columns and `totalStudies` of `gene_table`. That is
+  the intended direction: the gene-level control in `06-supplementary-tables/01`
+  now reproduces all 23 area columns and `totalStudies` for **0 of 8,285
+  genes**, where the legacy one-hots gave 2,757 differing.
+- **The study-level control in `01-data-preparation/03` no longer reaches zero,
+  and must not be made to.** The pre-refactor `gwas_w_therapeutic_areas` had
+  legacy-ordered one-hots while its gene table was on the published order, so no
+  single hierarchy reproduces both. Re-expressed as a report: **2,182 of 100,526
+  studies differ**, led by `geneticFamilialOrCongenitalDisease` (1,600),
+  `immuneSystemDisease` (993), `musculoskeletalOrConnectiveTissueDisease` (408),
+  `disorderOfVisualSystem` (250) and `nervousSystemDisease` (234);
+  `totalTherapeuticAreas` differs on 61.
+
+One unrelated breakage was fixed in passing. `01-data-preparation/07` cell 16
+cross-checked `variant_features` against a parquet under `chapters/_legacy/`,
+which `dcdc3ce` deleted from the repository, so the chapter could not run. The
+cell now skips when the reference is absent and prints its last recorded result
+(40,706 of 40,706 variants matched, `maxAbsBeta` within 4.441e-16, the rest 0);
+none of the columns it checks depends on the hierarchy.
 
 ### Results 4 — lead_vPS and directional concordance redefined
 
