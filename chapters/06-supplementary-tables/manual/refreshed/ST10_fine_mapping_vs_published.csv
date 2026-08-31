@@ -1,0 +1,10 @@
+Datasource,Number of valid studies with at least one CS published,% of binary traits published,Number of unique EFO/genes published,Number of unqiue regions published,Number of CSs published,% of CS with SNP PIP>0.9 published,Number of valid studies with at least one CS recomputed,% of binary traits recomputed,% of studes with proportion of NFE ancestry <90%,Number of unique EFO/genes recomputed,Number of unique biosamplds,Mean/median sample size,Number of unqiue regions recomputed,Number of CSs recomputed,Mean/median size of CSs,% of CS with SNP PIP>0.9 recomputed,Number of valid studies with at least one CS match,Number of unique EFO/genes match,Number of unqiue regions match,Number of CSs match,% of binary traits match,% of CS with SNP PIP>0.9 match
+GWAS Catalog Curated Associations,18191,0.219,7047,153568,153568,0.2052,18191,0.219,0.2781,7047,0,83790.04/10708,153568,153568,36.18/13,0.2052,True,True,True,True,True,True
+GWAS Catalog Summary Statistics,19849,0.1372,3698,198912,615181,0.401,19849,0.1372,0.3152,3698,0,101969.31/21081,198911,615181,20.82/3,0.401,True,True,True,True,True,True
+FinnGen R12,1242,1.0,974,10521,20704,0.1352,1242,1.0,1.0,974,0,423135.88/467775,10521,20704,51.46/14,0.1352,True,True,True,True,True,True
+UKBB-PPP,2375,0.0,2358,12113,32150,0.4289,2375,0.0,0.0,2358,1,33482.18/33657,12113,32150,12.72/2,0.4289,True,True,True,True,True,True
+eQTL Catalogue eQTL,1210140,0.0,28175,185918,1349478,0.1748,1210140,0.0,1.0,28175,77,329.13/318,185918,1349478,24.74/9,0.1748,True,True,True,True,True,True
+eQTL Catalogue pQTL,789,0.0,735,735,1581,0.2682,789,0.0,1.0,735,1,3301.00/3301,735,1581,14.94/4,0.2682,True,True,True,True,True,True
+eQTL Catalogue tuQTL,353260,0.0,12486,12480,384852,0.1848,353260,0.0,1.0,12486,74,345.71/324,12480,384852,22.17/9,0.1848,True,True,True,True,True,True
+eQTL Catalogue sQTL,209582,0.0,13301,32895,223500,0.1825,209582,0.0,1.0,13301,74,356.40/324,32895,223500,21.61/9,0.1825,True,True,True,True,True,True
+eQTL Catalogue sc-eQTL,48723,0.0,7123,7687,52744,0.0687,48723,0.0,1.0,7123,29,392.23/194,7687,52744,60.80/21,0.0687,True,True,True,True,True,True

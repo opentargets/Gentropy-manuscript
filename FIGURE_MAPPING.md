@@ -1,253 +1,108 @@
-# Figure-to-Code Mapping
+# Figure-to-code mapping
 
-Maps every figure in the manuscript to the analysis code and data files in this
-repo.
+Every figure in the manuscript, the code that draws it and the tables it reads.
+Paths are relative to the repository root; scripts are run from there.
 
-Paper source: `~/Projects/manuscript_gentropy/` Analysis repo:
-`~/Projects/Gentropy-manuscript/` (this repo)
+Analysis inputs all live in `data/intermediate_files_refactor/`, written by
+`chapters/01-data-preparation` and `chapters/02-analysis-main`. No figure script
+fits a model or reads a legacy file.
 
----
-
-## Main Figures
-
-### Figure 1 — Panoramic view across 100,526 complex-trait GWAS
-
-**Paper label:** `fig:1` | **Paper file:** `figures/figure_1.pdf`
-
-| Panel    | Description                                     | Code                                                                           | Data                                                                                                                                                  |
-| -------- | ----------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A        | Circular Manhattan / pleiotropy map             | `chapters/03-manuscript-figures/figure_1/manh_plot_dataprep.ipynb` (data prep) | `chapters/03-manuscript-figures/figure_1/disease_ta_index_pandas.csv`, `figure_1/genes_therapeutic_areas/`, `figure_1/target_index_for_plot.parquet/` |
-| B–C      | Temporal trends (sample size, GWAS discoveries) | `chapters/03-manuscript-figures/figure_1/Figure_1_b_c.R`                       | `chapters/03-manuscript-figures/figure_1/data/l2g_diseases_full.csv`, `data/qd_sl_eff.csv`, `data/qm_sl_eff.csv`                                      |
-| D        | Gene/disease per therapeutic area               | `chapters/03-manuscript-figures/figure_1/Figure_1_d.R`                         | `chapters/03-manuscript-figures/figure_1/l2g_diseases_full.csv`                                                                                       |
-| Combined | Assembly                                        | `chapters/03-manuscript-figures/figure_1/Figure_1_combined.R`                  | (reads outputs of above)                                                                                                                              |
-
-**Upstream analysis:**
-`chapters/02-analysis/01-descriptions-numbers/01_descriptive_numbers.ipynb`
+Verified against the published PDFs by rendering both at 1,200 px wide and
+differencing. `GAPS.md` §3b records the three figures that are not identical and
+why.
 
 ---
 
-### Figure 2 — Dependency between variant effect size, MAF and predicted consequence
+## Main figures
 
-**Paper label:** `fig:2` | **Paper file:** `figures/figure_2.pdf`
+Run with `tools/run_r.sh <script>`; each writes its PDF next to itself.
 
-| Panel | Description                                                           | Code                                                 | Data                                                                                                                |
-| ----- | --------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| A–D   | Effect size vs MAF, PAV proportion, consequence groups, variant types | `chapters/03-manuscript-figures/figure_2/figure_2.R` | `chapters/03-manuscript-figures/figure_2/data/figure_2_a.csv`, `figure_2_b.csv`, `figure_2_c.csv`, `figure_2_d.csv` |
+| Figure | Script                                                                                                                                           | Reads                                                                                                                                                                           | vs. published       |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 1      | `04-figures-main/figure_1/Figure_1_combined.R`, which sources `Figure_1_b_c.R` (b, c), `Figure_1_d.R` (d) and `Figure_1_d_pychart.R` (the donut) | `fig1c_cumulative_discovery.csv`, `qd_sl_eff.csv`, `qm_sl_eff.csv`, `fig1d_gene_index.parquet`, `fig1d_ancestry_donut.csv`, plus `figure_1/assets/` for panel a and the logo    | identical           |
+| 2      | `04-figures-main/figure_2/figure_2.R`                                                                                                            | `figure_2_a.csv` … `figure_2_d.csv`                                                                                                                                             | identical           |
+| 3      | `04-figures-main/figure_3/figure_3.R`                                                                                                            | `plot_a.csv`, `plot_b.csv`, `variant_pleiotropy_data_exploded.csv`, `variant_pleiotropy_data_exploded_2.csv`                                                                    | 0.03 %              |
+| 4      | `04-figures-main/figure_4/figure_4.R`                                                                                                            | `Fig4A_stats_gene_pleiotropy.csv`, `Fig4A_stats_variant_pleiotropy.csv`, `Fig4A_stats_gene_coverage.csv`, `gene_pleiotropy_coefficients.csv`, `gene_pleiotropy_by_category.csv` | 0.4 %               |
+| 5      | `04-figures-main/figure_5/figure_5.R`                                                                                                            | `temporal_drug_enrichment_full_chembl.csv`, `drug_enrichment_subsets_vs_full_l2g.csv`, `drug_enrichment_other_resources.csv`, `figure_5b_contrasts.csv`, `figure_5c_curves.csv` | 3.3 %, panel c only |
 
-**Upstream analysis (data preparation):**
+Panel 1a is a static illustration in `figure_1/assets/Fig1 a (cropped).pdf`, not
+generated from data. `figure_2.R` also writes Extended Data Fig. 9.
 
-- `chapters/02-analysis/02-variant-effects/01_lead_variant_effect_filtering.ipynb`
-- `chapters/02-analysis/02-variant-effects/02_variant_functional_consequence.ipynb`
-- `chapters/02-analysis/02-variant-effects/03_variant_regulatory_consequence.ipynb`
-- `playground/plots/figure_2_dataprep_c_d.ipynb` (panel C/D data prep)
+The FinnGen / MVP / UKBB reference lines in `Figure_1_b_c.R` are fixed values
+rather than read from the data — deliberate, and the only such case among the
+main figures.
 
----
-
-### Figure 3 — Variant-level pleiotropy modelling
-
-**Paper label:** `fig:3` | **Paper file:** `figures/figure_3.pdf`
-
-| Panel    | Description                     | Code                                                                                       | Data                                                                                |
-| -------- | ------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| A        | vPS vs MAF (observed/predicted) | `chapters/03-manuscript-figures/figure_3/R_scripts/clustering_plot_a_b.R`                  | `chapters/03-manuscript-figures/figure_3/data/plot_a.csv`                           |
-| B        | Forest plot: vPS covariates     | `chapters/03-manuscript-figures/figure_3/R_scripts/clustering_plot_a_b.R`                  | `chapters/03-manuscript-figures/figure_3/data/plot_b.csv`                           |
-| C        | APOE scatter plots              | `chapters/03-manuscript-figures/figure_3/python_scripts/variant_pleiotropy_analysis.ipynb` | `chapters/03-manuscript-figures/figure_3/data/variant_pleiotropy_data_exploded.csv` |
-| Combined | Assembly                        | `chapters/03-manuscript-figures/figure_3/figure_3.R`                                       | (reads panel outputs)                                                               |
-
-**Upstream analysis (data preparation):**
-
-- `chapters/02-analysis/04-variant-level-ps/01_variant_level_pleiotropy.ipynb`
-- `chapters/02-analysis/04-variant-level-ps/02_clustering_analysis.ipynb`
-- `chapters/03-manuscript-figures/figure_3/python_scripts/prepare_plot_a_b_data.py`
+The upstream notebooks are `02-analysis-main/01_panoramic.ipynb` (Fig 1),
+`02_selective_pressures.ipynb` (Fig 2), `04_variant_pleiotropy.ipynb` (Fig 3),
+`05_gene_pleiotropy.ipynb` (Fig 4) and `06_therapeutic_success.ipynb` (Fig 5).
 
 ---
 
-### Figure 4 — Gene-level pleiotropy modelling
+## Extended Data figures
 
-**Paper label:** `fig:4` | **Paper file:** `figures/figure_4.pdf`
+In `chapters/05-figures-supplementary/extended_data/`. Notebooks are executed
+with `tools/run_chapter.sh`; `ed10` is an R script.
 
-| Panel    | Description                                  | Code                                                                                                                   | Data                                                                                                                             |
-| -------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| A        | Temporal trends gPS/vPS + variants per gene  | `chapters/03-manuscript-figures/figure_4/plot_a.R`                                                                     | `data/intermediate_files/Fig4A_stats_gene_pleiotropy.csv`, `Fig4A_stats_variant_pleiotropy.csv`, `Fig4A_stats_gene_coverage.csv` |
-| B        | NB regression forest plot (gPS covariates)   | `chapters/03-manuscript-figures/figure_4/plot_b.R`                                                                     | `data/figure_4/gene_pleiotropy_full_model.csv` (→ `data/intermediate_files/gene_pleiotropy_full_model.csv`)                      |
-| C        | Gene set enrichment (log-odds, 21 gene sets) | `chapters/03-manuscript-figures/figure_4/plot_d.R` + `chapters/03-manuscript-figures/figure_4/python_scr/plot_d.ipynb` | `data/figure_4/`                                                                                                                 |
-| Combined | Assembly                                     | `chapters/03-manuscript-figures/figure_4/figure_4.R`                                                                   | (reads panel outputs)                                                                                                            |
-
-**Upstream analysis:**
-
-- `chapters/02-analysis/05-gene-level-ps/01_gene_level_pleiotropy.ipynb`
-- `chapters/02-analysis/05-gene-level-ps/02_temporal_vPS_gPS.ipynb`
-- `chapters/02-analysis/05-gene-level-ps/03_average_gPS_gene_categories.ipynb`
-- `chapters/02-analysis/05-gene-level-ps/04_gene_pleiotropy_by categories.ipynb`
-
----
-
-### Figure 5 — Genetic evidence and therapeutic implications
-
-**Paper label:** `fig:5` | **Paper file:** `figures/figure_5.pdf`
-
-| Panel | Description                                                 | Code                                                 | Data                                                                                    |
-| ----- | ----------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| A     | Temporal drug-target enrichment OR + cumulative T-I pairs   | `chapters/03-manuscript-figures/figure_5/figure_5.R` | `data/figure_5/temporal_drug_enrichment_full_chembl.csv` (→ `data/intermediate_files/`) |
-| B     | Forest plot: enrichment by pleiotropy/effect/variant bins   | `chapters/03-manuscript-figures/figure_5/figure_5.R` | `data/figure_5/drug_enrichment_subsets_vs_full_l2g.csv`                                 |
-| C     | Logistic regression probabilities (therapeutic areas + gPS) | `chapters/03-manuscript-figures/figure_5/figure_5.R` | `data/figure_5/df_for_enrichment_regression.csv`                                        |
-
-**Upstream analysis:**
-
-- `chapters/02-analysis/06-target-enrichment/03_temporal_drug_enrichment.ipynb`
-- `chapters/02-analysis/06-target-enrichment/05-regression_framework.ipynb`
-- `chapters/02-analysis/06-target-enrichment/07-split_by_TA_target_class.ipynb`
-- `chapters/02-analysis/06-target-enrichment/02-enrichment-groups.ipynb`
-- `chapters/02-analysis/06-target-enrichment/11-non-linearity-gPS.ipynb`
+| Figure | Source                                         | Reads                                                                           | vs. published |
+| ------ | ---------------------------------------------- | ------------------------------------------------------------------------------- | ------------- |
+| 1      | — (static asset)                               | `extended_data/assets/extended_figure_1.pdf`, drawn externally                  | n/a           |
+| 2      | `ed02_credible_sets_vs_sample_size.ipynb`      | `lead_variant_effect`, both qualifying credible-set tables                      | identical     |
+| 3      | `ed03_temporal_measurement_genes.ipynb`        | `ed3_cumulative_discovery.csv`                                                  | identical     |
+| 4      | `ed04_effect_size_by_consequence.ipynb`        | `variant_consequences`                                                          | identical     |
+| 5      | `ed05_l2g_venn_diagram.ipynb`                  | `prioritised_genes_per_cs`, both qualifying credible-set tables                 | identical     |
+| 6      | `ed06_temporal_l2g_confidence.ipynb`           | `prioritised_genes_annotated`                                                   | identical     |
+| 7      | `ed07_leave_one_out_enrichment.ipynb`          | `prioritised_genes_diseases`, the release evidence, disease and target datasets | identical     |
+| 8      | `ed08_translation_success_by_pleiotropy.ipynb` | `df_for_enrichment_regression.csv`                                              | identical     |
+| 9      | `04-figures-main/figure_2/figure_2.R`          | the panel demoted from Figure 2                                                 | identical     |
+| 10     | `ed10_rare_variant_discovery.R`                | `rare_discovery_over_time.csv`                                                  | identical     |
 
 ---
 
-## Extended Data Figures
+## Supplementary figures
 
-> Extended figures are generated within analysis notebooks in
-> `chapters/02-analysis/`. Currently **no dedicated rendering scripts** exist
-> for them (unlike main figures).
+Of Supplementary Results Figures 1–6, SR 2–6 have been carried into the
+refactored pipeline. Supplementary Methods Fig. 1 is an external illustration.
+See `GAPS.md`.
 
-### Extended Data Figure 1 — Data flowchart
+Numbers below are the **printed** figure numbers, which is how the figures are
+cited in the text. **SR 5 and SR 6 have their asset filenames and label names
+swapped**, so watch the last column:
 
-**Paper label:** `fig:ed1` | **Paper file:** `figures/extended_figure_1.png`
+| Printed as | Source                                                  | Manuscript asset     | Label     |
+| ---------- | ------------------------------------------------------- | -------------------- | --------- |
+| SR 1       | — (no source)                                           | `figure_sr1.png`     | `fig:sr1` |
+| SR 2       | `supplementary/sr02_clusters_by_maf.ipynb`              | `figure_sr2.png`     | `fig:sr2` |
+| SR 3       | `supplementary/sr03_concordance_by_maf.ipynb`           | `figure_sr3.png`     | `fig:sr3` |
+| SR 4       | `supplementary/sr04_effect_size_mixture.ipynb`          | `figure_sr4.png`     | `fig:sr4` |
+| SR 5       | `supplementary/sr05_cluster_disease_vs_ta.ipynb`        | **`figure_sr6.pdf`** | `fig:sr6` |
+| SR 6       | `supplementary/sr06_success_vs_pleiotropy_counts.ipynb` | **`figure_sr5.pdf`** | `fig:sr5` |
 
-| Description                                                           | Code | Notes                                                                                 |
-| --------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------- |
-| Schematic of data flow from 4 sources through fine-mapping to outputs | —    | Created externally (e.g. illustration tool). Not reproducible from code in this repo. |
+The cluster scatter appears at `sections/supplementary_results.tex:283` and the
+ten-panel figure at line 1116, so LaTeX numbers the cluster scatter 5 and the
+ten-panel 6 — the opposite of what their filenames and labels say. The rendered
+prose is correct throughout, because every citation goes through `\ref`. Only
+the asset names mislead. **Notebooks and outputs in this repository are named
+after the printed number**, so `supplementary/figure_sr5.pdf` here is the
+cluster scatter and corresponds to the manuscript's `figures/figure_sr6.pdf`.
+Copying a PDF across without swapping the name would silently put the wrong
+figure in the paper.
 
----
+| Printed as | Inputs                                                                           | Match                                       |
+| ---------- | -------------------------------------------------------------------------------- | ------------------------------------------- |
+| SR 1       | training set unavailable                                                         | not built                                   |
+| SR 2       | `cluster_covariates`                                                             | every bar matches                           |
+| SR 3       | `cluster_covariates`                                                             | 5 of 7 bins match; see the chapter README   |
+| SR 4       | `lead_variant_effect`, `qualifying_credible_sets`                                | same points, split and curve heights        |
+| SR 5       | `variant_clusters`                                                               | new; no published PDF to match              |
+| SR 6       | `df_for_enrichment_regression.csv`, `ti_pairs_chembl`, `eit_gene_metrics-r1.csv` | 0.94% of pixels, all in the bootstrap bands |
 
-### Extended Data Figure 2 — Credible sets vs GWAS sample size
+SR 5 was added for the round-1 response (Reviewer 1, minor comment 9) and is
+rebuilt here on the Supplementary Table 9 therapeutic-area order, so its
+coordinate count differs from the round-1 draft: 226 rather than 219. Design
+unchanged — two panels, linear and log, marker area ∝ √n, size key.
 
-**Paper label:** `fig:ed2` | **Paper file:** `figures/extended_figure_2.png`
-
-| Description                                    | Code                                                                        | Data                                                |
-| ---------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------- |
-| Average number of CSs per log10(N_samples) bin | `chapters/02-analysis/01-descriptions-numbers/01_descriptive_numbers.ipynb` | `data/intermediate_files/qualifying_credible_sets/` |
-
----
-
-### Extended Data Figure 3 — Temporal gene-measurement associations
-
-**Paper label:** `fig:ed3` | **Paper file:** `figures/extended_figure_3.png`
-
-| Description                                                                                                                                                               | Code                                                                                   | Data                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Two-panel stacked bar: cumulative unique measurement-associated genes (top) and gene–measurement pairs (bottom) by year, stratified by EUR common / Non-EUR common / Rare | `chapters/03-manuscript-figures/extended_figures/ed3_temporal_measurement_genes.ipynb` | `data/intermediate_files/list_of_prioritised_genes_per_CS_with_year_nfe_maf.parquet`, `data/intermediate_files/qualifying_measurement_credible_sets/` |
-
----
-
-### Extended Data Figure 4 — Effect size for eQTLs and cis-pQTLs
-
-**Paper label:** `fig:ed4` | **Paper file:** `figures/extended_figure_4.png`
-
-| Description | Code       | Data                                              |
-| ----------- | ---------- | ------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Mean        | β_rescaled | across variant consequence groups for eQTLs/pQTLs | `chapters/02-analysis/02-variant-effects/02_variant_functional_consequence.ipynb` | `data/intermediate_files/lead_variant_consequence_exploded/` |
-
----
-
-### Extended Data Figure 5 — Venn diagram of L2G prioritisation reasons
-
-**Paper label:** `fig:ed5` | **Paper file:** `figures/extended_figure_5.png`
-
-| Description                                             | Code                                                                    | Data                                                                |
-| ------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 4-way Venn: eQTL coloc / pQTL coloc / PAV / nearest TSS | `chapters/02-analysis/03-coloc-l2g/03_using_training_set_for_FDR.ipynb` | `data/intermediate_files/list_of_prioritised_genes_per_CS.parquet/` |
-
----
-
-### Extended Data Figure 6 — Temporal evolution of L2G confidence and evidence
-
-**Paper label:** `fig:ed6` | **Paper file:** `figures/extended_figure_6.png`
-
-| Description                                              | Code                                                                   | Data                                                                                  |
-| -------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Mean max L2G score over time + evidence type proportions | `chapters/02-analysis/03-coloc-l2g/19_temporal_l2g_improvements.ipynb` | `data/intermediate_files/list_of_prioritised_genes_per_CS_with_year_nfe_maf.parquet/` |
-
----
-
-### Extended Data Figure 7 — Leave-one-out drug target enrichment
-
-**Paper label:** `fig:ed7` | **Paper file:** `figures/extended_figure_7.png`
-
-| Description                                          | Code                                                                          | Data                                                                                            |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| OR (95% CI) after leaving out each TA / target class | `chapters/02-analysis/06-target-enrichment/07-split_by_TA_target_class.ipynb` | `data/intermediate_files/chembl_genetic_support_TI_pairs.csv`, `annotated_targets_wide.parquet` |
-
----
-
-### Extended Data Figure 8 — Target-disease translation success by pleiotropy
-
-**Paper label:** `fig:ed8` | **Paper file:** `figures/extended_figure_8.png`
-
-| Description                                                       | Code                                                                        | Data                                                                  |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Phase transition probabilities by pleiotropy level (Low/Med/High) | `chapters/02-analysis/06-target-enrichment/10-gps-in-clinical-stages.ipynb` | `data/intermediate_files/chembl_evidence_with_rusina_et_al_pharmprj/` |
-
----
-
-## Supplementary Figures
-
-### Supplementary Methods Figure 1 — Gentropy pipeline schematic
-
-**Paper label:** `fig:sm1` | **Paper file:** `figures/figure_sm1.png`
-
-| Description                                    | Code | Notes                                                        |
-| ---------------------------------------------- | ---- | ------------------------------------------------------------ |
-| Overview of Gentropy data processing pipelines | —    | Created externally. Not reproducible from code in this repo. |
-
----
-
-### Supplementary Results Figure 1 — L2G model evaluation
-
-**Paper label:** `fig:sr1` | **Paper file:** `figures/figure_sr1.png`
-
-| Description                                                   | Code                                                                    | Data                                                                         |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Feature importance, confusion matrix, ROC (AUC=0.95, AP=0.81) | `chapters/02-analysis/03-coloc-l2g/03_using_training_set_for_FDR.ipynb` | `data/25.06/output/l2g_prediction/`, `data/25.06/output/l2g_feature_matrix/` |
-
----
-
-### Supplementary Results Figure 2 — Colocalisation clusters by MAF bin
-
-**Paper label:** `fig:sr2` | **Paper file:** `figures/figure_sr2.png`
-
-| Description                             | Code                                                                             | Data                                                     |
-| --------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Cluster count and mean size per MAF bin | `chapters/02-analysis/02-variant-effects/01_lead_variant_effect_filtering.ipynb` | `data/intermediate_files/qualified_lead_variant_effect/` |
-
----
-
-### Supplementary Results Figure 3 — Beta-effect concordance by MAF
-
-**Paper label:** `fig:sr3` | **Paper file:** `figures/figure_sr3.png`
-
-| Description                                                         | Code                                                                                   | Data                                                       |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Beta concordance across MAF bins for pleiotropic variants (vPS > 1) | `chapters/02-analysis/02-variant-effects/01_concordanc_of_lead_variant_diseases.ipynb` | `data/intermediate_files/pleiotropy_combined_evidence.csv` |
-
----
-
-### Supplementary Results Figure 4 — Two-component Gaussian mixture model
-
-**Paper label:** `fig:sr4` | **Paper file:** `figures/figure_sr4.png`
-
-| Description             | Code | Data                               |
-| ----------------------- | ---- | ---------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------- |
-| Bimodal distribution of | β    | ² (large vs small effect clusters) | `chapters/02-analysis/04-variant-level-ps/02_clustering_analysis.ipynb` | `data/intermediate_files/cluster_stats_by_year.csv` |
-
----
-
-## Notes on Data Path Inconsistency
-
-Currently figure scripts look for data in two different places:
-
-- **Figures 1–3:** data stored locally inside
-  `chapters/03-manuscript-figures/figure_X/data/`
-- **Figures 4–5:** data expected at repo root `data/figure_X/` (Figure 4 also
-  reads from `data/intermediate_files/`)
-
-The `data/intermediate_files/` directory holds most of the CSVs needed by figure
-scripts but uses different filenames than some scripts expect.
+SR 4's published figure was drawn from a hand-pasted vector of 20 effect sizes
+with no variant id attached; it is `9_22124745_C_G`, recovered by matching the
+vector against the release. It also needs random EM initialisation — the k-means
+default behind the Supplementary Results 6 counts finds a worse local optimum on
+this variant.

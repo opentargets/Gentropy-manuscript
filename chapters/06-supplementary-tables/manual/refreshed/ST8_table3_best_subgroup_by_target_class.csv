@@ -1,0 +1,14 @@
+Target Class (l1_class),Number of Pairs (N),Unique Diseases,Unique Targets
+Adhesion,25,21,7
+Enzyme,412,220,146
+Epigenetic regulator,23,20,8
+Ion channel,42,33,15
+Membrane receptor,136,93,37
+Other cytosolic protein,10,10,6
+Other membrane protein,1,1,1
+Other nuclear protein,5,5,2
+Secreted protein,54,46,13
+Structural protein,47,40,16
+Transcription factor,23,19,9
+Transporter,67,56,18
+Unclassified protein,120,98,43
