@@ -1,0 +1,9 @@
+{
+  "credible_sets": 8235,
+  "egl_pairs_behind_the_positives": 612,
+  "genes": 5197,
+  "held_out_rows": 18611,
+  "negative_rows": 124450,
+  "positive_rows": 8520,
+  "rows": 132970
+}

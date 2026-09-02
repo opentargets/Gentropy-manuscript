@@ -6,8 +6,10 @@ Four notebooks, and three places a sheet can live.
 | ------------------------------- | --------------------------------------------------------------------------- |
 | `01_supplementary_tables.ipynb` | the sheets that come straight from the pipeline, into `sheets/`             |
 | `02_manual_table_numbers.ipynb` | recomputes the counts inside the hand-made sheets, into `manual/refreshed/` |
-| `03_l2g_tables.ipynb`           | ST12 and ST13, which need the L2G training set and held-out split           |
+| `03_l2g_tables.ipynb`           | ST12, which needs the L2G training set and held-out split                   |
 | `04_fine_mapping_numbers.ipynb` | the cells of ST10, against the published values transcribed in the notebook |
+| `05_effector_gene_list.ipynb`   | ST18, the effector gene list, from the downloaded EGL parquet               |
+| `06_l2g_training_set.ipynb`     | ST19, the full labelled L2G training set, positives and negatives           |
 
 - `sheets/` — built by the pipeline. Overwritten on every run. One sheet is
   written from outside this chapter: **ST17** comes from
@@ -51,7 +53,7 @@ this; the rest were checked on row counts alone, which is why this table exists.
 | ST11 colocalisation overlap                      | out of scope — hand-compiled, static asset, definitions unrecovered                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ST12 L2G performance                             | **8 of 8** rows exact, by `03_l2g_tables.ipynb`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ST15 `cluster_id` renumbering (2026-08-22)       | **Reverted the same day, no change stands.** The representative rank key was briefly moved to `chi2Stat`, which permuted 22 of the 20,041 cluster ids and moved this sheet's `cluster_id` column. The revert restores the sheet byte-for-byte; `diff -rq` against the pre-change sheets is clean. See `chapters/02-analysis-main/README.md`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ST13, ST14, ST15                                 | **not in the published workbook** — the manuscript marks them `TODO(data)`, so there is nothing to compare against. Built here from the pipeline: 12,274 / 36,858 / 42,918 rows                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ST13, ST14, ST15                                 | **not in the published workbook** — the manuscript marks them `TODO(data)`, so there is nothing to compare against. Built here from the pipeline: 12,274 / 36,858 / 42,918 rows. **ST13 was retired on 2026-09-02** and its sheet deleted; ST18 and ST19 replace it, and neither has a published counterpart either                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ST16 trait distribution across therapeutic areas | **was exact in content; 18 of the 22 area rows now differ.** It was verified exact on 2026-08-20, when the counts still came from the legacy therapeutic-area assignment. `clusters.therapeutic_area_lookup()` now defaults to the Supplementary Table 9 order (see `chapters/02-analysis-main/README.md`), and ST16 reads that lookup, so `immune system disease` goes 111/75 to 29/15 and `genetic, familial or congenital disease` 8/2 to 180/121. The totals hold at 2,320 and 1,394. The published sheet's own column description says the assignment follows "the hierarchy in Supplementary Table 9", which the sheet did not do and this one now does — so this is a correction, not a regression, but **it changes a submitted sheet**: the choice was to pin the ST16 cell back to the legacy hierarchy column to restore the published counts, or reissue the sheet. Row order was already on the Supplementary Table 9 order, unlike the published sheet. **Resolved 2026-08-24 in favour of reissuing** — see "The ST16 hierarchy question is settled" below |
 
 So **seven sheets reproduce exactly** (ST1, ST4, ST5, ST7, ST9, ST10, ST12 — the
@@ -316,6 +318,55 @@ Not regenerated, and the caption not rewritten to fit. R1-mn-10 and R2-MJ-9 turn
 on which of those two the author wants: fetch the GCS json and build the sheet
 with a reconstructed source and confidence column, or narrow the caption to the
 two columns the artefact actually carries.
+
+### ST13 retired, ST18 and ST19 added (2026-09-02)
+
+`sheets/ST13_effector_gene_list.csv` is **deleted**, and the section of
+`03_l2g_tables.ipynb` that wrote it is gone; that notebook now builds ST12 only.
+The sheet was never the effector gene list, for the reasons above, and
+`tab:st13` had already been removed from the manuscript on 2026-08-24.
+
+Two sheets replace it, one for each of the artefacts it stood in for. The
+numbers 18 and 19 are file labels chosen to collide with nothing existing — the
+manuscript numbering is a separate decision and no `.tex` file was touched. Note
+that `sheets/ST17_ta_correlation_matrix.csv` has no `\suppltableentry` block
+either, so the sheet labels and the printed numbers already disagree.
+
+**`ST18_effector_gene_list.csv`** — `05_effector_gene_list.ipynb`. The EGL is no
+longer GCS-only: `20250625_EGL_2506_0.95_otg_chembl.parquet` is downloaded to
+`data/intermediate_files/EGL.parquet`, 42,288 pairs over 5,548 genes and 8,643
+diseases, two columns wide as described above. The sheet is `EFO ID`,
+`Ensembl gene ID`, `Gene symbol`, `Disease name`, one row per pair. The labels
+come from the 25.06 target and disease indices; every target id resolves, and 81
+rows over 18 disease ids do not — `CHEBI`, `GO`, `Orphanet` and obsolete `EFO`
+terms the union carried in from the ChEMBL and platform-evidence branches. Those
+rows keep their id and get an empty name rather than being dropped.
+
+Source and confidence are still absent, for the reason above: the union drops
+them. This sheet answers the caption's first two columns only.
+
+**`ST19_l2g_training_set.csv`** — `06_l2g_training_set.ipynb`. The complete
+labelled set, **132,970 rows** over 8,235 credible sets, 2,128 studies and 5,197
+genes: 8,520 positive, 124,450 negative. Columns are `Credible set ID`,
+`Study ID`, `Lead variant ID`, `Ensembl gene ID`, `Gene symbol`, `EFO IDs`,
+`Disease names`, `Gold standard set`, `Held out (1 = test set)`. `diseaseIds` is
+the study's whole disease list — 57,057 rows carry more than one — so ids and
+names are serialised `a;b` in matching order, the convention ST7 uses. Every
+gene symbol and every disease name resolves in the 25.06 indices. 21 MB.
+
+The held-out flag is read off `test_v3.parquet`, not regenerated: the split seed
+was never recorded. All 18,611 of its rows match into the set on
+`(studyLocusId, geneId)`, and the remainder is 7,386 positive and 106,973
+negative — the training-split counts Supplementary Results 3 reports (`S3.08`,
+`S3.09`).
+
+Both notebooks assert the two artefacts against each other at the row level,
+which is the only comparison that means anything here: a positive is flagged by
+`array_contains(diseaseIds, sgl.diseaseId)`, so a multi-disease study
+contributes one matched pair alongside several co-occurring ones, and exploding
+`diseaseIds` undercounts by construction. **All 8,520 positive rows — 1,377
+distinct `(geneId, diseaseIds)` — have at least one disease id in the EGL.**
+They stand on 612 EGL pairs, 1.4% of the list.
 
 `ST14` also carries a `therapeuticArea` label from the same lookup, so 5,470 of
 its 36,858 rows (14.8%, over 164 diseases) changed label with it. ST14 has no
