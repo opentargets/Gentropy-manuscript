@@ -1,6 +1,6 @@
 """The L2G gold standard, the prioritisation rules scored against it, and their 2x2 tables.
 
-Used by Supplementary Results 3 and 4 and by Supplementary Table 12. The gold standard and the
+Used by Supplementary Results 3 and 4 and by Supplementary Table 17. The gold standard and the
 held-out split live in `data/l2g_training_set/`, which is not yet fetched by the download
 notebook — see GAPS.md.
 """
@@ -85,7 +85,7 @@ def evidence_masks(labelled: pd.DataFrame, combined: pd.Series | None = None) ->
 
 
 def confusion(predicted, actual) -> dict:
-    """The 2x2 table and the rates Supplementary Table 12 and Supplementary Results 4 report."""
+    """The 2x2 table and the rates Supplementary Table 17 and Supplementary Results 4 report."""
     predicted, actual = np.asarray(predicted), np.asarray(actual).astype(bool)
     tp = int((predicted & actual).sum())
     tn = int((~predicted & ~actual).sum())

@@ -75,7 +75,7 @@ Most sections had a surviving implementation. Two places to look, in this order:
 
 Shared code was factored into `src/manuscript_methods/`: `l2g.py` (the gold
 standard, the prioritisation rules and their 2x2 tables, shared with
-Supplementary Table 12) and `transitions.py` (phase transition rates, shared
+Supplementary Table 17) and `transitions.py` (phase transition rates, shared
 with Extended Data Figure 8).
 
 ## What does not reproduce, and why
@@ -92,14 +92,14 @@ Ranked by how much it matters.
   post-ingestion reasons only (60.1% flagged, but 56,735 of the 59,048 flags are
   "harmonized summary statistics are not available", which is not an exclusion).
   Closing them would need the upstream `.../study_index/gwas_catalog`, the same
-  input Supplementary Table 10's "Original number of studies before ingestion"
+  input Supplementary Table 15's "Original number of studies before ingestion"
   column needs. Recorded in the notebook's `PRECOMPUTED` table.
 - SR 2: the 67% of overlaps significant by eCAVIAR and the 79% by COLOC. The
   section makes claims on two universes — the percentages are over **all**
   tested overlaps, the credible-set counts over the **qualifying** ones — and
   the second paragraph reproduces exactly on that reading (330,584 / 63%,
   302,264 / 58%, 285,229 / 55%, 14,026 genes). The percentages, however, are the
-  row totals of **Supplementary Table 11 subtable 1**, a hand-made static asset
+  row totals of **Supplementary Table 16 subtable 1**, a hand-made static asset
   whose overlap universe is not the released colocalisation tables: 41,398,927 /
   61,484,864 = 67.3% and 24,536,009 / 31,167,732 = 78.7%, against 51,261,361 /
   75,407,692 = 68.0% and 30,597,242 / 38,561,709 = 79.3% in the release.
@@ -107,7 +107,7 @@ Ranked by how much it matters.
   not the cause, and 79% survives only because both readings round to it.
   Subtable 2 of the same sheet **does** agree with the pipeline (`All` = 285,229
   credible sets, 14,026 genes), so the sheet's two halves were built against
-  different data. Recorded in the notebook's `PRECOMPUTED` table; ST11 itself is
+  different data. Recorded in the notebook's `PRECOMPUTED` table; ST16 itself is
   documented in `chapters/06-supplementary-tables/manual/README.md`.
 
 - SR 3: the novelty comparison against Open Targets Genetics 22.10 — 456,323
@@ -236,7 +236,7 @@ of all protein-coding genes"
 ### Supplementary Results 14 — reproduced in full, then moved off the legacy hierarchy
 
 All 30 numbers reproduced exactly on the legacy therapeutic-area ordering. **On
-2026-08-24 the section was switched to the Supplementary Table 9 ordering**, on
+2026-08-24 the section was switched to the Supplementary Table 14 ordering**, on
 the user's instruction that no part of the pipeline should stay on the legacy
 one; 13 of the 30 now mismatch by design and 17 still pass. The two upstream
 definitions recovered along the way were definitions carried in upstream
@@ -253,7 +253,7 @@ artefacts rather than anything to correct in the text.
   root and a disease root. The matrix itself is built from that same file, so
   its labels travel with it. Source:
   `_legacy/06-review-r1/ta-independence/01_within_vs_between_ta.ipynb` cell 3.
-- **The single-area assignment now uses the Supplementary Table 9 ordering of
+- **The single-area assignment now uses the Supplementary Table 14 ordering of
   the 23 roots** — `paper.THERAPEUTIC_AREAS`, the ordering
   `primaryTherapeuticArea` carries and, since 2026-08-24, the only ordering the
   pipeline defines. The published section used the second ordering that used to
@@ -270,7 +270,7 @@ artefacts rather than anything to correct in the text.
 
   What that does to `tab:sr_rg_ta` and the 14.2 text, at printed precision:
 
-  | number                        | published | ST9 (now)  |
+  | number                        | published | ST14 (now) |
   | ----------------------------- | --------- | ---------- |
   | therapeutic areas represented | 21        | **22**     |
   | within-area pairs             | 5,844     | **5,789**  |
@@ -320,13 +320,14 @@ artefacts rather than anything to correct in the text.
   of its genes are already in that table, and the _term_ counts stay
   unrestricted, which is what the published table's own definition says.
 
-**Supplementary Table 17 is now built by this notebook**, at
+**The therapeutic-area correlation sheet is now built by this notebook** (not a
+printed supplementary table; the file keeps a repository label), at
 `chapters/06-supplementary-tables/sheets/ST17_ta_correlation_matrix.csv`. It was
 previously produced by a one-off script that lived outside the repository. It
 aggregates the same 79,800 absolute correlations by unordered area pair, so the
 pair-count weighted mean of its diagonal is the within-area mean and of its
 off-diagonal the between-area mean; the notebook asserts both, to within the
-sheet's four-decimal rounding. On the ST9 ordering it holds **253 cells (22
+sheet's four-decimal rounding. On the ST14 ordering it holds **253 cells (22
 diagonal, 231 off-diagonal)**, up from 231 (21 + 210), with no empty cell.
 `nPairs` runs 1-2,478 (was 1-2,655) and **9 cells sit below 10 pairs** (was 6):
 the four smallest are `pregnancy or perinatal x pregnancy or perinatal` (1),
@@ -456,11 +457,11 @@ after SR 6 changes and re-check the section then.
 > see `FIGURE_MAPPING.md`. The caption's other two counts are unchanged: 20,041
 > clusters (S6.15) and 13,424 of them at one disease and one therapeutic area
 > (S6.17). Only the coordinate count moves, because the cluster-level
-> therapeutic-area count is now taken on the Supplementary Table 9 hierarchy
+> therapeutic-area count is now taken on the Supplementary Table 14 hierarchy
 > order rather than the legacy one, and the areas per cluster shift for 996
 > clusters. See `chapters/02-analysis-main/README.md`, "Results 4 — the cluster
-> therapeutic-area count moved to the Supplementary Table 9 order", for the full
-> before/after and the reason. The figure itself is now built by
+> therapeutic-area count moved to the Supplementary Table 14 order", for the
+> full before/after and the reason. The figure itself is now built by
 > `chapters/05-figures-supplementary/supplementary/sr06_cluster_disease_vs_ta.ipynb`.
 
 **Lines 222-224** — "We constructed a matrix of estimated effect sizes for
@@ -1119,3 +1120,112 @@ pandas, pyarrow and scipy only, no Spark, about a minute. Reads
 `paper.derived("qualifying_credible_sets")`,
 `paper.derived("prioritised_genes_per_cs")`, `paper.derived("variant_features")`
 and `paper.release("disease")` / `paper.release("target")`.
+
+## Notebook 16 — from 189 to 242, one input at a time
+
+`16_chembl_vs_pharmaprojects.ipynb`, added 2026-10-19. **Not a Supplementary
+Results section.** It is a review-response analysis, kept here for the same
+reason as notebook 15. It writes `results/chembl_vs_pharmaprojects.json`, which
+is not registered in `tools/expected_numbers.tsv`.
+
+### Why it exists
+
+Results 6 says the 242 approved GWAS-supported target–indication pairs are "a
+substantial increase (28%) from the 189 pairs recently reported by Minikel et
+al." It credits more GWAS, richer functional genomics, a better
+gene-prioritisation model and the larger ChEMBL resource. That changes two
+inputs at once: the genetic evidence and the drug resource. The notebook changes
+them one at a time on the Pharmaprojects table that Supplementary Results 11.4
+already uses.
+
+### Control step
+
+| Check                                        | Result                                                                                                                                                         |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (a) 242 from the current pipeline            | **reproduces**: 242, OR 3.6186, the identical pair set to `242_approved_TI_pairs.csv`                                                                          |
+| (b) launched Pharmaprojects pairs            | 913 rows = 911 distinct (target, ontology term) = 822 distinct gene–MeSH pairs (`ti_uid`)                                                                      |
+| (b) 447 shared with ChEMBL Phase IV          | **reproduces** as a count of (target, term) pairs. SR 11.4 divides it by 913 rows, not 911 pairs; both give 49%. At the gene–MeSH level it is 429 of 822 (52%) |
+| (c) launched pairs with `geneticSupport_old` | 192 rows = **170** gene–MeSH pairs. **189 is not reproduced**                                                                                                  |
+
+Funnel for (c), using the original Minikel et al. table (`combined_ti_TA.tsv`,
+read from `dcdc3ce^`): 278 launched supported pairs, of which 211 are germline
+(not intOGen). 245 have a MeSH term that maps to the ontology, and 171 of those
+are mapped and not oncology. 170 survive into the table, because one gene symbol
+does not join to Ensembl. No step gives 189, nothing in either repository
+computes it, and the main text of Minikel et al. does not state it. It may come
+from a figure or supplementary table of theirs, at a filter this table does not
+carry. It is left unverified, not matched.
+
+`geneticSupport_old` is `similarity >= 0.8` row for row. The v2 table is already
+restricted to Minikel et al.'s "genetic insight" indications, which is the
+denominator they used for relative success.
+
+### Results
+
+1. **Our support in Pharmaprojects: 83 launched gene–MeSH pairs** (86 rows, 86
+   (target, term) pairs), against 170 for their flag; 64 carry both. It is the
+   same `score_all` definition that gives 242 in ChEMBL. It differs from theirs
+   in two ways. Evidence: Gentropy 25.06 credible sets with gene L2G >= 0.1,
+   against OTG v8 with L2G _share_ >= 0.5, plus OMIM, PICCOLO, Genebass and
+   intOGen. Matching: the indication or any ontology descendant, against MeSH
+   similarity >= 0.8, which also matches siblings and ancestors.
+2. **Pairs by maximum phase** (target, ontology term). The universes differ:
+   ChEMBL counts every non-oncology pair, while Pharmaprojects counts programmes
+   since 2000 on genetic-insight indications.
+
+   |                           | Phase I | Phase II | Phase III | Phase IV / launched | total  | targets | indications |
+   | ------------------------- | ------- | -------- | --------- | ------------------- | ------ | ------- | ----------- |
+   | ChEMBL                    | 6,163   | 14,410   | 12,240    | 4,564               | 37,377 | 1,273   | 1,842       |
+   | Pharmaprojects            | 2,255   | 3,301    | 900       | 911                 | 7,367  | 1,164   | 523         |
+   | Pharmaprojects, gene–MeSH | 1,947   | 2,986    | 822       | 822                 | 6,577  |         |             |
+
+   Targets with an approved pair: 754 in ChEMBL, 319 in Pharmaprojects. The two
+   822s are a coincidence; the sets are disjoint.
+
+3. **Approved-pair overlap**: 447 in both, 4,117 in ChEMBL only, 464 in
+   Pharmaprojects only. Of the 464, ChEMBL has 155 at Phase III, 31 at Phase II
+   and 5 at Phase I, and lacks the other 273 entirely.
+4. **186 of the 242 are not launched pairs in Pharmaprojects**, and they are not
+   older drugs. Approval year is the earliest `yearOfFirstApproval` of the Phase
+   IV drugs on the pair. Median 2004 for absent pairs against 2001.5 for shared
+   ones; 44% against 50% approved before 2000; Mann–Whitney P = 0.31. Two looser
+   definitions of "shared" give the same answer: allowing an ancestor or
+   descendant term (129 absent, P = 0.51), and presence at any phase in Minikel
+   et al.'s full post-2000 list (128 absent, P = 0.76). By cause: 71 have target
+   and indication both in the table but never paired. 39 lack the target, 37
+   lack the indication, 9 lack both, and 30 sit in the table below launch. The
+   groups missing the target, or below launch, are the youngest, with median
+   2009–2010.
+
+**Summary.** On the same Pharmaprojects pairs, our genetic support marks
+**fewer** launched pairs than Minikel et al.'s flag: 83 against 170. All of the
+increase to 242 comes from changing the drug resource. ChEMBL has five times as
+many approved non-oncology pairs (4,564 against 911), and covers more
+indications (1,842 against 523).
+
+### Manuscript text this affects
+
+- Results 6, "This increase reflects the larger set of GWAS studies, much richer
+  functional genomics data, and a refined gene-prioritisation engine used here,
+  together with drug–target–indication data from ChEMBL". The data support only
+  the last clause. Holding the drug resource fixed, the genetic evidence does
+  not increase the count.
+- The comparison itself is not like for like. 189 counts Pharmaprojects pairs
+  with Minikel et al.'s multi-source support, while 242 counts ChEMBL pairs with
+  GWAS-only support.
+- Supplementary Results 11.4, "447 of the launched pairs ... (49%)": the
+  denominator is 911 distinct pairs, not 913 rows. The percentage is unchanged.
+
+### Running it
+
+```sh
+tools/run_chapter.sh chapters/03-analysis-supplementary 16
+```
+
+pandas and pyarrow only, under a minute. Reads
+`paper.derived("ti_pairs_chembl")`, `paper.derived("ti_pairs_pharmaprojects")`,
+the 25.06 ChEMBL evidence and disease index,
+`minikel_etal_data_processed.parquet` and `242_approved_TI_pairs.csv` from
+`data/intermediate_files/`, and `combined_ti_TA.tsv` from git history (the
+funnel is skipped if that fails). It fetches `data/25.06/output/drug_molecule`
+from the public EBI FTP if absent.

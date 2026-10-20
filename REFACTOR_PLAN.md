@@ -17,7 +17,7 @@ Manuscript (read-only, never modified by this repo):
 | `chapters/03-analysis-supplementary/` | One notebook per Supplementary Results section.                          |
 | `chapters/04-figures-main/`           | Figures 1–5.                                                             |
 | `chapters/05-figures-supplementary/`  | Extended Data Figs 2–10, Supplementary Results Figs 1–6.                 |
-| `chapters/06-supplementary-tables/`   | Supplementary Tables 1–16.                                               |
+| `chapters/06-supplementary-tables/`   | Supplementary Tables 1–17.                                               |
 | `chapters/r-env/`                     | Shared R library (`renv`). Use `tools/run_r.sh`.                         |
 | `chapters/_legacy/`                   | The pre-refactor chapters, kept for reference. Not part of the pipeline. |
 | `src/manuscript_methods/`             | Existing method library. Pre-existing modules are not modified.          |

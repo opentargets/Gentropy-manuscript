@@ -107,7 +107,7 @@ Each notebook closes with a comparison against the published figure. In summary:
   local optimum here.
 - **SR 5** (diseases against therapeutic areas per cluster) is new for the
   round-1 response, so there is no published PDF to match; it is rebuilt on the
-  Supplementary Table 9 therapeutic-area order.
+  Supplementary Table 14 therapeutic-area order.
 - **SR 6** (ten trait counts against clinical success) reproduces; 0.94% of
   pixels differ, all in the bootstrap bands and the LOWESS curves, because the
   resampling follows row order and the published table's order is unrecoverable

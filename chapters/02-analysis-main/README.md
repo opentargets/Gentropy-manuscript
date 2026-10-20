@@ -88,17 +88,17 @@ where the two differ is a manuscript edit that is owed, not a reproduction
 failure; `check_numbers.py` marks those rows EDIT and counts them at the top of
 `REPRODUCIBILITY.md`. The numbers below are that list.
 
-### Results 4 — the cluster therapeutic-area count moved to the Supplementary Table 9 order
+### Results 4 — the cluster therapeutic-area count moved to the Supplementary Table 14 order
 
 Two hierarchy orders coexisted in `src/manuscript_methods/paper.py`:
-`THERAPEUTIC_AREAS`, the order published as Supplementary Table 9, and a second
+`THERAPEUTIC_AREAS`, the order published as Supplementary Table 14, and a second
 one, `THERAPEUTIC_AREAS_LEGACY`, which placed
 `genetic, familial or congenital disease` second to last and
 `immune system disease` ninth rather than eighteenth. Both orders assign each
 disease term to the first area whose ontology subtree contains it, so the order
 is the assignment, and carrying two of them made the same disease carry
 different areas in different sections of one paper. The gene-level analysis
-(gPS, ED Fig. 7, ST 8) used the published order; the cluster-level
+(gPS, ED Fig. 7, ST 13) used the published order; the cluster-level
 therapeutic-area count used the second one, which is how the published numbers
 were computed. `clusters.therapeutic_area_lookup()` was made to default to
 `primaryTherapeuticArea` first, feeding both `cluster_table()` and
@@ -109,7 +109,7 @@ unified" below.
 The order touches areas only, never diseases. Verified unchanged against the
 pre-change run: the 20,041 clusters and their membership, the 5,595 clusters
 with more than one lead variant, every disease-count statistic (6,617 with more
-than one disease, range 1-120, mean 2.1415), the 42,918 ST 15 rows and their
+than one disease, range 1-120, mean 2.1415), the 42,918 ST 5 rows and their
 disease ids, all four Figure 3 variance-explained figures (R4.10-R4.13), the
 directionality block R4.14-R4.22, and every gPS number.
 
@@ -117,20 +117,20 @@ What moves — 307 of the 12,856 terms in `efo_therapeutic_area` change area
 between the two orders, which changes the area count of 996 of the 20,041
 clusters (859 up, 137 down):
 
-| id    | quantity                                         | legacy (published) | Supplementary Table 9 order                |
-| ----- | ------------------------------------------------ | ------------------ | ------------------------------------------ |
-| R4.06 | clusters linked to multiple TAs                  | 4,539 (23%)        | **4,766 (24%)**                            |
-| R4.07 | maximum TAs per cluster                          | 20                 | **19**                                     |
-| R4.08 | mean TAs per cluster                             | 1.40               | **1.45**                                   |
-| R4.09 | Spearman rho, diseases against TAs per cluster   | 0.81               | **0.84**                                   |
-| S6.16 | distinct coordinates in Supplementary Figure 5   | 219                | **226**                                    |
-| —     | ST 15 rows whose `therapeuticArea` label changes | —                  | 6,456 of 42,918 (15.0%), over 165 diseases |
+| id    | quantity                                        | legacy (published) | Supplementary Table 14 order               |
+| ----- | ----------------------------------------------- | ------------------ | ------------------------------------------ |
+| R4.06 | clusters linked to multiple TAs                 | 4,539 (23%)        | **4,766 (24%)**                            |
+| R4.07 | maximum TAs per cluster                         | 20                 | **19**                                     |
+| R4.08 | mean TAs per cluster                            | 1.40               | **1.45**                                   |
+| R4.09 | Spearman rho, diseases against TAs per cluster  | 0.81               | **0.84**                                   |
+| S6.16 | distinct coordinates in Supplementary Figure 5  | 219                | **226**                                    |
+| —     | ST 5 rows whose `therapeuticArea` label changes | —                  | 6,456 of 42,918 (15.0%), over 165 diseases |
 
 The maximum falls from 20 to 19 on the same cluster in both orders — cluster 54,
 114 diseases. Its only representatives of `gastrointestinal disease` and
 `reproductive system or breast disease` both move under
 `genetic, familial or congenital disease`, which the cluster did not otherwise
-carry: two areas out, one in. Across ST 15 the same reshuffle costs
+carry: two areas out, one in. Across ST 5 the same reshuffle costs
 `immune system disease` 3,753 rows and gives
 `genetic, familial or congenital disease` 4,695.
 
@@ -151,21 +151,21 @@ $P < 1 \times 10^{-16}$)"
 
 **The default reaches three more consumers than expected.**
 `clusters.therapeutic_area_lookup()` is called at five places, not two:
-`cluster_table()` and `membership_table()` as intended, plus ST14 and ST16 in
+`cluster_table()` and `membership_table()` as intended, plus ST7 and ST2 in
 `chapters/06-supplementary-tables/01_supplementary_tables.ipynb` and the Figure
 3c APOE tables in `04_variant_pleiotropy.ipynb`. All three moved:
 
-- **ST16, trait distribution across therapeutic areas** — 18 of its 22 area rows
+- **ST2, trait distribution across therapeutic areas** — 18 of its 22 area rows
   change count (`immune system disease` 111/75 to 29/15,
   `genetic, familial or congenital disease` 8/2 to 180/121; totals hold at 2,320
   and 1,394). This sheet was verified **exact against the published workbook**
   on 2026-08-20, under the legacy assignment, so that verification no longer
   holds — even though the published sheet's own column description says the
-  assignment follows the Supplementary Table 9 hierarchy, which it did not and
+  assignment follows the Supplementary Table 14 hierarchy, which it did not and
   this one now does. Resolved on 2026-08-24 in favour of reissuing the sheet;
   see `chapters/06-supplementary-tables/README.md`.
-- **ST14, gene-disease associations with gPS** — 5,470 of 36,858 rows (14.8%,
-  164 diseases) change their `therapeuticArea` label. `gPS` and
+- **ST7, gene-disease associations with gPS** — 5,470 of 36,858 rows (14.8%, 164
+  diseases) change their `therapeuticArea` label. `gPS` and
   `numberOfTherapeuticAreas` are unchanged; no published counterpart exists.
 - **Figure 3c** — `variant_pleiotropy_data_exploded.csv` goes from 192 to 193
   rows, because the table is exploded on therapeutic area and one study
@@ -179,8 +179,8 @@ Supplementary Results 14.1-14.2 is also on the published order now; it barely
 moves: within-area mean $|r_g|$ 0.401 -> 0.400, between-area 0.317 -> 0.317,
 permutation $P = 10^{-4}$ either way (55 of the 79,800 disease pairs cross from
 within to between). See `chapters/03-analysis-supplementary/README.md` for the
-full S14 table. The gene-level one-hot TA columns behind ED Fig. 7 and ST 8 were
-already on the published order and are untouched.
+full S14 table. The gene-level one-hot TA columns behind ED Fig. 7 and ST 13
+were already on the published order and are untouched.
 
 ### The hierarchy is unified — 2026-08-24
 
@@ -203,15 +203,15 @@ published order and are unchanged; R4.22 (APOE therapeutic areas) stays at 15,
 because the count coincides across the two orders even though the area set does
 not. Verified unchanged: 20,041 clusters and their partition, 5,595 with more
 than one lead variant, 6,617 with more than one disease (range 1-120, mean
-2.1415), the 42,918 ST 15 rows and their disease ids, R4.10-R4.13, R4.14-R4.21,
-every gPS number, Results 5 and 6, ST16's 2,320 / 1,394 / 7,010 totals, ST5
-(37,377 rows), ST9 (24 rows), ST7 `uniqueTherapeuticAreas`, and `plot_a.csv` /
+2.1415), the 42,918 ST 5 rows and their disease ids, R4.10-R4.13, R4.14-R4.21,
+every gPS number, Results 5 and 6, ST2's 2,320 / 1,394 / 7,010 totals, ST10
+(37,377 rows), ST14 (24 rows), ST12 `uniqueTherapeuticAreas`, and `plot_a.csv` /
 `plot_b.csv` / `variant_pleiotropy_data_exploded*.csv`, so no figure needed
 rebuilding.
 
 What moved:
 
-- **ST 2, `Number of associated therapeutic areas`** — 19 of the 37 rows go up
+- **ST 6, `Number of associated therapeutic areas`** — 19 of the 37 rows go up
   by one (one by three, `6_90267049_G_A` 4 -> 7); the row set and every other
   column are unchanged. Column total 231 -> 252.
 - **The APOE therapeutic-area direction split**, printed in Results 4 as nine
@@ -367,8 +367,8 @@ PIP:
 | R4.17 / R4.18 / R4.19             | 67 / 18 / 21                    | **68 / 19 / 22**                                                      |
 | APOE in the R4.18 set             | no                              | **yes**                                                               |
 | R4.10 / R4.11 / R4.12 / R4.13 (%) | 15.073 / 16.946 / 3.827 / 0.518 | **15.069 / 17.375 / 4.702 / 0.605**                                   |
-| ST2, cluster representatives      | 18 rows / 21 genes              | **19 rows / 22 genes**                                                |
-| ST2, all lead variants            | 37 rows / 37 genes              | unchanged — variant-level                                             |
+| ST6, cluster representatives      | 18 rows / 21 genes              | **19 rows / 22 genes**                                                |
+| ST6, all lead variants            | 37 rows / 37 genes              | unchanged — variant-level                                             |
 | SR 6 universe / below 1           | 5,919 / 1,051                   | unchanged — variant-level, not representative-level                   |
 
 Twelve Figure 3b coefficients, all twelve move and all in the same direction
@@ -421,7 +421,7 @@ What the change does do, measured against the pre-change run:
 | twelve Figure 3b coefficients                                           | unchanged — asserted, max deviation below 1e-6                                                                                    |
 | `figure_3.pdf`                                                          | **0 of 1,365,525 pixels differ** from the pre-change build                                                                        |
 | `cluster_covariates`, `cluster_membership`                              | content identical once sorted; only `cluster_id` and row order permuted                                                           |
-| ST15 sheet                                                              | changes, in the `cluster_id` column only (see `chapters/06-supplementary-tables/README.md`)                                       |
+| ST5 sheet                                                               | changes, in the `cluster_id` column only (see `chapters/06-supplementary-tables/README.md`)                                       |
 
 For the record, the old rule had a p-value tie spanning more than one lead
 variant in **29** clusters, so PIP was deciding the representative variant in 29
@@ -571,7 +571,7 @@ the ungated family, the Supplementary Results 6 effect matrix (40,706 variants,
 disease-variant pair) and its modelling paragraph (S6.03-S6.06: 9,828, 24%, mean
 1.48, max 85 — counted over all disease terms and deliberately ungated),
 S6.09-S6.17, every gPS number with `results/gene_pleiotropy.json` untouched, and
-every sheet in `06-supplementary-tables` except ST2.
+every sheet in `06-supplementary-tables` except ST6.
 
 **Registry tallies are unchanged at 608 PASS / 49 MISMATCH / 9 BLOCKED / 7
 PRECOMPUTED.** The amendment moves values inside ids that were already MISMATCH
@@ -718,7 +718,7 @@ agreements of less than 80\%"
 > genes.** The "less than 80\%" wording needs to become "80\% or less": the code
 > selects on $\leq 0.8$, and one of the 18 sits exactly at 0.8 (`RGL3`,
 > `19_11416089_T_G`), so the operator is load-bearing — `< 0.8` would give 17.
-> Supplementary Table 2 was reissued on this same universe on 2026-08-22 and now
+> Supplementary Table 6 was reissued on this same universe on 2026-08-22 and now
 > matches these three numbers row for row; see
 > `chapters/06-supplementary-tables/README.md`.
 

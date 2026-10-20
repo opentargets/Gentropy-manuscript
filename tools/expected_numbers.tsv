@@ -731,38 +731,38 @@ RR14.51	R2-MJ-14	of those, COVID-19	9	9	0		pending	03-supp/15_immunity_infection
 RR14.52	R2-MJ-14	of those, the lymphoma terms	4	4	0		pending	03-supp/15_immunity_infection_directionality
 RR14.53	R2-MJ-14	of those, peritonsillar abscess	7	7	0		pending	03-supp/15_immunity_infection_directionality
 RR14.54	R2-MJ-14	trans-disease credible sets supplying both sides of a pair	0	0	0		pending	03-supp/15_immunity_infection_directionality
-T2.01	tab:st2	lead variants at lead_vPS >= 10 and concordance <= 0.8	37	31	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T2.02	tab:st2	of those, cluster representatives (the main-text subset)	18	18	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T5.01	tab:st5	ChEMBL target-indication pairs	37377	37377	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T5.02	tab:st5	of those, approved (Phase IV)	4564	4564	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T5.03	tab:st5	of the approved, with GWAS genetic support	242	242	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T14.01	tab:st14	gene-disease associations, unrestricted	36858	36858	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T14.02	tab:st14	unique genes	8285	8285	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T14.03	tab:st14	unique diseases	1394	1394	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T14.04	tab:st14	pairs with rare-variant evidence only (not in R1.31)	645	645	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T14.05	tab:st14	pairs first seen in 2025 only (not in R1.31)	1323	1323	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T15.01	tab:st15	cluster-disease membership rows	42918	42918	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T15.02	tab:st15	colocalisation clusters	20041	20041	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T15.03	tab:st15	distinct diseases across clusters	1403	1403	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T15.04	tab:st15	therapeutic-area labels present (including `other`)	23	23	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T15.05	tab:st15	largest cluster vPS	120	120	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T16.01	tab:st16	genes differing under the Supplementary Table 9 hierarchy	0	0	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
-T18.01	tab:st18	effector gene list, de-duplicated EFO-gene pairs	42288	42288	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
-T18.02	tab:st18	genes in the effector gene list	5548	5548	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
-T18.03	tab:st18	disease terms in the effector gene list	8643	8643	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
-T18.04	tab:st18	rows whose disease identifier has no name in the release	81	81	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
-T18.05	tab:st18	distinct disease identifiers with no name	18	18	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
-T19.01	tab:st19	labelled credible set-gene pairs	132970	132970	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.02	tab:st19	positive pairs	8520	8520	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.03	tab:st19	negative pairs	124450	124450	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.04	tab:st19	credible sets carrying the positive pairs	8235	8235	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.05	tab:st19	studies	2128	2128	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.06	tab:st19	genes across all pairs	5197	5197	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.07	tab:st19	effector gene list pairs that enter training	612	612	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.08	tab:st19	genes across those pairs	390	390	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.09	tab:st19	disease terms across those pairs	159	159	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.10	tab:st19	gene-disease combinations on the positive rows (exploded disease list)	1704	1704	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.11	tab:st19	disease terms across those combinations	291	291	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.12	tab:st19	rows whose study maps to more than one disease term	57057	57057	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.13	tab:st19	positive pairs in the training split	7386	7386	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
-T19.14	tab:st19	negative pairs in the training split	106973	106973	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T2.01	tab:st6	lead variants at lead_vPS >= 10 and concordance <= 0.8	37	31	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T2.02	tab:st6	of those, cluster representatives (the main-text subset)	18	18	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T5.01	tab:st10	ChEMBL target-indication pairs	37377	37377	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T5.02	tab:st10	of those, approved (Phase IV)	4564	4564	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T5.03	tab:st10	of the approved, with GWAS genetic support	242	242	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T14.01	tab:st7	gene-disease associations, unrestricted	36858	36858	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T14.02	tab:st7	unique genes	8285	8285	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T14.03	tab:st7	unique diseases	1394	1394	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T14.04	tab:st7	pairs with rare-variant evidence only (not in R1.31)	645	645	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T14.05	tab:st7	pairs first seen in 2025 only (not in R1.31)	1323	1323	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T15.01	tab:st5	cluster-disease membership rows	42918	42918	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T15.02	tab:st5	colocalisation clusters	20041	20041	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T15.03	tab:st5	distinct diseases across clusters	1403	1403	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T15.04	tab:st5	therapeutic-area labels present (including `other`)	23	23	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T15.05	tab:st5	largest cluster vPS	120	120	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T16.01	tab:st2	genes differing under the Supplementary Table 14 hierarchy	0	0	0	sections/extended_data.tex	pending	06-tables/01_supplementary_tables
+T18.01	tab:st3	effector gene list, de-duplicated EFO-gene pairs	42288	42288	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
+T18.02	tab:st3	genes in the effector gene list	5548	5548	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
+T18.03	tab:st3	disease terms in the effector gene list	8643	8643	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
+T18.04	tab:st3	rows whose disease identifier has no name in the release	81	81	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
+T18.05	tab:st3	distinct disease identifiers with no name	18	18	0	sections/extended_data.tex	pending	06-tables/05_effector_gene_list
+T19.01	tab:st4	labelled credible set-gene pairs	132970	132970	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.02	tab:st4	positive pairs	8520	8520	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.03	tab:st4	negative pairs	124450	124450	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.04	tab:st4	credible sets carrying the positive pairs	8235	8235	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.05	tab:st4	studies	2128	2128	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.06	tab:st4	genes across all pairs	5197	5197	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.07	tab:st4	effector gene list pairs that enter training	612	612	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.08	tab:st4	genes across those pairs	390	390	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.09	tab:st4	disease terms across those pairs	159	159	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.10	tab:st4	gene-disease combinations on the positive rows (exploded disease list)	1704	1704	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.11	tab:st4	disease terms across those combinations	291	291	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.12	tab:st4	rows whose study maps to more than one disease term	57057	57057	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.13	tab:st4	positive pairs in the training split	7386	7386	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set
+T19.14	tab:st4	negative pairs in the training split	106973	106973	0	sections/extended_data.tex	pending	06-tables/06_l2g_training_set

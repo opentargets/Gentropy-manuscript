@@ -14,7 +14,7 @@ DERIVED = ROOT / "data" / "intermediate_files_refactor"
 RESULTS = ROOT / "results"
 
 # Order matters: the first ancestor that matches wins, unmatched diseases become "other".
-# This is the order published as Supplementary Table 9, the single hierarchy every analysis in the
+# This is the order published as Supplementary Table 14, the single hierarchy every analysis in the
 # manuscript uses, and the one that reproduces the published gene-level therapeutic-area counts
 # (4,743 genes in more than one area, mean 2.53, max 21). The pre-refactor pipeline carried a
 # second ordering with `genetic, familial or congenital disease` last but one, used by its variant

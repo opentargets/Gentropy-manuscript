@@ -97,7 +97,7 @@ figure in the paper.
 | SR 6       | `df_for_enrichment_regression.csv`, `ti_pairs_chembl`, `eit_gene_metrics-r1.csv` | 0.94% of pixels, all in the bootstrap bands |
 
 SR 5 was added for the round-1 response (Reviewer 1, minor comment 9) and is
-rebuilt here on the Supplementary Table 9 therapeutic-area order, so its
+rebuilt here on the Supplementary Table 14 therapeutic-area order, so its
 coordinate count differs from the round-1 draft: 226 rather than 219. Design
 unchanged — two panels, linear and log, marker area ∝ √n, size key.
 

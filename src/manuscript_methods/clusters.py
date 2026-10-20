@@ -33,7 +33,7 @@ def load_credible_sets(path: str = None) -> pd.DataFrame:
     break a tie the stored p-value does not break: cluster 26's three most significant credible
     sets all store `1.0e-323` and all map to `chi2Stat = 1479.141`, so the representative stayed
     `19_44888997_C_T` either way. The only effect was to permute 22 of the 20,041 `cluster_id`
-    values, which moved the ST15 sheet for no analytical gain. See
+    values, which moved the Supplementary Table 5 sheet for no analytical gain. See
     `chapters/02-analysis-main/README.md`.
 
     `chi2Stat` is kept on the frame — it is non-null and strictly positive for every qualifying
@@ -120,7 +120,7 @@ def cluster(study_loci: list, edges: list) -> list:
 def therapeutic_area_lookup() -> dict:
     """Disease id to therapeutic area, restricted to terms used by the release study index.
 
-    The hierarchy order published as Supplementary Table 9, which is the only order the pipeline
+    The hierarchy order published as Supplementary Table 14, which is the only order the pipeline
     carries. See `01-data-preparation/03_therapeutic_areas`.
     """
     efo_ta = ds.dataset(paper.derived("efo_therapeutic_area"), format="parquet").to_table().to_pydict()
@@ -169,7 +169,7 @@ def cluster_table(cs: pd.DataFrame, clusters: list, trait_column: str = "disease
 
 
 def membership_table(cs: pd.DataFrame, clusters: list, trait_column: str = "diseaseIds") -> pd.DataFrame:
-    """One row per cluster and disease, for Supplementary Table 15."""
+    """One row per cluster and disease, for Supplementary Table 5."""
     lookup = therapeutic_area_lookup()
     names = disease_names()
     traits_by_locus = dict(zip(cs["studyLocusId"], cs[trait_column]))

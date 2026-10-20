@@ -1,0 +1,31 @@
+,recomputed Number of Pairs (N),recomputed Unique Diseases,recomputed Unique Targets,published Number of Pairs (N),published Unique Diseases,published Unique Targets,table
+Enzyme,5857,835,1151,5857,835,1151,ST13_table1_all_nominated_by_target_class
+Other nuclear protein,94,79,20,94,79,20,ST13_table1_all_nominated_by_target_class
+Adhesion,208,163,29,208,163,29,ST13_table1_all_nominated_by_target_class
+Surface antigen,62,49,15,62,49,15,ST13_table1_all_nominated_by_target_class
+Membrane receptor,1156,398,235,1156,398,235,ST13_table1_all_nominated_by_target_class
+Epigenetic regulator,420,196,99,420,196,99,ST13_table1_all_nominated_by_target_class
+Other cytosolic protein,399,209,65,399,209,65,ST13_table1_all_nominated_by_target_class
+Other membrane protein,29,28,9,29,28,9,ST13_table1_all_nominated_by_target_class
+Ion channel,626,264,133,626,264,133,ST13_table1_all_nominated_by_target_class
+Auxiliary transport protein,92,67,17,92,67,17,ST13_table1_all_nominated_by_target_class
+Transcription factor,1197,463,123,1197,463,123,ST13_table1_all_nominated_by_target_class
+Unclassified protein,2801,632,535,2801,632,535,ST13_table1_all_nominated_by_target_class
+Transporter,377,213,91,377,213,91,ST13_table1_all_nominated_by_target_class
+Secreted protein,961,359,106,961,359,106,ST13_table1_all_nominated_by_target_class
+Structural protein,253,147,37,253,147,37,ST13_table1_all_nominated_by_target_class
+Enzyme,441,233,148,441,233,148,ST13_table3_best_subgroup_by_target_class
+Other nuclear protein,5,5,2,5,5,2,ST13_table3_best_subgroup_by_target_class
+Adhesion,25,21,7,25,21,7,ST13_table3_best_subgroup_by_target_class
+Surface antigen,0,0,0,0,0,0,ST13_table3_best_subgroup_by_target_class
+Membrane receptor,136,93,37,136,93,37,ST13_table3_best_subgroup_by_target_class
+Epigenetic regulator,23,20,8,23,20,8,ST13_table3_best_subgroup_by_target_class
+Other cytosolic protein,10,10,6,10,10,6,ST13_table3_best_subgroup_by_target_class
+Other membrane protein,1,1,1,1,1,1,ST13_table3_best_subgroup_by_target_class
+Ion channel,42,33,15,42,33,15,ST13_table3_best_subgroup_by_target_class
+Auxiliary transport protein,0,0,0,0,0,0,ST13_table3_best_subgroup_by_target_class
+Transcription factor,23,19,9,23,19,9,ST13_table3_best_subgroup_by_target_class
+Unclassified protein,125,101,45,125,101,45,ST13_table3_best_subgroup_by_target_class
+Transporter,67,56,18,67,56,18,ST13_table3_best_subgroup_by_target_class
+Secreted protein,56,47,14,56,47,14,ST13_table3_best_subgroup_by_target_class
+Structural protein,47,40,16,47,40,16,ST13_table3_best_subgroup_by_target_class
