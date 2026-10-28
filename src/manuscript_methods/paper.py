@@ -1,6 +1,6 @@
 """Paths, therapeutic-area hierarchy and result reporting for the manuscript pipeline.
 
-Every refactored notebook imports from here so there is one definition of each.
+Every notebook imports from here so there is one definition of each.
 Notebooks are executed from the repository root.
 """
 
@@ -16,9 +16,9 @@ RESULTS = ROOT / "results"
 # Order matters: the first ancestor that matches wins, unmatched diseases become "other".
 # This is the order published as Supplementary Table 14, the single hierarchy every analysis in the
 # manuscript uses, and the one that reproduces the published gene-level therapeutic-area counts
-# (4,743 genes in more than one area, mean 2.53, max 21). The pre-refactor pipeline carried a
+# (4,743 genes in more than one area, mean 2.53, max 21). The original analysis carried a
 # second ordering with `genetic, familial or congenital disease` last but one, used by its variant
-# and cluster analyses while its gene analysis used this one; that inconsistency is now removed.
+# and cluster analyses while its gene analysis used this one; here every analysis uses this one.
 THERAPEUTIC_AREAS = {
     "EFO_0001444": "measurement",
     "MONDO_0045024": "cancer or benign tumor",
@@ -88,8 +88,13 @@ def derived(name: str) -> str:
 
 
 def baseline(name: str) -> str:
-    """Path to the equivalent pre-refactor dataset, used only for cross-checks."""
+    """Path to the equivalent dataset of the original analysis, used only for cross-checks."""
     return str(BASELINE / name)
+
+
+def has_baseline(*names: str) -> bool:
+    """Whether the original analysis's datasets are on disk; they are not part of the Zenodo deposit."""
+    return all((BASELINE / name).exists() for name in names)
 
 
 def first_therapeutic_area(ancestors) -> str:

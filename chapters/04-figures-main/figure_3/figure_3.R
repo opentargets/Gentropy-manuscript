@@ -126,7 +126,7 @@ is_plot_b_schema <- function(df) {
     has_required && has_some_series
 }
 
-# If the user renamed/swapped the input files, detect by schema and swap internally.
+# If the two input files are swapped, detect by schema and swap internally.
 if (is_plot_b_schema(df_a) && is_plot_a_schema(df_b)) {
     message("Detected that plot_a_path contains Plot b schema and plot_b_path contains Plot a schema. Swapping inputs internally.")
     tmp <- df_a

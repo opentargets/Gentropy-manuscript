@@ -4,9 +4,8 @@
 #
 # Reads the model frame written by 08_enrichment_bias.ipynb and refits the models the published
 # analysis used: `glm` for the two fixed-effect ones and `lme4::glmer` for the two with a random
-# therapeutic-area intercept. Ported from
-# ~/Projects/EGL_and_training_set/archive/gentropy_paper/R_scripts/05_enrichment.R, which is the
-# only surviving implementation. Results go back to CSV for the notebook to read.
+# therapeutic-area intercept. Ported from `R_scripts/05_enrichment.R` in the original analysis
+# code (not public), which is the only surviving implementation. Results go back to CSV for the notebook to read.
 
 suppressMessages(library(lme4))
 

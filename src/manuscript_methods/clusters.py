@@ -27,14 +27,13 @@ def load_credible_sets(path: str = None) -> pd.DataFrame:
     The sort decides which locus seeds each cluster, and hence both the cluster numbering and
     which lead variant represents the cluster downstream.
 
-    Ranking on `variantStatistics.chi2Stat` descending was tried on 2026-08-22 and reverted the
-    same day. Chi-square is monotone in the p-value at one degree of freedom, and here it is
-    computed *from* the stored mantissa and exponent, so it carries the same information and cannot
-    break a tie the stored p-value does not break: cluster 26's three most significant credible
-    sets all store `1.0e-323` and all map to `chi2Stat = 1479.141`, so the representative stayed
-    `19_44888997_C_T` either way. The only effect was to permute 22 of the 20,041 `cluster_id`
-    values, which moved the Supplementary Table 5 sheet for no analytical gain. See
-    `chapters/02-analysis-main/README.md`.
+    Ranking on `variantStatistics.chi2Stat` descending instead is deliberately not used. Chi-square
+    is monotone in the p-value at one degree of freedom, and here it is computed *from* the stored
+    mantissa and exponent, so it carries the same information and cannot break a tie the stored
+    p-value does not break: cluster 26's three most significant credible sets all store `1.0e-323`
+    and all map to `chi2Stat = 1479.141`, so the representative is `19_44888997_C_T` either way. The
+    only effect would be to permute 22 of the 20,041 `cluster_id` values, which changes the
+    Supplementary Table 5 sheet for no analytical gain.
 
     `chi2Stat` is kept on the frame — it is non-null and strictly positive for every qualifying
     credible set, in every project and both `hasSumstats` strata — so the alternative ordering

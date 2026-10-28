@@ -1,8 +1,13 @@
 # Data download
 
-`01_download_data_to_local_repo.ipynb` fetches the Open Targets 25.06 release
-and the project-specific inputs into `data/`. Requires `gcloud auth login`. ~40
-GB, 30–60 min.
+`01_download_data_to_local_repo.ipynb` fetches everything the pipeline reads
+into `data/`:
 
-Inputs it does **not** fetch are listed in `GAPS.md` (§1
-present-but-not-scripted, §2 missing).
+- the Open Targets 25.06 release, from `gs://open-targets-data-releases/25.06`
+  (requester-pays: set `BILLING_PROJECT`; also free over HTTPS from the EBI
+  FTP). Requires `gcloud auth login`. ~24 GB, 30–60 min;
+- the project inputs, from Zenodo
+  ([10.5281/zenodo.23736324](https://doi.org/10.5281/zenodo.23736324), all
+  versions), 206 MB. Add `intermediates.tar.gz` to skip chapter 01;
+- one third-party file, Supplementary Table 8 of Sun et al. 2024, which has to
+  be downloaded by hand. The notebook checks it is present.

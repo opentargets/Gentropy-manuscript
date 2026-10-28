@@ -66,8 +66,7 @@ add_gene_labels_outside <- function(manhattan_data, chr_regions) {
   # Initialize container for labeled points used for highlighting
   .labeled_points <<- data.frame(sector = character(), x = numeric(), label = character(), stringsAsFactors = FALSE)
   # Load the full dataset to get approvedSymbol and uniqueDiseases. This is the same table that
-  # is plotted; the pre-refactor script read a separate CSV of the disease-gene subset, which
-  # carried the same 54 labelled genes.
+  # is plotted; it yields the 54 labelled genes.
   full_data <- as.data.frame(read_parquet(gene_index_path))
 
   # Filter genes with uniqueDiseases > n
@@ -607,7 +606,7 @@ create_circular_manhattan <- function(data, output_file = NULL,
          inset = c(0.1, 0.07))  # Move legend slightly outside
 
   # # Draw a centered image inside the circle before clearing
-  # img_path <- "/Users/polina/genetics_gsea/scr/8728108.png"
+  # img_path <- "<path to centre image>.png"
   # if(file.exists(img_path)) {
   #   img <- try(readPNG(img_path), silent = TRUE)
   #   if(!inherits(img, "try-error")) {

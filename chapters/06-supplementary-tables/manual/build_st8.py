@@ -9,6 +9,9 @@ the therapeutic-area rows and two corrected notes change.
 Writes manual/refreshed/ST13_-_subgroup_analysis.xlsx. Copying it over
 supplementary_tables/sheets/ST13_-_subgroup_analysis.xlsx in the manuscript repository is a
 deliberate, separate step.
+
+The script name and the hand-laid-out `manual/ST8_-_subgroup_analysis.xlsx` keep this repository's
+own number for the table (8); the root README maps it to the printed number (13).
 """
 
 from pathlib import Path

@@ -72,12 +72,9 @@ layer_labels <- c(
 )
 layer_colors <- setNames(c(color_eur, color_non_eur, color_mixed, color_rare), layer_labels)
 
-# Panel c layer heights are pre-computed by figure_1_dataprep-r1.ipynb, which lifts them from
-# chapters/06-review-r1/ancestry-mixed-split/01_ancestry_reclassification.ipynb. Each row is one
-# stacked segment: `layer` is its height, `cumulative` is the running total of that tier and
-# everything below it. Computing them upstream keeps panel c, ED Fig 3 and the reviewer response
-# numerically identical, and removes the fragile step this script used to do — splitting a Python
-# list-repr string of diseaseIds on commas to recover gene-disease pairs.
+# Panel c layer heights are pre-computed by chapters/02-analysis-main/01_panoramic.ipynb. Each row
+# is one stacked segment: `layer` is its height, `cumulative` is the running total of that tier and
+# everything below it. Computing them upstream keeps panel c and ED Fig 3 numerically identical.
 stopifnot(file.exists(input_csv))
 layers_raw <- suppressMessages(readr::read_csv(input_csv, show_col_types = FALSE)) %>%
   dplyr::rename(height = layer)

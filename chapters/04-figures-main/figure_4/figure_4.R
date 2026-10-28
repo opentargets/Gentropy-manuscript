@@ -52,7 +52,7 @@ base_theme <- theme_minimal() +
   )
 
 # ---- Data directory ----
-# Inputs come from data/intermediate_files_refactor. Run with the repository root as the wd.
+# Inputs come from data/intermediate_files_refactor/.
 # Run from the repository root: tools/run_r.sh chapters/04-figures-main/figure_4/figure_4.R
 data_dir <- "data/intermediate_files_refactor"
 

@@ -1,7 +1,7 @@
 # Extended Data Figure 10 - the rare-variant share of cumulative discovery over time.
 #
-# Answers reviewer 1, minor comment 3: on the shared y-axis of Figure 1c the rare band is a sliver,
-# so the reader cannot see whether its share is growing. Both panels here are on their own percent
+# On the shared y-axis of Figure 1c the rare band is a sliver, so the reader cannot see whether its
+# share is growing. Both panels here are on their own percent
 # scale and neither shares an axis with a common-variant count.
 #
 #   a - rare-variant share of cumulative disease-associated genes (%)

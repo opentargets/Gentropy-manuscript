@@ -1,8 +1,8 @@
 """The L2G gold standard, the prioritisation rules scored against it, and their 2x2 tables.
 
 Used by Supplementary Results 3 and 4 and by Supplementary Table 17. The gold standard and the
-held-out split live in `data/l2g_training_set/`, which is not yet fetched by the download
-notebook — see GAPS.md.
+held-out split live in `data/l2g_training_set/`, fetched from the Zenodo deposit by the download
+notebook.
 """
 
 import numpy as np

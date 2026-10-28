@@ -157,8 +157,6 @@ p_a <- p_a_top / p_a_bot +
 # =============================================================================
 # PLOT B: Forest plot - gene categories with faceted category panels
 # =============================================================================
-# Review round 1 (R2-MJ-1) added the number-of-TAs pleiotropy strata; prefer the augmented table
-# written by chapters/06-review-r1/fig5b-ta-stratum/fig5b_ta_contrast.py when it is present.
 # The comparison against the other genetic-evidence resources runs over a different universe, so
 # 02-analysis-main writes it to its own table. It is the "Other" facet block of panel b.
 other_file <- file.path(data_dir, "drug_enrichment_other_resources.csv")
