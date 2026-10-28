@@ -1,0 +1,10 @@
+Datasource,Number of valid studies with at least one CS,% of binary traits,% of studes with proportion of NFE ancestry <90%,Number of unique EFO/genes,Number of unique biosamplds,Mean/median sample size,Number of unqiue regions,Number of CSs,Mean/median size of CSs,% of CS with SNP PIP>0.9
+GWAS Catalog Curated Associations,18191,0.219,0.2781,7047,0,83790.04/10708,153568,153568,36.18/13,0.2052
+GWAS Catalog Summary Statistics,19849,0.1372,0.3152,3698,0,101969.31/21081,198911,615181,20.82/3,0.401
+FinnGen R12,1242,1.0,1.0,974,0,423135.88/467775,10521,20704,51.46/14,0.1352
+UKBB-PPP,2375,0.0,0.0,2358,1,33482.18/33657,12113,32150,12.72/2,0.4289
+eQTL Catalogue eQTL,1210140,0.0,1.0,28175,77,329.13/318,185918,1349478,24.74/9,0.1748
+eQTL Catalogue pQTL,789,0.0,1.0,735,1,3301.00/3301,735,1581,14.94/4,0.2682
+eQTL Catalogue tuQTL,353260,0.0,1.0,12486,74,345.71/324,12480,384852,22.17/9,0.1848
+eQTL Catalogue sQTL,209582,0.0,1.0,13301,74,356.40/324,32895,223500,21.61/9,0.1825
+eQTL Catalogue sc-eQTL,48723,0.0,1.0,7123,29,392.23/194,7687,52744,60.80/21,0.0687

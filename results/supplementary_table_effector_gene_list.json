@@ -1,0 +1,7 @@
+{
+  "egl_diseases": 8643,
+  "egl_genes": 5548,
+  "egl_pairs": 42288,
+  "egl_pairs_in_training_set": 612,
+  "training_set_positive_rows": 1377
+}

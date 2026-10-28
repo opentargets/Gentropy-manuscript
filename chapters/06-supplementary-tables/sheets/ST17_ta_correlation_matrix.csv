@@ -1,0 +1,254 @@
+therapeuticArea1,therapeuticArea2,meanAbsRg,nPairs
+cancer or benign tumor,cancer or benign tumor,0.3291,1711
+cancer or benign tumor,cardiovascular disease,0.2303,2478
+cancer or benign tumor,disorder of ear,0.3395,118
+cancer or benign tumor,disorder of visual system,0.2722,885
+cancer or benign tumor,endocrine system disease,0.2699,413
+cancer or benign tumor,gastrointestinal disease,0.2798,2242
+cancer or benign tumor,"genetic, familial or congenital disease",0.2404,1829
+cancer or benign tumor,hematologic disease,0.3224,236
+cancer or benign tumor,immune system disease,0.2468,295
+cancer or benign tumor,infectious disease,0.3022,1357
+cancer or benign tumor,"injury, poisoning or other complication",0.3159,1003
+cancer or benign tumor,integumentary system disease,0.3002,708
+cancer or benign tumor,musculoskeletal or connective tissue disease,0.2388,1947
+cancer or benign tumor,nervous system disease,0.2336,1593
+cancer or benign tumor,nutritional or metabolic disease,0.2932,767
+cancer or benign tumor,pancreas disease,0.2222,295
+cancer or benign tumor,pregnancy or perinatal disease,0.2202,118
+cancer or benign tumor,psychiatric disorder,0.2795,177
+cancer or benign tumor,reproductive system or breast disease,0.2622,708
+cancer or benign tumor,respiratory or thoracic disease,0.2223,885
+cancer or benign tumor,sign or symptom,0.2508,1298
+cancer or benign tumor,urinary system disease,0.2858,767
+cardiovascular disease,cardiovascular disease,0.4545,861
+cardiovascular disease,disorder of ear,0.4039,84
+cardiovascular disease,disorder of visual system,0.3001,630
+cardiovascular disease,endocrine system disease,0.2549,294
+cardiovascular disease,gastrointestinal disease,0.3356,1596
+cardiovascular disease,"genetic, familial or congenital disease",0.2698,1302
+cardiovascular disease,hematologic disease,0.4216,168
+cardiovascular disease,immune system disease,0.2843,210
+cardiovascular disease,infectious disease,0.3568,966
+cardiovascular disease,"injury, poisoning or other complication",0.3492,714
+cardiovascular disease,integumentary system disease,0.2121,504
+cardiovascular disease,musculoskeletal or connective tissue disease,0.2859,1386
+cardiovascular disease,nervous system disease,0.2718,1134
+cardiovascular disease,nutritional or metabolic disease,0.3914,546
+cardiovascular disease,pancreas disease,0.3857,210
+cardiovascular disease,pregnancy or perinatal disease,0.3966,84
+cardiovascular disease,psychiatric disorder,0.2917,126
+cardiovascular disease,reproductive system or breast disease,0.2741,504
+cardiovascular disease,respiratory or thoracic disease,0.2708,630
+cardiovascular disease,sign or symptom,0.3238,924
+cardiovascular disease,urinary system disease,0.3707,546
+disorder of ear,disorder of ear,0.7619,1
+disorder of ear,disorder of visual system,0.5563,30
+disorder of ear,endocrine system disease,0.4498,14
+disorder of ear,gastrointestinal disease,0.5101,76
+disorder of ear,"genetic, familial or congenital disease",0.4397,62
+disorder of ear,hematologic disease,0.7257,8
+disorder of ear,immune system disease,0.2471,10
+disorder of ear,infectious disease,0.5311,46
+disorder of ear,"injury, poisoning or other complication",0.5436,34
+disorder of ear,integumentary system disease,0.5586,24
+disorder of ear,musculoskeletal or connective tissue disease,0.4597,66
+disorder of ear,nervous system disease,0.369,54
+disorder of ear,nutritional or metabolic disease,0.663,26
+disorder of ear,pancreas disease,0.4095,10
+disorder of ear,pregnancy or perinatal disease,0.1716,4
+disorder of ear,psychiatric disorder,0.2441,6
+disorder of ear,reproductive system or breast disease,0.4827,24
+disorder of ear,respiratory or thoracic disease,0.357,30
+disorder of ear,sign or symptom,0.5187,44
+disorder of ear,urinary system disease,0.4304,26
+disorder of visual system,disorder of visual system,0.3784,105
+disorder of visual system,endocrine system disease,0.1777,105
+disorder of visual system,gastrointestinal disease,0.3615,570
+disorder of visual system,"genetic, familial or congenital disease",0.2905,465
+disorder of visual system,hematologic disease,0.2972,60
+disorder of visual system,immune system disease,0.2726,75
+disorder of visual system,infectious disease,0.3508,345
+disorder of visual system,"injury, poisoning or other complication",0.3869,255
+disorder of visual system,integumentary system disease,0.2646,180
+disorder of visual system,musculoskeletal or connective tissue disease,0.2965,495
+disorder of visual system,nervous system disease,0.3191,405
+disorder of visual system,nutritional or metabolic disease,0.3157,195
+disorder of visual system,pancreas disease,0.3981,75
+disorder of visual system,pregnancy or perinatal disease,0.449,30
+disorder of visual system,psychiatric disorder,0.3814,45
+disorder of visual system,reproductive system or breast disease,0.2923,180
+disorder of visual system,respiratory or thoracic disease,0.2557,225
+disorder of visual system,sign or symptom,0.3035,330
+disorder of visual system,urinary system disease,0.3919,195
+endocrine system disease,endocrine system disease,0.2927,21
+endocrine system disease,gastrointestinal disease,0.2812,266
+endocrine system disease,"genetic, familial or congenital disease",0.2414,217
+endocrine system disease,hematologic disease,0.2033,28
+endocrine system disease,immune system disease,0.262,35
+endocrine system disease,infectious disease,0.234,161
+endocrine system disease,"injury, poisoning or other complication",0.3199,119
+endocrine system disease,integumentary system disease,0.1586,84
+endocrine system disease,musculoskeletal or connective tissue disease,0.2167,231
+endocrine system disease,nervous system disease,0.2522,189
+endocrine system disease,nutritional or metabolic disease,0.1675,91
+endocrine system disease,pancreas disease,0.1996,35
+endocrine system disease,pregnancy or perinatal disease,0.223,14
+endocrine system disease,psychiatric disorder,0.2869,21
+endocrine system disease,reproductive system or breast disease,0.2292,84
+endocrine system disease,respiratory or thoracic disease,0.1747,105
+endocrine system disease,sign or symptom,0.2234,154
+endocrine system disease,urinary system disease,0.2446,91
+gastrointestinal disease,gastrointestinal disease,0.4946,703
+gastrointestinal disease,"genetic, familial or congenital disease",0.3076,1178
+gastrointestinal disease,hematologic disease,0.3894,152
+gastrointestinal disease,immune system disease,0.3075,190
+gastrointestinal disease,infectious disease,0.4495,874
+gastrointestinal disease,"injury, poisoning or other complication",0.4621,646
+gastrointestinal disease,integumentary system disease,0.3418,456
+gastrointestinal disease,musculoskeletal or connective tissue disease,0.4033,1254
+gastrointestinal disease,nervous system disease,0.3919,1026
+gastrointestinal disease,nutritional or metabolic disease,0.4377,494
+gastrointestinal disease,pancreas disease,0.4324,190
+gastrointestinal disease,pregnancy or perinatal disease,0.2643,76
+gastrointestinal disease,psychiatric disorder,0.419,114
+gastrointestinal disease,reproductive system or breast disease,0.4069,456
+gastrointestinal disease,respiratory or thoracic disease,0.3606,570
+gastrointestinal disease,sign or symptom,0.4793,836
+gastrointestinal disease,urinary system disease,0.3881,494
+"genetic, familial or congenital disease","genetic, familial or congenital disease",0.2591,465
+"genetic, familial or congenital disease",hematologic disease,0.3083,124
+"genetic, familial or congenital disease",immune system disease,0.2452,155
+"genetic, familial or congenital disease",infectious disease,0.3193,713
+"genetic, familial or congenital disease","injury, poisoning or other complication",0.3392,527
+"genetic, familial or congenital disease",integumentary system disease,0.2585,372
+"genetic, familial or congenital disease",musculoskeletal or connective tissue disease,0.2646,1023
+"genetic, familial or congenital disease",nervous system disease,0.2441,837
+"genetic, familial or congenital disease",nutritional or metabolic disease,0.3103,403
+"genetic, familial or congenital disease",pancreas disease,0.2835,155
+"genetic, familial or congenital disease",pregnancy or perinatal disease,0.2667,62
+"genetic, familial or congenital disease",psychiatric disorder,0.2399,93
+"genetic, familial or congenital disease",reproductive system or breast disease,0.2737,372
+"genetic, familial or congenital disease",respiratory or thoracic disease,0.2394,465
+"genetic, familial or congenital disease",sign or symptom,0.2776,682
+"genetic, familial or congenital disease",urinary system disease,0.303,403
+hematologic disease,hematologic disease,0.4778,6
+hematologic disease,immune system disease,0.3677,20
+hematologic disease,infectious disease,0.368,92
+hematologic disease,"injury, poisoning or other complication",0.4086,68
+hematologic disease,integumentary system disease,0.2022,48
+hematologic disease,musculoskeletal or connective tissue disease,0.2942,132
+hematologic disease,nervous system disease,0.3434,108
+hematologic disease,nutritional or metabolic disease,0.3369,52
+hematologic disease,pancreas disease,0.4076,20
+hematologic disease,pregnancy or perinatal disease,0.6949,8
+hematologic disease,psychiatric disorder,0.4006,12
+hematologic disease,reproductive system or breast disease,0.2829,48
+hematologic disease,respiratory or thoracic disease,0.3228,60
+hematologic disease,sign or symptom,0.3047,88
+hematologic disease,urinary system disease,0.4342,52
+immune system disease,immune system disease,0.3991,10
+immune system disease,infectious disease,0.3425,115
+immune system disease,"injury, poisoning or other complication",0.3261,85
+immune system disease,integumentary system disease,0.258,60
+immune system disease,musculoskeletal or connective tissue disease,0.2581,165
+immune system disease,nervous system disease,0.2402,135
+immune system disease,nutritional or metabolic disease,0.2747,65
+immune system disease,pancreas disease,0.2839,25
+immune system disease,pregnancy or perinatal disease,0.1602,10
+immune system disease,psychiatric disorder,0.2431,15
+immune system disease,reproductive system or breast disease,0.2022,60
+immune system disease,respiratory or thoracic disease,0.3792,75
+immune system disease,sign or symptom,0.31,110
+immune system disease,urinary system disease,0.289,65
+infectious disease,infectious disease,0.4502,253
+infectious disease,"injury, poisoning or other complication",0.4817,391
+infectious disease,integumentary system disease,0.3162,276
+infectious disease,musculoskeletal or connective tissue disease,0.3796,759
+infectious disease,nervous system disease,0.3887,621
+infectious disease,nutritional or metabolic disease,0.3678,299
+infectious disease,pancreas disease,0.4607,115
+infectious disease,pregnancy or perinatal disease,0.3782,46
+infectious disease,psychiatric disorder,0.4354,69
+infectious disease,reproductive system or breast disease,0.3871,276
+infectious disease,respiratory or thoracic disease,0.383,345
+infectious disease,sign or symptom,0.4242,506
+infectious disease,urinary system disease,0.3592,299
+"injury, poisoning or other complication","injury, poisoning or other complication",0.5648,136
+"injury, poisoning or other complication",integumentary system disease,0.3724,204
+"injury, poisoning or other complication",musculoskeletal or connective tissue disease,0.4567,561
+"injury, poisoning or other complication",nervous system disease,0.4109,459
+"injury, poisoning or other complication",nutritional or metabolic disease,0.4412,221
+"injury, poisoning or other complication",pancreas disease,0.3371,85
+"injury, poisoning or other complication",pregnancy or perinatal disease,0.1634,34
+"injury, poisoning or other complication",psychiatric disorder,0.4518,51
+"injury, poisoning or other complication",reproductive system or breast disease,0.4331,204
+"injury, poisoning or other complication",respiratory or thoracic disease,0.3501,255
+"injury, poisoning or other complication",sign or symptom,0.4871,374
+"injury, poisoning or other complication",urinary system disease,0.3982,221
+integumentary system disease,integumentary system disease,0.3367,66
+integumentary system disease,musculoskeletal or connective tissue disease,0.2963,396
+integumentary system disease,nervous system disease,0.2668,324
+integumentary system disease,nutritional or metabolic disease,0.1944,156
+integumentary system disease,pancreas disease,0.2133,60
+integumentary system disease,pregnancy or perinatal disease,0.2741,24
+integumentary system disease,psychiatric disorder,0.3357,36
+integumentary system disease,reproductive system or breast disease,0.2973,144
+integumentary system disease,respiratory or thoracic disease,0.2595,180
+integumentary system disease,sign or symptom,0.2632,264
+integumentary system disease,urinary system disease,0.3034,156
+musculoskeletal or connective tissue disease,musculoskeletal or connective tissue disease,0.428,528
+musculoskeletal or connective tissue disease,nervous system disease,0.3281,891
+musculoskeletal or connective tissue disease,nutritional or metabolic disease,0.3609,429
+musculoskeletal or connective tissue disease,pancreas disease,0.3386,165
+musculoskeletal or connective tissue disease,pregnancy or perinatal disease,0.2674,66
+musculoskeletal or connective tissue disease,psychiatric disorder,0.3236,99
+musculoskeletal or connective tissue disease,reproductive system or breast disease,0.3509,396
+musculoskeletal or connective tissue disease,respiratory or thoracic disease,0.3075,495
+musculoskeletal or connective tissue disease,sign or symptom,0.3924,726
+musculoskeletal or connective tissue disease,urinary system disease,0.3197,429
+nervous system disease,nervous system disease,0.3418,351
+nervous system disease,nutritional or metabolic disease,0.3566,351
+nervous system disease,pancreas disease,0.3056,135
+nervous system disease,pregnancy or perinatal disease,0.1752,54
+nervous system disease,psychiatric disorder,0.3654,81
+nervous system disease,reproductive system or breast disease,0.3279,324
+nervous system disease,respiratory or thoracic disease,0.3273,405
+nervous system disease,sign or symptom,0.4141,594
+nervous system disease,urinary system disease,0.319,351
+nutritional or metabolic disease,nutritional or metabolic disease,0.3564,78
+nutritional or metabolic disease,pancreas disease,0.4937,65
+nutritional or metabolic disease,pregnancy or perinatal disease,0.7236,26
+nutritional or metabolic disease,psychiatric disorder,0.3993,39
+nutritional or metabolic disease,reproductive system or breast disease,0.3444,156
+nutritional or metabolic disease,respiratory or thoracic disease,0.315,195
+nutritional or metabolic disease,sign or symptom,0.3539,286
+nutritional or metabolic disease,urinary system disease,0.397,169
+pancreas disease,pancreas disease,0.6538,10
+pancreas disease,pregnancy or perinatal disease,0.5571,10
+pancreas disease,psychiatric disorder,0.2701,15
+pancreas disease,reproductive system or breast disease,0.2805,60
+pancreas disease,respiratory or thoracic disease,0.2999,75
+pancreas disease,sign or symptom,0.327,110
+pancreas disease,urinary system disease,0.4815,65
+pregnancy or perinatal disease,pregnancy or perinatal disease,0.1051,1
+pregnancy or perinatal disease,psychiatric disorder,0.1549,6
+pregnancy or perinatal disease,reproductive system or breast disease,0.2981,24
+pregnancy or perinatal disease,respiratory or thoracic disease,0.227,30
+pregnancy or perinatal disease,sign or symptom,0.2795,44
+pregnancy or perinatal disease,urinary system disease,0.4723,26
+psychiatric disorder,psychiatric disorder,0.2696,3
+psychiatric disorder,reproductive system or breast disease,0.3365,36
+psychiatric disorder,respiratory or thoracic disease,0.3348,45
+psychiatric disorder,sign or symptom,0.544,66
+psychiatric disorder,urinary system disease,0.2761,39
+reproductive system or breast disease,reproductive system or breast disease,0.4058,66
+reproductive system or breast disease,respiratory or thoracic disease,0.2774,180
+reproductive system or breast disease,sign or symptom,0.3501,264
+reproductive system or breast disease,urinary system disease,0.3404,156
+respiratory or thoracic disease,respiratory or thoracic disease,0.4388,105
+respiratory or thoracic disease,sign or symptom,0.4073,330
+respiratory or thoracic disease,urinary system disease,0.2642,195
+sign or symptom,sign or symptom,0.5444,231
+sign or symptom,urinary system disease,0.305,286
+urinary system disease,urinary system disease,0.5642,78

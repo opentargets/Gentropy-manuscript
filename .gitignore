@@ -178,6 +178,10 @@ cython_debug/
 data/*
 !data/.gitkeep
 
+# Minikel et al. 2024 Pharmaprojects tables, inputs to the legacy processing notebook
+combined_ti_TA.tsv
+drug_phase_summary.tsv
+
 
 spark-warehouse
 app/
@@ -198,3 +202,25 @@ app/
 .Renviron.site
 .Rds
 gentropy-manuscript.Rproj
+# reviewer-facing notes (contain verbatim referee comments, kept local only)
+chapters/06-review-r1/**/README.md
+chapters/06-review-r1/**/MAPPING_REVIEW.md
+
+slides
+
+# Internal notes, not for the public repository
+GAPS.md
+REFACTOR_PLAN.md
+REPRODUCIBILITY.md
+playground/
+tmp/
+Rplots.pdf
+plot_d.pdf
+.DS_Store
+.vscode/
+chapters/02-analysis-main/README.md
+chapters/03-analysis-supplementary/README.md
+chapters/04-figures-main/README.md
+chapters/05-figures-supplementary/README.md
+chapters/06-supplementary-tables/README.md
+chapters/06-supplementary-tables/manual/README.md
